@@ -6,6 +6,67 @@ The frontend is using a firebase project for most backend services such as fireb
 
 The app is striving to always run in containers both as local project when developing and in production. 
 
+### Getting Started
+
+This section provides instructions on how to set up the project environment on Windows using either npm or Docker. Choose the method that best suits your development preferences and follow the steps below to get started.
+
+We recommend having both tools at your disposal.
+
+#### Option 1: Using npm
+
+1. **Install Node.js and npm**: Ensure that Node.js and npm are installed on your Windows machine. You can download them from [https://nodejs.org/](https://nodejs.org/).
+
+2. **Clone the Repository**: Clone the project repository to your local machine using Git.
+
+    ```bash
+    git clone https://github.com/cvpl-fdca/Intranet-projekt.git
+    cd Intranet-projekt
+    ```
+
+3. **Navigate to the Project Directory**:
+
+    ```bash
+    cd fdca-intranet
+    ```
+
+4. **Install Dependencies**:
+
+    ```bash
+    npm install
+    ```
+
+5. **Run the Development Server**:
+
+    ```bash
+    npm run dev
+    ```
+
+    This command starts the development server. You can now access the application in your web browser at the specified address (usually `http://localhost:5173`).
+
+#### Option 2: Using Docker
+
+1. **Install Docker for Windows**: Download and install Docker Desktop for Windows from [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop). Follow the installation instructions provided on the website.
+
+2. **Clone the Repository**: If you haven't already, clone the project repository to your local machine.
+
+    ```bash
+    git clone https://github.com/cvpl-fdca/Intranet-projekt.git
+    cd Intranet-projekt
+    ```
+
+3. **Stay in the Root Folder**: Ensure you're in the root directory of the cloned repository.
+
+4. **Build and Run the Container**:
+
+    ```bash
+    docker-compose up --build
+    ```
+
+    This command builds the Docker image and starts the container. Once the process is complete, the application will be running and accessible through the specified ports.
+
+Choose either method to set up your development environment and start working on the project.
+
+
 ## Deployment Flow Overview
 
 Our deployment flow is designed to ensure code quality and stability across all stages of Dev. Here's a brief overview:
