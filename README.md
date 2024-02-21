@@ -1,6 +1,10 @@
-# Project Deployment Workflow
+# FDCA Intranet application
 
-This document outlines our project's deployment workflow, including the process of moving from Dev to Testing, and finally to Prod. It also details the use of Firebase projects across different environments and provides a guide for creating and naming feature branches.
+This application is a Svelte-kit PWA that is designed with Tailwind-css, Skeleton-UI, Flowbite-svelte. 
+
+The frontend is using a firebase project for most backend services such as firebase storage and firestore to allow users to read and write articles that can be read by other FDCA members.
+
+The app is striving to always run in containers both as local project when developing and in production. 
 
 ## Deployment Flow Overview
 
