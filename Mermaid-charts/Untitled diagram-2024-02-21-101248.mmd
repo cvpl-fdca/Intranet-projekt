@@ -1,0 +1,22 @@
+graph TD
+    FB[Feature Branches 1...∞] -->|Push| A[Dev branch]
+    A -->|1 approval| B[Test branch]
+    B -->|4 approvals| C[Prod branch]
+    A -->|Deploy| D[Kubernetes Dev]
+    B -->|Deploy| E[Kubernetes Test]
+    C -->|Deploy| F[Kubernetes Prod]
+    D --> G[Firebase Project Dev/Test]
+    E --> G
+    F --> H[Firebase Project Prod]
+    G -->|Configured to use| D
+    G -->|Configured to use| E
+    H -->|Configured to use| F
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
+    style D fill:#fdd,stroke:#333,stroke-width:4px
+    style E fill:#ddf,stroke:#333,stroke-width:4px
+    style F fill:#dfd,stroke:#333,stroke-width:4px
+    style G fill:#fd7,stroke:#333,stroke-width:2px
+    style H fill:#dfd,stroke:#333,stroke-width:2px
+    style FB fill:#ddd,stroke:#333,stroke-width:2px
