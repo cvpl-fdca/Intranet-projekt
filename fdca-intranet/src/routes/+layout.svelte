@@ -68,17 +68,6 @@
 		response: (r: string) => console.log('response:', r)
 	};
 
-	/*const drawerSettings: DrawerSettings = {
-  id: 'example-3',
-  // Provide your property overrides:
-  bgDrawer: 'bg-purple-900 text-white',
-  bgBackdrop: 'bg-gradient-to-tr from-indigo-500/50 via-purple-500/50 to-pink-500/50',
-  width: 'w-[280px] md:w-[480px]',
-  padding: 'p-4',
-  rounded: 'rounded-xl',
-  position: 'right',
-};*/
-
 	const drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
