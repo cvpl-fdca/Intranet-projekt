@@ -25,11 +25,11 @@ const firebaseConfigProd = {
 // Initialize Firebase
 console.log(PUBLIC_ENVIRONMENT);
 let app:FirebaseApp;
-if (PUBLIC_ENVIRONMENT == "Dev" || PUBLIC_ENVIRONMENT == "Test") {
+if (PUBLIC_ENVIRONMENT.toLowerCase() == "dev" || PUBLIC_ENVIRONMENT.toLowerCase() == "test") {
     const appDevTest = initializeApp(firebaseConfigDevTest);
     app = appDevTest;
 }
-else if (PUBLIC_ENVIRONMENT == "Prod") {
+else if (PUBLIC_ENVIRONMENT.toLowerCase() == "prod") {
     const appProd = initializeApp(firebaseConfigProd);
     app = appProd;
 } else {
