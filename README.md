@@ -35,7 +35,13 @@ We recommend having both tools at your disposal.
     npm install
     ```
 
-5. **Run the Development Server**:
+5. **Add .env file**:
+    ```
+    echo "PUBLIC_ENVIRONMENT=Dev" > src/.env
+    ```
+    This command puts the environment to dev. You may need to update this if you are not running dev.
+
+6. **Run the Development Server**:
 
     ```bash
     npm run dev
@@ -56,7 +62,13 @@ We recommend having both tools at your disposal.
 
 3. **Stay in the Root Folder**: Ensure you're in the root directory of the cloned repository.
 
-4. **Build and Run the Container**:
+4.  **Add .env file**:
+    ```
+    echo "PUBLIC_ENVIRONMENT=Dev" > src/.env
+    ```
+    This command puts the environment to dev. You may need to update this if you are not running dev.
+
+5. **Build and Run the Container**:
 
     ```bash
     docker-compose up --build
