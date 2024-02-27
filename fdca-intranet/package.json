@@ -38,6 +38,7 @@
   "dependencies": {
     "@floating-ui/dom": "1.6.3",
     "@sveltejs/adapter-node": "^4.0.1",
+    "firebase": "^10.8.0",
     "highlight.js": "11.9.0"
   }
 }
