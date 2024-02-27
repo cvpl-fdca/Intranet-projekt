@@ -13,6 +13,7 @@
 	import { faSearch, faBars, faHome } from '@fortawesome/free-solid-svg-icons'; // Import the faBars icon
 	import Fa from 'svelte-fa';
 	import img from '$lib/images/fdca_logo.svg';
+	import { navigate } from 'svelte-routing';
 
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	initializeStores();
@@ -57,6 +58,7 @@
 
 	function toggleSidebar() {
 		sidebarActive = !sidebarActive;
+		console.log('sidebarActive:', sidebarActive);
 	}
 
 	let currentTile = 0;
@@ -71,52 +73,50 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<div class="flex items-center justify-center w-16">
-					<Fa
-						icon={faBars}
-						class="fa hover:text-blue-500"
-						style="font-size: 24px; padding-right: 30px; cursor: pointer;"
-						on:click={toggleSidebar}
-					/>
-				</div>
+				<button class="btn w-4" on:click={toggleSidebar}>
+					<Fa icon={faBars} class="fa" />
+				</button>
+
 				<a href="/">
 					<img src={img} alt="FDCA Logo" style="height: 40px;" />
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<button class="btn variant-filled">Kontakt</button>
+				<button class="btn variant-filled" on:click={() => navigate('/kontakt')}> Kontakt </button>
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />
 				</button>
-				<Avatar class="w-11" initials="JD" background="bg-primary-500"></Avatar>
+				<Avatar class="w-10" initials="JD" background="bg-primary-500"></Avatar>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 	<svelte:fragment slot="sidebarLeft">
-		<div id="sidebar-left" class="{sidebarActive ? 'block' : 'hidden'} lg:block">
-			<AppRail width="w-16">
-				<!-- --- -->
-				<AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
-					<svelte:fragment slot="lead">(icon)</svelte:fragment>
-					<span>Tile 1</span>
-				</AppRailTile>
-				<AppRailTile bind:group={currentTile} name="tile-2" value={1} title="tile-2">
-					<svelte:fragment slot="lead">(icon)</svelte:fragment>
-					<span>Tile 2</span>
-				</AppRailTile>
-				<AppRailTile bind:group={currentTile} name="tile-3" value={2} title="tile-3">
-					<svelte:fragment slot="lead">(icon)</svelte:fragment>
-					<span>Tile 3</span>
-				</AppRailTile>
-				<svelte:fragment slot="trail">
-					<AppRailAnchor href="/" class="flex flex-col items-center">
-						<Fa icon={faHome} class="fa" />
-						<span class="mt-1">Home</span>
-					</AppRailAnchor>
-				</svelte:fragment>
-			</AppRail>
-		</div>
-	</svelte:fragment>
+		<div class="flex items-center justify-center lg:items-start lg:justify-start">
+			<div id="sidebar-left" class={sidebarActive ? 'block' : 'hidden'}>
+				<AppRail width="w-16">
+					<!-- --- -->
+					<AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
+						<svelte:fragment slot="lead">(icon)</svelte:fragment>
+						<span>Tile 1</span>
+					</AppRailTile>
+					<AppRailTile bind:group={currentTile} name="tile-2" value={1} title="tile-2">
+						<svelte:fragment slot="lead">(icon)</svelte:fragment>
+						<span>Tile 2</span>
+					</AppRailTile>
+					<AppRailTile bind:group={currentTile} name="tile-3" value={2} title="tile-3">
+						<svelte:fragment slot="lead">(icon)</svelte:fragment>
+						<span>Tile 3</span>
+					</AppRailTile>
+					<svelte:fragment slot="trail">
+						<AppRailAnchor href="/" class="flex flex-col items-center">
+							<Fa icon={faHome} class="fa" />
+							<span class="mt-1">Home</span>
+						</AppRailAnchor>
+					</svelte:fragment>
+				</AppRail>
+			</div>
+		</div></svelte:fragment
+	>
 	<slot />
 </AppShell>
