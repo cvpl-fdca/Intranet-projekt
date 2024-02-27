@@ -11,8 +11,11 @@
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
 	import app from '$lib/firebase';
+	import signIn, { getUsername, auth } from '$lib/login';
 
 	console.log(app);
+	console.log(getUsername());
+
 	hljs.registerLanguage('xml', xml); // for HTML
 	hljs.registerLanguage('css', css);
 	hljs.registerLanguage('javascript', javascript);
