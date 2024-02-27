@@ -87,7 +87,11 @@
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />
 				</button>
-				<Avatar class="w-10" initials="JD" background="bg-primary-500"></Avatar>
+				<Avatar
+					class="w-11"
+					border="border-4 border-surface-300-600-token hover:!border-primary-500"
+					cursor="cursor-pointer"
+				/>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
