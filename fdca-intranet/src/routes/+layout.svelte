@@ -8,7 +8,9 @@
 		type ModalSettings,
 		AppRail,
 		AppRailTile,
-		AppRailAnchor
+		AppRailAnchor,
+		type DrawerSettings,
+		Drawer
 	} from '@skeletonlabs/skeleton';
 	import { faSearch, faBars, faHome } from '@fortawesome/free-solid-svg-icons'; // Import the faBars icon
 	import Fa from 'svelte-fa';
@@ -20,6 +22,10 @@
 	import { getModalStore } from '@skeletonlabs/skeleton';
 
 	const modalStore = getModalStore();
+
+	import { getDrawerStore } from '@skeletonlabs/skeleton';
+
+	const drawerStore = getDrawerStore();
 
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
@@ -44,14 +50,39 @@
 
 	const searchModal: ModalSettings = {
 		type: 'prompt',
-		// Data
-		title: 'Enter Name',
-		body: 'Provide your first name in the field below.',
-		// Populates the input value and attributes
-		value: 'Skeleton',
-		valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
-		// Returns the updated response value
+		title: 'Search bar',
+		body: 'Search to your hearts content!',
+		// No value field is set here; the placeholder is used instead
+		valueAttr: {
+			type: 'text',
+			minlength: 3,
+			maxlength: 10,
+			required: true,
+			placeholder: 'Search' // placeholder is set here
+		},
 		response: (r: string) => console.log('response:', r)
+	};
+
+	/*const drawerSettings: DrawerSettings = {
+  id: 'example-3',
+  // Provide your property overrides:
+  bgDrawer: 'bg-purple-900 text-white',
+  bgBackdrop: 'bg-gradient-to-tr from-indigo-500/50 via-purple-500/50 to-pink-500/50',
+  width: 'w-[280px] md:w-[480px]',
+  padding: 'p-4',
+  rounded: 'rounded-xl',
+  position: 'right',
+};*/
+
+	const drawerSettings: DrawerSettings = {
+		id: 'example-3',
+		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
+		bgBackdrop:
+			'bg-gradient-to-tr from-indigo-500/50 via-purple-500/50 to-pink-500/50 bg-opacity-10',
+		width: 'w-64',
+		padding: 'p-4',
+		rounded: 'rounded-xl',
+		position: 'right'
 	};
 
 	let sidebarActive = false;
@@ -67,16 +98,17 @@
 <!-- Modal -->
 <Modal />
 
+<Drawer />
+
 <!-- App Shell -->
 <AppShell slotPageHeader="h-0.5">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<button class="btn w-4" on:click={toggleSidebar}>
+				<button class="btn w-4 btn-align" on:click={toggleSidebar}>
 					<Fa icon={faBars} class="fa" />
 				</button>
-
 				<a href="/">
 					<img src={img} alt="FDCA Logo" style="height: 40px;" />
 				</a>
@@ -88,9 +120,10 @@
 					<Fa icon={faSearch} class="fa" />
 				</button>
 				<Avatar
-					class="w-11"
+					class="w-10"
 					border="border-4 border-surface-300-600-token hover:!border-primary-500"
 					cursor="cursor-pointer"
+					on:click={() => drawerStore.open(drawerSettings)}
 				/>
 			</svelte:fragment>
 		</AppBar>
@@ -98,29 +131,29 @@
 	<svelte:fragment slot="sidebarLeft">
 		<div class="flex items-center justify-center lg:items-start lg:justify-start">
 			<div id="sidebar-left" class={sidebarActive ? 'block' : 'hidden'}>
-				<AppRail width="w-16">
-					<!-- --- -->
-					<AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
-						<svelte:fragment slot="lead">(icon)</svelte:fragment>
+				<AppRail width="w-28">
+					<!-- Place the Home link directly inside the AppRail, without using a slot -->
+					<AppRailAnchor href="/" class="flex flex-col items-center">
+						<Fa icon={faHome} class="fa" />
+						<span class="mt-1">Home</span>
+					</AppRailAnchor>
+					<AppRailTile bind:group={currentTile} name="tile-2" value={1} title="tile-2" height="h-10">
+						<svelte:fragment slot="lead">Artikler</svelte:fragment>
 						<span>Tile 1</span>
-					</AppRailTile>
-					<AppRailTile bind:group={currentTile} name="tile-2" value={1} title="tile-2">
-						<svelte:fragment slot="lead">(icon)</svelte:fragment>
-						<span>Tile 2</span>
 					</AppRailTile>
 					<AppRailTile bind:group={currentTile} name="tile-3" value={2} title="tile-3">
 						<svelte:fragment slot="lead">(icon)</svelte:fragment>
+						<span>Tile 2</span>
+					</AppRailTile>
+					<AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
+						<svelte:fragment slot="lead">Disskusioner</svelte:fragment>
 						<span>Tile 3</span>
 					</AppRailTile>
-					<svelte:fragment slot="trail">
-						<AppRailAnchor href="/" class="flex flex-col items-center">
-							<Fa icon={faHome} class="fa" />
-							<span class="mt-1">Home</span>
-						</AppRailAnchor>
-					</svelte:fragment>
 				</AppRail>
 			</div>
-		</div></svelte:fragment
-	>
-	<slot />
+		</div>
+</svelte:fragment>
+<slot />
 </AppShell>
+
+
