@@ -1,24 +1,49 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import {
+		getAuth,
+		onAuthStateChanged,
+		signOut,
+		type User
+	} from 'firebase/auth';
+
+	const auth = getAuth();
+	let user: User | null = null;
+
+	onMount(() => {
+		console.log(auth.currentUser); // null (initially)
+		onAuthStateChanged(auth, (firebaseUser) => {
+			user = firebaseUser; // Update the user variable with the current user
+		});
+	});
+
+	function handleLogout() {
+		signOut(auth)
+			.then(() => {
+				// Sign-out successful.
+				console.log('User signed out');
+			})
+			.catch((error) => {
+				// An error happened.
+				console.error('Sign out error', error);
+			});
+	}
+</script>
+
 <div
 	id="example-3"
 	class="drawer bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100 w-64 p-4 rounded-xl flex flex-col relative h-full"
 >
-	<!-- Drawer content here -->
-
-	<!-- User Profile -->
 	<div class="flex flex-col justify-between h-full pb-16">
-		<!-- Add padding-bottom here -->
 		<div class="text-center p-2">
-			<!-- Text-center for centering content and removed flex classes -->
 			<img
-				src="lib/images/fdca_logo.svg"
+				src={user?.photoURL || 'lib/images/fdca_logo.svg'}
 				alt=""
 				class="h-16 w-16 rounded-full mx-auto"
 			/>
-			<!-- mx-auto for centering image -->
-			<div class="font-semibold my-4">Name: Anders ESP</div>
-			<div class="font-semibold">mail@fdca.dk</div>
+			<div class="font-semibold my-4">Name: {user?.displayName || 'Anders ESP'}</div>
+			<div class="font-semibold">{user?.email || 'mail@fdca.dk'}</div>
 		</div>
-
 		<!-- Menu Items -->
 		<ul class="text-sm">
 			<!-- Divider Line -->
@@ -48,7 +73,10 @@
 		<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 			Edit
 		</button>
-		<button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+		<button
+			class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+			on:click={handleLogout}
+		>
 			Logout
 		</button>
 	</div>
