@@ -24,19 +24,19 @@
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Phone -->
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">Phone</li>
+			<li class="p-2 rounded-md font-semibold">Phone</li>
 			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">+420 69696969</li>
 			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">+360 720720720</li>
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Mail -->
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">Emails</li>
+			<li class="p-2 rounded-md font-semibold">Emails</li>
 			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">mail@gmail.com</li>
 			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">mail@mango.dk</li>
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Menu Items -->
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">Discord User</li>
+			<li class="p-2 rounded-md font-semibold">Discord User</li>
 			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">Anders#6969</li>
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
@@ -44,7 +44,7 @@
 	</div>
 
 	<!-- Buttons -->
-	<div class="absolute bottom-0 left-0 right-0 p-2 flex justify-between">
+	<div class="absolute bottom-2.5 left-1 right-1 p-2 flex justify-between">
 		<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 			Edit
 		</button>
