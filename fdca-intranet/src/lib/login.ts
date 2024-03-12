@@ -1,5 +1,5 @@
 import type { FirebaseApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 import app from "$lib/firebase";
 import { PUBLIC_ENVIRONMENT } from '$env/static/public';
 
@@ -42,4 +42,8 @@ function getUsername(): Promise<string | null> {
     });
 }
 
-export { auth, getUsername };
+function logout(): Promise<void> {
+    return signOut(auth);
+}
+
+export { auth, getUsername, logout};
