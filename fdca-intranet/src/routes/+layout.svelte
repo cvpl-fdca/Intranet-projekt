@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Login from './Login.svelte';
 	import '../app.postcss';
 	import {
 		AppShell,
@@ -51,6 +52,7 @@
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import LoginModal from './LoginModal.svelte';
 
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
@@ -72,7 +74,7 @@
 	const drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
-		bgBackdrop:'bg-gray-500 bg-opacity-10',
+		bgBackdrop: 'bg-gray-500 bg-opacity-10',
 		width: 'w-64',
 		padding: 'p-4',
 		rounded: 'rounded-xl',
@@ -87,8 +89,10 @@
 	}
 
 	let currentTile = 0;
-</script>
 
+
+</script>
+<Login/>
 <!-- Modal -->
 <Modal />
 
