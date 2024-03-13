@@ -1,5 +1,5 @@
-class User {
-    private details = {
+export class User {
+    public details = {
         discordName: "",
         email: {
             fdca: "",
@@ -12,7 +12,7 @@ class User {
             work: ""
         }
     };
-    private roles = {
+    public roles = {
         isAdmin: false,
         isMember: false,
         projects: {
@@ -20,7 +20,7 @@ class User {
             soMe: false
         },
     };
-    private uid = "";
+    public uid = "";
     constructor(uid: string) {
         this.uid = uid;
     }

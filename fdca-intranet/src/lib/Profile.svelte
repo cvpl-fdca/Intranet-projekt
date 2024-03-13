@@ -1,15 +1,20 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import {
-		getAuth,
-		onAuthStateChanged,
-		signOut,
-		type User
-	} from 'firebase/auth';
+	import { User } from './user';
+	import { userProfileStore } from '$lib/userProfileStore';
+
+	import { onDestroy, onMount } from 'svelte';
+	import { getAuth, onAuthStateChanged, signOut, type User as firebaseUser } from 'firebase/auth';
 
 	const auth = getAuth();
-	let user: User | null = null;
+	let userDoc: User;
 
+	const unsubscribe = userProfileStore.subscribe((value) => {
+		userDoc = value as User;
+		console.log('userdoc' + userDoc);
+	});
+
+	onDestroy(unsubscribe);
+	let user: firebaseUser | null;
 	onMount(() => {
 		console.log(auth.currentUser); // null (initially)
 		onAuthStateChanged(auth, (firebaseUser) => {
@@ -41,8 +46,8 @@
 				alt=""
 				class="h-16 w-16 rounded-full mx-auto"
 			/>
-			<div class="font-semibold my-4">Name: {user?.displayName || 'Anders ESP'}</div>
-			<div class="font-semibold">{user?.email || 'mail@fdca.dk'}</div>
+			<div class="font-semibold my-4">Name: {userDoc?.details?.fullName}</div>
+			<div class="font-semibold">{user?.displayName}</div>
 		</div>
 		<!-- Menu Items -->
 		<ul class="text-sm">
@@ -50,19 +55,27 @@
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Phone -->
 			<li class="p-2 rounded-md font-semibold">Phone</li>
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">+420 69696969</li>
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">+360 720720720</li>
+			{#each Object.entries(userDoc?.details?.phone || {}) as [key, value]}
+				{#if value}
+					<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{key}: {value}</li>
+				{/if}
+			{/each}
+
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Mail -->
 			<li class="p-2 rounded-md font-semibold">Emails</li>
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">mail@gmail.com</li>
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">mail@mango.dk</li>
+			{#each Object.entries(userDoc?.details?.email || {}) as [key, value]}
+				{#if value}
+					<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{key}: {value}</li>
+				{/if}
+			{/each}
+
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Menu Items -->
 			<li class="p-2 rounded-md font-semibold">Discord User</li>
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">Anders#6969</li>
+			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{userDoc?.details.discordName}</li>
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 		</ul>
