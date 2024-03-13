@@ -16,7 +16,6 @@
 	import { faSearch, faBars, faHome } from '@fortawesome/free-solid-svg-icons'; // Import the faBars icon
 	import Fa from 'svelte-fa';
 	import img from '$lib/images/fdca_logo.svg';
-	import { navigate } from 'svelte-routing';
 
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	initializeStores();
@@ -89,10 +88,9 @@
 	}
 
 	let currentTile = 0;
-
-
 </script>
-<Login/>
+
+<Login />
 <!-- Modal -->
 <Modal />
 
@@ -115,7 +113,7 @@
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<button class="btn variant-filled" on:click={() => navigate('/kontakt')}> Kontakt </button>
+				<a href="/kontakt" class="btn variant-filled"> Kontakt </a>
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />
