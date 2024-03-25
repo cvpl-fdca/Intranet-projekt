@@ -39,7 +39,7 @@ export async function POST(event) {
     if(validate(data)) {
         let userDetails = {
             details: {
-                fullName: validator.isAlpha(data.get('name'), 'da-DK') ? data.get('name') : "",
+                fullName: data.get('name'),
                 phone: {
                     private: data.get('telPrivate'),
                     work: data.get('telWork'),
