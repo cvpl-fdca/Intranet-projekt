@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # For npm dependencies
+    directory: "/" # Assuming your package.json is in the root directory
+    schedule:
+      interval: "weekly" # Dependabot will check for updates weekly
+    # You can also add additional configuration options as needed:
+    # commit-message:
+    #   prefix: "fix" # or "chore", "feat", etc., as per your preference
+    #   include: "scope" # to include the scope in commit messages
+    # allow:
+    #   - dependency-type: "direct" # Only update direct dependencies
+    #   - dependency-type: "indirect" # Only update indirect (transitive) dependencies
+    # ignore:
+    #   - dependency-name: "express"
+    #     versions: ["4.16.3"] # Ignore a specific version of a dependency
