@@ -42,7 +42,6 @@
                 const response = await fetch('/api/updateUserDetails', {
                     method: 'POST',
                     body: submissionFormData,
-                    credentials: 'include',
                     headers: {
                         'X-firebase-token': token
                     }

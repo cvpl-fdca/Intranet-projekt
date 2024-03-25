@@ -20,7 +20,6 @@ export const createUser = (user: { uid: any; }) => {
         },
         roles: {
             isAdmin: false,
-            isMember: false,
             projects: {
                 sagalabs: false,
                 soMe: false
