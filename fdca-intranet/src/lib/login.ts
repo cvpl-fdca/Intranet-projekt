@@ -46,4 +46,18 @@ function logout(): Promise<void> {
     return signOut(auth);
 }
 
-export { auth, getUsername, logout};
+function getToken(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                user.getIdToken().then((token) => {
+                    resolve(token);
+                });
+            } else {
+                reject("No user logged in");
+            }
+        });
+    });
+}
+
+export { auth, getUsername, logout, getToken};

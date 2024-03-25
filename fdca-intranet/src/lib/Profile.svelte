@@ -4,9 +4,11 @@
 
 	import { onDestroy, onMount } from 'svelte';
 	import { getAuth, onAuthStateChanged, signOut, type User as firebaseUser } from 'firebase/auth';
-
+	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	import EditUserDataModal from './EditUserDataModal.svelte';
 	const auth = getAuth();
 	let userDoc: User;
+	let modalComponent: ModalComponent;
 
 	const unsubscribe = userProfileStore.subscribe((value) => {
 		userDoc = value as User;
@@ -19,6 +21,10 @@
 		console.log(auth.currentUser); // null (initially)
 		onAuthStateChanged(auth, (firebaseUser) => {
 			user = firebaseUser; // Update the user variable with the current user
+			modalComponent = {
+				ref: EditUserDataModal,
+				props: { userDoc: userDoc }
+			};
 		});
 	});
 
@@ -32,6 +38,15 @@
 				// An error happened.
 				console.error('Sign out error', error);
 			});
+	}
+
+	const modalStore = getModalStore();
+	function handleEdit() {
+		const modal: ModalSettings = {
+			type: 'component',
+			component: modalComponent
+		};
+		modalStore.trigger(modal);
 	}
 </script>
 
@@ -83,7 +98,10 @@
 
 	<!-- Buttons -->
 	<div class="absolute bottom-2.5 left-1 right-1 p-2 flex justify-between">
-		<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+		<button
+			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+			on:click={handleEdit}
+		>
 			Edit
 		</button>
 		<button

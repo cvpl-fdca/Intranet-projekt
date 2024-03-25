@@ -45,6 +45,7 @@
     "firebase": "^10.8.0",
     "flowbite-svelte": "^0.44.24",
     "flowbite-svelte-icons": "^1.5.0",
+    "firebase-admin": "^12.0.0",
     "highlight.js": "11.9.0",
     "svelte-routing": "^2.12.0"
   }
