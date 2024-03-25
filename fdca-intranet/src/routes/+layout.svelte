@@ -24,6 +24,7 @@
 	const modalStore = getModalStore();
 
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
+	import Profile from '$lib/Profile.svelte';
 
 	const drawerStore = getDrawerStore();
 
@@ -71,8 +72,7 @@
 	const drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
-		bgBackdrop:
-			'bg-gradient-to-tr from-indigo-500/50 via-purple-500/50 to-pink-500/50 bg-opacity-10',
+		bgBackdrop:'bg-gray-500 bg-opacity-10',
 		width: 'w-64',
 		padding: 'p-4',
 		rounded: 'rounded-xl',
@@ -92,7 +92,10 @@
 <!-- Modal -->
 <Modal />
 
-<Drawer />
+<!-- Right side profile drawer (click on avatar)-->
+<Drawer>
+	<Profile />
+</Drawer>
 
 <!-- App Shell -->
 <AppShell slotPageHeader="h-0.5">
@@ -131,7 +134,13 @@
 						<Fa icon={faHome} class="fa" />
 						<span class="mt-1">Home</span>
 					</AppRailAnchor>
-					<AppRailTile bind:group={currentTile} name="tile-2" value={1} title="tile-2" height="h-10">
+					<AppRailTile
+						bind:group={currentTile}
+						name="tile-2"
+						value={1}
+						title="tile-2"
+						height="h-10"
+					>
 						<svelte:fragment slot="lead">Artikler</svelte:fragment>
 						<span>Tile 1</span>
 					</AppRailTile>
@@ -146,8 +155,6 @@
 				</AppRail>
 			</div>
 		</div>
-</svelte:fragment>
-<slot />
+	</svelte:fragment>
+	<slot />
 </AppShell>
-
-
