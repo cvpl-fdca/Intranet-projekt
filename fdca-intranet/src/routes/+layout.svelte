@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Login from './Login.svelte';
 	import '../app.postcss';
 	import {
 		AppShell,
@@ -15,7 +16,6 @@
 	import { faSearch, faBars, faHome } from '@fortawesome/free-solid-svg-icons'; // Import the faBars icon
 	import Fa from 'svelte-fa';
 	import img from '$lib/images/fdca_logo.svg';
-	import { navigate } from 'svelte-routing';
 
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	initializeStores();
@@ -51,6 +51,7 @@
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import LoginModal from './LoginModal.svelte';
 
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
@@ -72,7 +73,7 @@
 	const drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
-		bgBackdrop:'bg-gray-500 bg-opacity-10',
+		bgBackdrop: 'bg-gray-500 bg-opacity-10',
 		width: 'w-64',
 		padding: 'p-4',
 		rounded: 'rounded-xl',
@@ -89,6 +90,7 @@
 	let currentTile = 0;
 </script>
 
+<Login />
 <!-- Modal -->
 <Modal />
 
@@ -111,7 +113,7 @@
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<button class="btn variant-filled" on:click={() => navigate('/kontakt')}> Kontakt </button>
+				<a href="/kontakt" class="btn variant-filled"> Kontakt </a>
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />
