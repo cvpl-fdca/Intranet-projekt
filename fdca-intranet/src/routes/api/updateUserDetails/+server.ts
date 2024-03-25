@@ -4,6 +4,7 @@ import { admin } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 
 const db = admin.firestore();
+let errors: string[] = [];
 
 export async function POST(event) {
     // Retrieve the Firebase token from the request headers
@@ -36,7 +37,8 @@ export async function POST(event) {
     // Proceed to use the UID to update Firestore as before
     const data = await event.request.formData();
     // Extract details from the form data
-    if (validate(data)) {
+
+    if (validate(data) === true) {
         let userDetails = {
             details: {
                 fullName: data.get('name'),
@@ -82,7 +84,7 @@ export async function POST(event) {
             });
         }
     } else {
-        return new Response(JSON.stringify({ error: 'Invalid data' }), {
+        return new Response(JSON.stringify({ errors }), {
             status: 400,
             headers: {
                 'Content-Type': 'application/json',
@@ -92,26 +94,28 @@ export async function POST(event) {
 }
 
 function validate(userDetails: { get: (arg0: string) => any; }) {
-    if (!validator.isAlpha(userDetails.get('name'), 'da-DK')) {
-        return false
+    errors = [];
+    if (!validator.isAlpha(userDetails.get('name'), 'da-DK', { ignore: ' ' })) {
+        errors.push('Invalid name');
     }
     if (!validator.isMobilePhone(userDetails.get('telPrivate'))) {
-        return false
+        errors.push('Invalid private phone number');
     }
     if (!validator.isMobilePhone(userDetails.get('telWork'))) {
-        return false
+        errors.push('Invalid work phone number');
     }
     if (!validator.isEmail(userDetails.get('emailFDCA'))) {
-        return false
+        errors.push('Invalid FDCA email');
     }
     if (!validator.isEmail(userDetails.get('emailPrivate'))) {
-        return false
+        errors.push('Invalid private email');
     }
     if (!validator.isEmail(userDetails.get('emailWork'))) {
-        return false
+        errors.push('Invalid work email');
     }
     if (!validator.matches(userDetails.get('discordName'), /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
-        return false
+        errors.push('Invalid discord name');
     }
-    return true
+    console.log("errors", errors);
+    return errors.length === 0 ? true : false;
 }
