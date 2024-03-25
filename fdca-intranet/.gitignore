@@ -8,5 +8,4 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-package-lock.json
 fdca-intranet-dev-test-firebase-adminsdk-e9ktp-e1032c03a1.json

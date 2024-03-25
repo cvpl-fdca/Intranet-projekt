@@ -36,7 +36,7 @@ export async function POST(event) {
     // Proceed to use the UID to update Firestore as before
     const data = await event.request.formData();
     // Extract details from the form data
-    if(validate(data)) {
+    if (validate(data)) {
         let userDetails = {
             details: {
                 fullName: data.get('name'),
@@ -52,30 +52,38 @@ export async function POST(event) {
                 discordName: data.get('discordName'),
             },
         };
-    }
-    console.log('User details:', userDetails);
-    try {
-        console.log('Updating user details for UID:', uid);
-        console.log('User details to merge into "details":', userDetails);
 
-        await admin.firestore().collection('users').doc(uid).update({
-            details: {
-                ...userDetails.details
-            }
-        });
+        console.log('User details:', userDetails);
+        try {
+            console.log('Updating user details for UID:', uid);
+            console.log('User details to merge into "details":', userDetails);
 
-        console.log('Successfully updated user details');
+            await admin.firestore().collection('users').doc(uid).update({
+                details: {
+                    ...userDetails.details
+                }
+            });
 
-        // Get the updated user details from Firestore
-        const updatedUser = await admin.firestore().collection('users').doc(uid).get();
-        const updatedDetails = updatedUser.data()?.details ?? {};
+            console.log('Successfully updated user details');
+
+            // Get the updated user details from Firestore
+            const updatedUser = await admin.firestore().collection('users').doc(uid).get();
+            const updatedDetails = updatedUser.data()?.details ?? {};
 
 
-        return json({ success: true, details: updatedDetails });
-    } catch (error) {
-        console.error('Failed to update user details:', error);
-        return new Response(JSON.stringify({ error: 'Failed to update user details' }), {
-            status: 500,
+            return json({ success: true, details: updatedDetails });
+        } catch (error) {
+            console.error('Failed to update user details:', error);
+            return new Response(JSON.stringify({ error: 'Failed to update user details' }), {
+                status: 500,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+    } else {
+        return new Response(JSON.stringify({ error: 'Invalid data' }), {
+            status: 400,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -83,26 +91,26 @@ export async function POST(event) {
     }
 }
 
-function validate(userDetails) {
-    if(!validator.isAlpha(userDetails.get('name'), 'da-DK')) {
+function validate(userDetails: { get: (arg0: string) => any; }) {
+    if (!validator.isAlpha(userDetails.get('name'), 'da-DK')) {
         return false
     }
-    if(!validator.isMobilePhone(userDetails.get('telPrivate'))) {
+    if (!validator.isMobilePhone(userDetails.get('telPrivate'))) {
         return false
     }
-    if(!validator.isMobilePhone(userDetails.get('telWork'))) {
+    if (!validator.isMobilePhone(userDetails.get('telWork'))) {
         return false
     }
-    if(!validator.isEmail(userDetails.get('emailFDCA'))) {
+    if (!validator.isEmail(userDetails.get('emailFDCA'))) {
         return false
     }
-    if(!validator.isEmail(userDetails.get('emailPrivate'))) {
+    if (!validator.isEmail(userDetails.get('emailPrivate'))) {
         return false
     }
-    if(!validator.isEmail(userDetails.get('emailWork'))) {
+    if (!validator.isEmail(userDetails.get('emailWork'))) {
         return false
     }
-    if(!validator.matches(userDetails.get('discordName'), /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
+    if (!validator.matches(userDetails.get('discordName'), /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
         return false
     }
     return true
