@@ -1,6 +1,7 @@
 // src/routes/api/updateUserDetails/+server.ts
 import { json } from '@sveltejs/kit';
 import { admin } from '$lib/firebaseAdmin.server.js';
+import validator from 'validator';
 
 const db = admin.firestore();
 
@@ -35,21 +36,23 @@ export async function POST(event) {
     // Proceed to use the UID to update Firestore as before
     const data = await event.request.formData();
     // Extract details from the form data
-    let userDetails = {
-        details: {
-            fullName: data.get('name'),
-            phone: {
-                private: data.get('telPrivate'),
-                work: data.get('telWork'),
+    if(validate(data)) {
+        let userDetails = {
+            details: {
+                fullName: validator.isAlpha(data.get('name'), 'da-DK') ? data.get('name') : "",
+                phone: {
+                    private: data.get('telPrivate'),
+                    work: data.get('telWork'),
+                },
+                email: {
+                    fdca: data.get('emailFDCA'),
+                    private: data.get('emailPrivate'),
+                    work: data.get('emailWork'),
+                },
+                discordName: data.get('discordName'),
             },
-            email: {
-                fdca: data.get('emailFDCA'),
-                private: data.get('emailPrivate'),
-                work: data.get('emailWork'),
-            },
-            discordName: data.get('discordName'),
-        },
-    };
+        };
+    }
     console.log('User details:', userDetails);
     try {
         console.log('Updating user details for UID:', uid);
@@ -78,4 +81,29 @@ export async function POST(event) {
             },
         });
     }
+}
+
+function validate(userDetails) {
+    if(!validator.isAlpha(userDetails.get('name'), 'da-DK')) {
+        return false
+    }
+    if(!validator.isMobilePhone(userDetails.get('telPrivate'))) {
+        return false
+    }
+    if(!validator.isMobilePhone(userDetails.get('telWork'))) {
+        return false
+    }
+    if(!validator.isEmail(userDetails.get('emailFDCA'))) {
+        return false
+    }
+    if(!validator.isEmail(userDetails.get('emailPrivate'))) {
+        return false
+    }
+    if(!validator.isEmail(userDetails.get('emailWork'))) {
+        return false
+    }
+    if(!validator.matches(userDetails.get('discordName'), /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
+        return false
+    }
+    return true
 }
