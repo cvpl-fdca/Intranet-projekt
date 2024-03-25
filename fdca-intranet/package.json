@@ -43,6 +43,8 @@
     "@sveltejs/adapter-node": "^4.0.1",
     "@widgetbot/html-embed": "^1.3.0",
     "firebase": "^10.8.0",
+    "flowbite-svelte": "^0.44.24",
+    "flowbite-svelte-icons": "^1.5.0",
     "highlight.js": "11.9.0",
     "svelte-routing": "^2.12.0"
   }

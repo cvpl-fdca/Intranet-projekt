@@ -52,6 +52,7 @@
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import LoginModal from './LoginModal.svelte';
+	import KontaktDrawer from '$lib/KontaktDrawer.svelte';
 
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
@@ -70,7 +71,7 @@
 		response: (r: string) => console.log('response:', r)
 	};
 
-	const drawerSettings: DrawerSettings = {
+	let drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
 		bgBackdrop: 'bg-gray-500 bg-opacity-10',
@@ -96,7 +97,11 @@
 
 <!-- Right side profile drawer (click on avatar)-->
 <Drawer>
-	<Profile />
+	{#if $drawerStore.id === 'example-3'}
+		<Profile />
+	{:else if $drawerStore.id === 'kontakt-bestyrelse-drawer'}
+		<KontaktDrawer />
+	{/if}
 </Drawer>
 
 <!-- App Shell -->
