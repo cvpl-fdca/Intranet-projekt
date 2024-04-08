@@ -6,6 +6,7 @@
 	import { getAuth, onAuthStateChanged, signOut, type User as firebaseUser } from 'firebase/auth';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import EditUserDataModal from './EditUserDataModal.svelte';
+	
 	const auth = getAuth();
 	let userDoc: User;
 	let modalComponent: ModalComponent;

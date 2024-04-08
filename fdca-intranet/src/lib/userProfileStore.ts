@@ -21,8 +21,9 @@ onAuthStateChanged(auth, (user) => {
     const unsubscribe = onSnapshot(doc(db, 'users', uid), (doc) => {
       const userData = doc.data() as User;
       userProfileStore.set(userData);
-      console.log(userData); // Print the userData to the console
+      console.log("userdata", userData); // Print the userData to the console
     });
+    
   } else {
     userProfileStore.set(null);
   }
