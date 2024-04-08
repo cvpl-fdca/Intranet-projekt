@@ -8,14 +8,15 @@ const db = getFirestore(app);
 //let auth = getAuth(app);
 
 const createMembersStore = () => {
-    const {subscribe, set, update } = writable([]);
+    const { subscribe, set, update } = writable<any[]>([]);
 
     const usersCollection = collection(db, "users");
-
+    console.log(usersCollection);
     const unsubscribe = onSnapshot(usersCollection, (snapshot) => {
         let members: any[] = [];
         snapshot.forEach(doc => {
             members.push({ id: doc.id, ...doc.data() });
+            console.log(doc.id, '=>', doc.data());
         });
         set(members);
     });

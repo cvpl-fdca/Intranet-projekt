@@ -23,7 +23,7 @@ onAuthStateChanged(auth, (user) => {
       userProfileStore.set(userData);
       console.log("userdata", userData); // Print the userData to the console
     });
-    
+
   } else {
     userProfileStore.set(null);
   }
