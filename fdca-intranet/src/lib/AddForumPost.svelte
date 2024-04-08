@@ -2,6 +2,7 @@
 	import type { SvelteComponent } from 'svelte';
 	import app from '$lib/firebase';
 	import { getAuth, onAuthStateChanged } from 'firebase/auth';
+	
 	//import firestore
 	import { getFirestore, collection, addDoc } from 'firebase/firestore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
@@ -20,9 +21,8 @@
 	const token = getToken();
 	let title: string;
 	let text = writable('');
-    
+
 	export let parent: SvelteComponent;
-	const submissionFormData = new FormData();
 
 	const modalStore = getModalStore();
 
@@ -30,11 +30,10 @@
 		try {
 			const token = await getToken();
 			// Send the formData to the server
-			submissionFormData.delete('text');
+			const submissionFormData = new FormData();
 			submissionFormData.append('text', $text);
-			submissionFormData.delete('title');
 			submissionFormData.append('title', title);
-			const response = await fetch('/api/createForumPost', {
+			const response = await fetch('/api/forum/createForumPost', {
 				method: 'POST',
 				body: submissionFormData,
 				headers: {
@@ -45,6 +44,7 @@
 			console.error('Error:', error.message);
 		}
 	}
+
 </script>
 
 {#if $modalStore[0]}
