@@ -52,6 +52,8 @@
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import LoginModal from './LoginModal.svelte';
+	import { User } from '$lib/user';
+	import { userProfileStore } from '$lib/userProfileStore';
 
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
@@ -113,7 +115,12 @@
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<a href="/forum" class="btn variant-filled"> Forum </a>
+				<a href="/artikler" class="btn variant-filled"> Artikler </a>
 				<a href="/kontakt" class="btn variant-filled"> Kontakt </a>
+				{#if $userProfileStore?.roles.isAdmin}
+					<a href="/admin" class="btn variant-filled"> Admin </a>
+				{/if}
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />
