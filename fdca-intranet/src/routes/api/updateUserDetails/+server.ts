@@ -1,8 +1,10 @@
 // src/routes/api/updateUserDetails/+server.ts
 import { json } from '@sveltejs/kit';
 import { admin } from '$lib/firebaseAdmin.server.js';
+import validator from 'validator';
 
 const db = admin.firestore();
+let errors: string[] = [];
 
 export async function POST(event) {
     // Retrieve the Firebase token from the request headers
@@ -35,47 +37,85 @@ export async function POST(event) {
     // Proceed to use the UID to update Firestore as before
     const data = await event.request.formData();
     // Extract details from the form data
-    let userDetails = {
-        details: {
-            fullName: data.get('name'),
-            phone: {
-                private: data.get('telPrivate'),
-                work: data.get('telWork'),
-            },
-            email: {
-                fdca: data.get('emailFDCA'),
-                private: data.get('emailPrivate'),
-                work: data.get('emailWork'),
-            },
-            discordName: data.get('discordName'),
-        },
-    };
-    console.log('User details:', userDetails);
-    try {
-        console.log('Updating user details for UID:', uid);
-        console.log('User details to merge into "details":', userDetails);
 
-        await admin.firestore().collection('users').doc(uid).update({
+    if (validate(data) === true) {
+        let userDetails = {
             details: {
-                ...userDetails.details
-            }
-        });
+                fullName: data.get('name'),
+                phone: {
+                    private: data.get('telPrivate'),
+                    work: data.get('telWork'),
+                },
+                email: {
+                    fdca: data.get('emailFDCA'),
+                    private: data.get('emailPrivate'),
+                    work: data.get('emailWork'),
+                },
+                discordName: data.get('discordName'),
+            },
+        };
 
-        console.log('Successfully updated user details');
+        console.log('User details:', userDetails);
+        try {
+            console.log('Updating user details for UID:', uid);
+            console.log('User details to merge into "details":', userDetails);
 
-        // Get the updated user details from Firestore
-        const updatedUser = await admin.firestore().collection('users').doc(uid).get();
-        const updatedDetails = updatedUser.data()?.details ?? {};
+            await admin.firestore().collection('users').doc(uid).update({
+                details: {
+                    ...userDetails.details
+                }
+            });
+
+            console.log('Successfully updated user details');
+
+            // Get the updated user details from Firestore
+            const updatedUser = await admin.firestore().collection('users').doc(uid).get();
+            const updatedDetails = updatedUser.data()?.details ?? {};
 
 
-        return json({ success: true, details: updatedDetails });
-    } catch (error) {
-        console.error('Failed to update user details:', error);
-        return new Response(JSON.stringify({ error: 'Failed to update user details' }), {
-            status: 500,
+            return json({ success: true, details: updatedDetails });
+        } catch (error) {
+            console.error('Failed to update user details:', error);
+            return new Response(JSON.stringify({ error: 'Failed to update user details' }), {
+                status: 500,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+    } else {
+        return new Response(JSON.stringify({ errors }), {
+            status: 400,
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     }
+}
+
+function validate(userDetails: { get: (arg0: string) => any; }) {
+    errors = [];
+    if (!validator.isAlpha(userDetails.get('name'), 'da-DK', { ignore: ' ' })) {
+        errors.push('Invalid name');
+    }
+    if (!validator.isMobilePhone(userDetails.get('telPrivate'))) {
+        errors.push('Invalid private phone number');
+    }
+    if (!validator.isMobilePhone(userDetails.get('telWork'))) {
+        errors.push('Invalid work phone number');
+    }
+    if (!validator.isEmail(userDetails.get('emailFDCA'))) {
+        errors.push('Invalid FDCA email');
+    }
+    if (!validator.isEmail(userDetails.get('emailPrivate'))) {
+        errors.push('Invalid private email');
+    }
+    if (!validator.isEmail(userDetails.get('emailWork'))) {
+        errors.push('Invalid work email');
+    }
+    if (!validator.matches(userDetails.get('discordName'), /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
+        errors.push('Invalid discord name');
+    }
+    console.log("errors", errors);
+    return errors.length === 0 ? true : false;
 }

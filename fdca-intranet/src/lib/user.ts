@@ -14,7 +14,6 @@ export class User {
     };
     public roles = {
         isAdmin: false,
-        isMember: false,
         projects: {
             sagalabs: false,
             soMe: false
@@ -25,4 +24,3 @@ export class User {
         this.uid = uid;
     }
 }
-
