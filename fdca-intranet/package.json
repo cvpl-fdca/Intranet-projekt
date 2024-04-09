@@ -40,14 +40,21 @@
     "@floating-ui/dom": "1.6.3",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@popperjs/core": "^2.11.8",
     "@sveltejs/adapter-node": "^4.0.1",
     "@widgetbot/html-embed": "^1.3.0",
+    "dayjs": "^1.11.10",
+    "dayjs-plugin-utc": "^0.1.2",
     "firebase": "^10.8.0",
     "flowbite-svelte": "^0.44.24",
     "flowbite-svelte-icons": "^1.5.0",
     "firebase-admin": "^12.0.0",
+    "flowbite": "^2.3.0",
+    "flowbite-svelte": "^0.44.24",
     "highlight.js": "11.9.0",
+    "svelte-markdown": "^0.4.1",
     "svelte-routing": "^2.12.0",
+    "tailwind-merge": "^2.2.2",
     "validator": "^13.11.0"
   }
 }

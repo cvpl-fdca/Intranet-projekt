@@ -6,6 +6,7 @@
 	import { getAuth, onAuthStateChanged, signOut, type User as firebaseUser } from 'firebase/auth';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import EditUserDataModal from './EditUserDataModal.svelte';
+	
 	const auth = getAuth();
 	let userDoc: User;
 	let modalComponent: ModalComponent;
@@ -48,6 +49,7 @@
 		};
 		modalStore.trigger(modal);
 	}
+	
 </script>
 
 <div
@@ -61,8 +63,7 @@
 				alt=""
 				class="h-16 w-16 rounded-full mx-auto"
 			/>
-			<div class="font-semibold my-4">Name: {userDoc?.details?.fullName}</div>
-			<div class="font-semibold">{user?.displayName}</div>
+			<div class="font-semibold my-4">{userDoc?.details?.fullName}</div>
 		</div>
 		<!-- Menu Items -->
 		<ul class="text-sm">
