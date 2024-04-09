@@ -1,4 +1,22 @@
 <script lang="ts">
+	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton';
+	const drawerStore = getDrawerStore();
+
+	const drawerKontakt: DrawerSettings = {
+		id: 'kontakt-bestyrelse-drawer',
+		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
+		bgBackdrop: 'bg-gray-500 bg-opacity-10',
+		padding: 'p-4',
+		width: 'w-128',
+		height: 'h-128',
+		rounded: 'rounded-xl',
+		position: 'bottom',
+	};
+
+	function openKontaktDrawer() {
+		drawerStore.open(drawerKontakt);
+	}
+					
 	interface BoardMember {
 		name: string;
 		phone: string;
@@ -80,30 +98,34 @@
 </script>
 
 <div class="container mx-auto p-4">
-	<!-- Bestyrelse Section -->
-	<div class="card bg-blue-800 shadow-md rounded-lg p-4 mb-4">
-		<h3 class="text-3xl font-semibold text-white mb-4 text-center">Bestyrelse</h3>
-		<div class="grid grid-flow-row-dense grid-cols-auto-fit gap-4">
-			{#each boardMembers as member, i (i)}
-				<div class="card p-4 bg-white rounded shadow-lg">
-					<div class="flex flex-col items-center">
-						<img
-							class="w-24 h-24 rounded-full mb-3"
-							src={member.imageUrl}
-							alt={`Picture of ${member.name}`}
-						/>
-						<div class="text-center">
-							<h4 class="font-semibold">{member.name}</h4>
-							<p>{member.phone}</p>
-							<p class="text-sm">{member.address}</p>
-							<p class="text-sm">{member.additionalText}</p>
-						</div>
-					</div>
-				</div>
-			{/each}
-		</div>
-	</div>
+    <!-- Bestyrelse Section -->
+    <div class="card bg-blue-800 shadow-md rounded-lg p-4 mb-4">
+        <h3 class="text-3xl font-semibold text-white mb-4 text-center">Bestyrelse</h3>
+        <div class="text-center mb-4">
+<button class="bg-white text-black py-2 px-8 rounded-full" on:click={openKontaktDrawer}>Skriv til Bestyrelse</button>
+        </div>
+        <div class="grid grid-flow-row-dense grid-cols-auto-fit gap-4">
+            {#each boardMembers as member, i (i)}
+                <div class="card p-4 bg-white rounded shadow-lg">
+                    <div class="flex flex-col items-center">
+                        <img
+                            class="w-24 h-24 rounded-full mb-3"
+                            src={member.imageUrl}
+                            alt={`Picture of ${member.name}`}
+                        />
+                        <div class="text-center">
+                            <h4 class="font-semibold">{member.name}</h4>
+                            <p>{member.phone}</p>
+                            <p class="text-sm">{member.address}</p>
+                            <p class="text-sm">{member.additionalText}</p>
+                        </div>
+                    </div>
+                </div>
+            {/each}
+        </div>
+    </div>
 </div>
+
 <!-- Udvalg Section -->
 <div class="container mx-auto p-4">
 	<div class="card bg-blue-800 shadow-md rounded-lg p-4 mb-4">

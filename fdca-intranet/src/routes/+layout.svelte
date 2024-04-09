@@ -56,6 +56,7 @@
 	import LoginModal from './LoginModal.svelte';
 	import { User } from '$lib/user';
 	import { userProfileStore } from '$lib/userProfileStore';
+	import KontaktDrawer from '$lib/KontaktDrawer.svelte';
 
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
@@ -74,7 +75,7 @@
 		response: (r: string) => console.log('response:', r)
 	};
 
-	const drawerSettings: DrawerSettings = {
+	let drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
 		bgBackdrop: 'bg-gray-500 bg-opacity-10',
@@ -116,7 +117,11 @@
 
 <!-- Right side profile drawer (click on avatar)-->
 <Drawer>
-	<Profile />
+	{#if $drawerStore.id === 'example-3'}
+		<Profile />
+	{:else if $drawerStore.id === 'kontakt-bestyrelse-drawer'}
+		<KontaktDrawer />
+	{/if}
 </Drawer>
 
 <div class="card w-48 shadow-xl py-2" data-popup="popupComboKontakt">
