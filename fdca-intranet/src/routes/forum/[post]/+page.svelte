@@ -18,7 +18,8 @@
 	let markdownText = writable('');
 	let authorUID = writable('');
 	let uid = writable('');
-
+	let authorName = writable('');
+	let time = writable('');
 	getUid()
 		.then((uidValue) => {
 			uid.set(uidValue);
@@ -35,6 +36,8 @@
 				markdownText.set(postData.text);
 				title.set(postData.title);
 				authorUID.set(postData.authorUID);
+				authorName.set(postData.authorName);
+				time.set(postData.time);
 				console.log(markdownText);
 			}
 		});
@@ -95,5 +98,7 @@
 {/if}
 
 <h1>{$title}</h1>
+<p>{$authorName}</p>
+<p>{new Date($time).toLocaleString()}</p>
 
 <MarkdownRenderer {markdownText} />
