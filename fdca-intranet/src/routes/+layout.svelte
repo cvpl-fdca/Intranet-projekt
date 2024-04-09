@@ -94,7 +94,10 @@
 
 	let comboboxKontakt: string = "Kontakt";
 	function handleListBoxClick(value: string) {
-		if (value === 'medlemmer') {
+		if(value === 'kontakt') {
+			window.location.href = '/kontakt';
+		}
+		else if (value === 'medlemmer') {
 			window.location.href = '/kontakt/medlemmer';
 		} else if (value === 'forslag') {
 			window.location.href = '/kontakt/forslag';
@@ -126,6 +129,7 @@
 
 <div class="card w-48 shadow-xl py-2" data-popup="popupComboKontakt">
 	<ListBox rounded="rounded-none">
+		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="kontakt" on:click={() => handleListBoxClick('kontakt')}>Kontakt</ListBoxItem>
 		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="medlemmer" on:click={() => handleListBoxClick('medlemmer')}>Medlemmer</ListBoxItem>
 		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="forslag" on:click={() => handleListBoxClick('forslag')}>Forslag</ListBoxItem>
 	</ListBox>
@@ -146,15 +150,15 @@
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				{#if $userProfileStore?.roles.isAdmin}
+					<a href="/admin" class="btn variant-filled"> Admin </a>
+				{/if}
 				<a href="/forum" class="btn variant-filled"> Forum </a>
 				<a href="/artikler" class="btn variant-filled"> Artikler </a>
 				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
 					<span href="/kontakt/medlemmer" class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>
 				</button>
-				{#if $userProfileStore?.roles.isAdmin}
-					<a href="/admin" class="btn variant-filled"> Admin </a>
-				{/if}
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />
