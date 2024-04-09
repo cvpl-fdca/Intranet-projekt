@@ -156,7 +156,7 @@
 				<a href="/forum" class="btn variant-filled"> Forum </a>
 				<a href="/artikler" class="btn variant-filled"> Artikler </a>
 				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
-					<span href="/kontakt/medlemmer" class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
+					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>
 				</button>
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
