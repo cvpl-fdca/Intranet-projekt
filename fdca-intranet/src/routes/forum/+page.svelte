@@ -8,17 +8,24 @@
 	import { getFirestore, collection, query, getDocs, onSnapshot } from 'firebase/firestore';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { ImagePlaceholder } from 'flowbite-svelte';
 	let db = getFirestore(app);
 
 	// Subscribe to updates in the 'OpenForum' collection
 	onMount(() => {
 		const postsCollection = collection(db, 'OpenForum');
 		const postsQuery = query(postsCollection);
-		onSnapshot(postsQuery, (querySnapshot) => {
-			const postsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-			posts.set(postsData);
-			console.log(postsData);
-		});
+		const unsubscribe = onSnapshot(
+			postsQuery,
+			(querySnapshot) => {
+				const postsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+				posts.set(postsData);
+				console.log(postsData);
+			},
+			(error) => {
+				console.error('Error getting posts:', error);
+			}
+		);
 	});
 
 	const modalStore = getModalStore();
@@ -48,12 +55,12 @@
 	{#each $posts as post}
 		<div class="card p-4">
 			<h2>{post.title}</h2>
-			<p>{post.text}</p>
 			<p>{post.authorName}</p>
 			<p>{new Date(post.time).toLocaleString()}</p>
 			<button type="button" class="btn variant-filled" on:click={() => goto(`/forum/${post.id}`)}
 				>view</button
 			>
+			<ImagePlaceholder />
 		</div>
 	{/each}
 </div>

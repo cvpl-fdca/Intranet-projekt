@@ -60,4 +60,16 @@ function getToken(): Promise<string> {
     });
 }
 
-export { auth, getUsername, logout, getToken};
+function getUid(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                resolve(user.uid);
+            } else {
+                reject("No user logged in");
+            }
+        });
+    });
+}
+
+export { auth, getUsername, logout, getToken, getUid };
