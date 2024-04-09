@@ -32,7 +32,7 @@
     "tailwindcss": "3.4.1",
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
-    "vite": "^5.0.3",
+    "vite": "^5.1.7",
     "vite-plugin-tailwind-purgecss": "0.2.0"
   },
   "type": "module",
@@ -46,6 +46,8 @@
     "dayjs": "^1.11.10",
     "dayjs-plugin-utc": "^0.1.2",
     "firebase": "^10.8.0",
+    "flowbite-svelte": "^0.44.24",
+    "flowbite-svelte-icons": "^1.5.0",
     "firebase-admin": "^12.0.0",
     "flowbite": "^2.3.0",
     "flowbite-svelte": "^0.44.24",
