@@ -49,6 +49,7 @@
 		};
 		modalStore.trigger(modal);
 	}
+	
 </script>
 
 <div
@@ -62,8 +63,7 @@
 				alt=""
 				class="h-16 w-16 rounded-full mx-auto"
 			/>
-			<div class="font-semibold my-4">Name: {userDoc?.details?.fullName}</div>
-			<div class="font-semibold">{user?.displayName}</div>
+			<div class="font-semibold my-4">{userDoc?.details?.fullName}</div>
 		</div>
 		<!-- Menu Items -->
 		<ul class="text-sm">
