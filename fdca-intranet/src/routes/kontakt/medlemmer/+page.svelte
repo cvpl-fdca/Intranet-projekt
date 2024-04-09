@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { memberStore } from '$lib/memberStore';
 	import type { User } from '$lib/user';
 	import { Table } from '@skeletonlabs/skeleton';
@@ -34,19 +33,20 @@ function getSourceData(members: User[]): Element[] {
 	let i = 1;
 		var new_el: Element;
 	members.forEach(member => {
-			new_el = {
-				position: i,
-				name: member.details.fullName,
-				discord: member.details.discordName,
-				pmail: member.details.email.private,
-				fmail: member.details.email.fdca,
-				wmail: member.details.email.work,
-				pphone: member.details.phone.private,
-				wphone: member.details.phone.work,
-			};
-			console.log(new_el);
-			sourceData.push(new_el);
-			i+=1;
+		try {new_el = {
+			position: i,
+			name: member.details.fullName,
+			discord: member.details.discordName,
+			pmail: member.details.email.private,
+			fmail: member.details.email.fdca,
+			wmail: member.details.email.work,
+			pphone: member.details.phone.private,
+			wphone: member.details.phone.work,
+		};
+		console.log(new_el);
+		sourceData.push(new_el);
+		i+=1;}
+		catch (error) {};
 	});
 	return sourceData;
 };
@@ -54,10 +54,6 @@ function getSourceData(members: User[]): Element[] {
 let sourceData: Element[] = [];
 let tableSimple: TableSource;
 	$: sourceData  = getSourceData(members);
-	tableSimple = {
-			head: ['Name', 'Discord', 'Mail'],
-			body: tableMapperValues(sourceData, ['name', 'discord', 'pmail']),
-	};
 	$: tableSimple = sourceData ? setTableSource() : undefined;
 </script>
 
