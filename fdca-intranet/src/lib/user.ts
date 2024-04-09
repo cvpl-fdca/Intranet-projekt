@@ -15,8 +15,9 @@ export class User {
     public roles = {
         isAdmin: false,
         projects: {
-            sagalabs: false,
-            soMe: false
+            karkom: false,
+            strøko: false,
+            socsam: false
         },
     };
     public uid = "";
