@@ -54,20 +54,32 @@
 </script>
 
 {#if $modalStore[0]}
-	<input
-		type="text"
-		bind:value={title}
-		class="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600"
-		placeholder="Title"
-	/>
+	<div class="grid md:grid-cols-2 gap-4">
+		<!-- Column 1 for title, MarkdownEditor, and Save post button -->
+		<div class="space-y-4">
+			<input
+				type="text"
+				bind:value={title}
+				class="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600"
+				placeholder="Title"
+			/>
 
-	<MarkdownEditor text={textCopy} />
-	<div class="card p-4"><MarkdownRenderer markdownText={textCopy} /></div>
-	<button
-		on:click={editPost}
-		type="submit"
-		class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
-	>
-		Save post
-	</button>
+			<MarkdownEditor text={textCopy} />
+
+			<button
+				on:click={editPost}
+				type="submit"
+				class="w-[102px] inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
+			>
+				Save post
+			</button>
+		</div>
+
+		<!-- Column 2 for MarkdownRenderer -->
+		<div>
+			<div class="card p-4 w-[500px]">
+				<MarkdownRenderer markdownText={textCopy} />
+			</div>
+		</div>
+	</div>
 {/if}
