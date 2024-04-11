@@ -183,7 +183,7 @@
 		<MarkdownRenderer {markdownText} />
 	</div>
 	<div class="grid gap-1 h-auto w-auto p-4">
-		<div class="bg-surface-500/30 p-4">
+		<div class="bg-surface-500/30 p-4 rounded">
 			<div
 				class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token"
 			>
@@ -200,7 +200,7 @@
 				<button class="variant-filled-primary" on:click={addComment}>Send</button>
 			</div>
 		</div>
-		<div class="bg-surface-500/30 p-4 overflow-y-auto">
+		<div class="bg-surface-500/30 p-4 overflow-y-auto rounded">
 			{#each $comments as comment}
 				<div class="grid gap-2">
 					<div
