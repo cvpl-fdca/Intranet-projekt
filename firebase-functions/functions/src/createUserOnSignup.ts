@@ -21,8 +21,9 @@ export const createUser = (user: { uid: any; }) => {
         roles: {
             isAdmin: false,
             projects: {
-                sagalabs: false,
-                soMe: false
+                karkom: false,
+                strøko: false,
+                socsam: false
             },
         },
         uid: uid

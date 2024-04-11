@@ -92,21 +92,30 @@
 		console.log('sidebarActive:', sidebarActive);
 	}
 
-	let comboboxKontakt: string = "Kontakt";
 	function handleListBoxClick(value: string) {
 		if(value === 'kontakt') {
 			window.location.href = '/kontakt';
-		}
-		else if (value === 'medlemmer') {
+		} else if (value === 'medlemmer') {
 			window.location.href = '/kontakt/medlemmer';
 		} else if (value === 'forslag') {
 			window.location.href = '/kontakt/forslag';
+		} else if (value === 'admin') {
+			window.location.href = '/admin'
+		} else if (value === 'rettigheder') {
+			window.location.href = '/admin/rettigheder';
 		}
 	};
-
+	let comboboxKontakt: string = "Kontakt";
 	const popupComboKontakt: PopupSettings = {
 		event: 'click',
 		target: 'popupComboKontakt',
+		placement: 'bottom',
+		closeQuery: '.listbox-item'
+	};
+	let comboboxAdmin: string = "Admin";
+	const popupComboAdmin: PopupSettings = {
+		event: 'click',
+		target: 'popupComboAdmin',
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
 	};
@@ -136,6 +145,14 @@
 	<div class="arrow bg-surface-100-800-token" />
 </div>
 
+<div class="card w-48 shadow-xl py-2" data-popup="popupComboAdmin">
+	<ListBox rounded="rounded-none">
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="admin" on:click={() => handleListBoxClick('admin')}>Admin</ListBoxItem>
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="rettigheder" on:click={() => handleListBoxClick('rettigheder')}>Rettigheder</ListBoxItem>
+	</ListBox>
+	<div class="arrow bg-surface-100-800-token" />
+</div>
+
 <!-- App Shell -->
 <AppShell slotPageHeader="h-0.5">
 	<svelte:fragment slot="header">
@@ -151,7 +168,10 @@
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				{#if $userProfileStore?.roles.isAdmin}
-					<a href="/admin" class="btn variant-filled"> Admin </a>
+					<button class="btn variant-filled justify-between" use:popup={popupComboAdmin}>
+						<span class="capitalize">{comboboxAdmin ?? 'Trigger'}</span>
+						<span>↓</span>
+					</button>
 				{/if}
 				<a href="/forum" class="btn variant-filled"> Forum </a>
 				<a href="/artikler" class="btn variant-filled"> Artikler </a>
