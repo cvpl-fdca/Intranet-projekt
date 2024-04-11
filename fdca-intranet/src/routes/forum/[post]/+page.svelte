@@ -140,58 +140,72 @@
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
+		currentMessage = '';
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			addComment();
+		}
 	}
 </script>
-<div class="flex items-start justify-between">
-	<!-- Container for Title and Author/Date -->
-	<div>
-	  <h1 class="text-4xl font-bold">{$title}</h1>
-	  <p class="text-sm">{$authorName}</p>
-	  <p class="text-sm">{new Date($time).toLocaleString()}</p>
-	</div>
-  
-	<!-- Container for Delete/Edit if user is the author -->
-	{#if $uid === $authorUID}
-	  <div class="flex justify-end">
-		<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-		<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
-	  </div>
-	{/if}
-  </div>
-  
-<div class="w-[800px] mx-auto">
-	<MarkdownRenderer {markdownText} />
+
+<div class="relative mt-8 mb-4 px-4">
+    <!-- Center-aligned Title, Author, and Date -->
+    <div class="text-center mx-auto" style="max-width: 800px;">
+        <h1 class="text-4xl font-bold">{$title}</h1>
+        <p class="text-sm">{$authorName}</p>
+        <p class="text-sm">{new Date($time).toLocaleString()}</p>
+    </div>
+
+    <!-- Right-aligned Delete/Edit Buttons -->
+    {#if $uid === $authorUID}
+        <div class="absolute right-0 top-0">
+            <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+            <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+        </div>
+    {/if}
 </div>
 
-<div class="grid gap-1 h-auto w-auto p-4">
-	<div class="w-[800px] mx-auto bg-surface-500/30 p-4 overflow-y-auto">
-		{#each $comments as comment}
-			<div class="grid gap-2">
-				<div
-					class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}
-				>
-					<!-- Added 'my-2' class for margin -->
-					<header class="flex justify-between items-center">
-						<p class="font-bold">{comment.authorName}</p>
-						<small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
-					</header>
-					<p>{comment.text}</p>
-				</div>
-			</div>
-		{/each}
+<!-- Main content area -->
+<div class="w-[800px] mx-auto">
+	<div>
+		<MarkdownRenderer {markdownText} />
 	</div>
-	<div class="w-[800px] bg-surface-500/30 p-4 mx-auto">
-		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
-			<button class="input-group-shim">+</button>
-			<textarea
-				bind:value={currentMessage}
-				class="bg-transparent border-0 ring-0"
-				name="prompt"
-				id="prompt"
-				placeholder="Write a message..."
-				rows="1"
-			/>
-			<button class="variant-filled-primary" on:click={addComment}>Send</button>
+	<div class="grid gap-1 h-auto w-auto p-4">
+		<div class="bg-surface-500/30 p-4">
+			<div
+				class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token"
+			>
+				<button class="input-group-shim">+</button>
+				<textarea
+					bind:value={currentMessage}
+					class="bg-transparent border-0 ring-0"
+					name="prompt"
+					id="prompt"
+					placeholder="Write a message..."
+					rows="1"
+					on:keydown={handleKeydown}
+				/>
+				<button class="variant-filled-primary" on:click={addComment}>Send</button>
+			</div>
+		</div>
+		<div class="bg-surface-500/30 p-4 overflow-y-auto">
+			{#each $comments as comment}
+				<div class="grid gap-2">
+					<div
+						class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}
+					>
+						<!-- Added 'my-2' class for margin -->
+						<header class="flex justify-between items-center">
+							<p class="font-bold">{comment.authorName}</p>
+							<small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
+						</header>
+						<p>{comment.text}</p>
+					</div>
+				</div>
+			{/each}
 		</div>
 	</div>
 </div>
