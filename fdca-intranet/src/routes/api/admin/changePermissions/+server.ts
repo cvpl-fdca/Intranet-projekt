@@ -4,10 +4,9 @@ import type { User } from '$lib/user.js';
 import firebase from '$lib/firebase';
 import { json } from '@sveltejs/kit';
 
-
 const db = admin.firestore();
 
-export async function GET(event) {
+export async function POST(event) {
     // Retrieve Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
@@ -35,17 +34,11 @@ export async function GET(event) {
             },
         });
     }
-
+    const data = await event.request.formData();
+    console.log(data);
     let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
     if(userDoc.roles.isAdmin) {
-        let users = await admin.auth().listUsers()
-        console.log(users);
-        return json({ success: true, data: users});
+        
     }
-    return new Response(JSON.stringify({error: 'Permission denied'}), {
-        status: 403,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+
 }
