@@ -17,6 +17,7 @@
 	import EditForumPost from '$lib/EditForumPost.svelte';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
+	import { navigate } from 'svelte-routing';
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -111,17 +112,25 @@
 	modalStore.close();
 
 	async function deletePost() {
-		try {
-			const token = await getToken();
-			// Append the postID to the URL as a parameter
-			const response = await fetch(`/api/forum/deleteForumPost/${data.post}`, {
-				method: 'DELETE',
-				headers: {
-					'X-firebase-token': token
+		if (confirm('Are you sure you want to delete this post?')) {
+			try {
+				const token = await getToken();
+				// Append the postID to the URL as a parameter
+				const response = await fetch(`/api/forum/deleteForumPost/${data.post}`, {
+					method: 'DELETE',
+					headers: {
+						'X-firebase-token': token
+					}
+				});
+	
+				// If the post was successfully deleted, navigate to the forum
+				if (response.ok) {
+					navigate('/forum');
+					location.reload();
 				}
-			});
-		} catch (error) {
-			console.error('Error:', error.message);
+			} catch (error) {
+				console.error('Error:', error.message);
+			}
 		}
 	}
 	async function addComment() {
