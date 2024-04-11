@@ -39,7 +39,6 @@ export async function GET(event) {
     let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
     if(userDoc.roles.isAdmin) {
         let users = await admin.auth().listUsers()
-        console.log(users);
         return json({ success: true, data: users});
     }
     return new Response(JSON.stringify({error: 'Permission denied'}), {

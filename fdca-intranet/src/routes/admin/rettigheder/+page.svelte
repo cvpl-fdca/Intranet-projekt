@@ -32,7 +32,7 @@
 				'Strategi/Økonomi',
 				'Socialt sammenhold'
 			],
-			body: tableMapperValues(sourceData, ['name', 'user', 'isAdmin', 'karkom', 'socsam'])
+			body: tableMapperValues(sourceData, ['name', 'user', 'isAdmin', 'karkom', 'strøko', 'socsam'])
 		};
 	}
 
@@ -48,7 +48,7 @@
 				isAdmin: member.roles.isAdmin,
 				karkom: member.roles.projects.karkom,
 				strøko: member.roles.projects.strøko,
-				socsam: member.roles.projects.socsam
+				socsam: member.roles.projects.socsam,
 			};
 			for (let user of userMatches) {
 				if(member.uid === user.uid) {
@@ -105,6 +105,29 @@
 		}
 	}
 
+	async function changePermission(userid: string, name: string, setTo: boolean) {
+		try {
+			const token = await getToken();
+			const requestBody = {
+				uid: userid,
+				permission: {
+					name: name,
+					setTo: setTo,
+				}
+			}
+			const response = await fetch('/api/admin/changePermissions', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-firebase-token': token
+					},
+					body: JSON.stringify(requestBody)
+				});
+		} catch (error) {
+		}
+	}
+
+	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true); THIS IS HOW WE HAVE TO DO IT!
 	let userMatches: UserMatch[];
 	$: userMatches = getUserMatches(users);
 

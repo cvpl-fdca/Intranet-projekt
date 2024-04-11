@@ -38,29 +38,33 @@ export async function POST(event) {
 
 
     if(userDoc.roles.isAdmin) {
-        const data = await event.request.formData();
-        const affectedUid = data.user.uid;
+        const data: {uid: string, permission: {name: string, setTo: boolean}} = await event.request.json();
+        const affectedUid = data.uid;
         const affectedPermission = data.permission;
+        
+        console.log(data.uid);
         const userRef = admin.firestore().collection('users').doc(affectedUid);
         if(data.permission.name === 'isAdmin') {
-            let roles.isAdmin = data.permission.setTo;
+            let isAdmin = data.permission.setTo;
             await userRef.update({
-                roles.isAdmin,
+                'roles.isAdmin': isAdmin
             });
         } else if(data.permission.name === 'karkom') {
-            let roles.projects.karkom = data.permission.setTo;
+            let karkom = data.permission.setTo;
             await userRef.update({
-                roles.projects.karkom,
+                'roles.projects.karkom': karkom,
             });
         } else if(data.permission.name === 'strøko') {
-            let roles.projects.strøko = data.permission.setTo;
+            console.log("Changing permissions for strøko");
+            let strøko = data.permission.setTo;
             await userRef.update({
-                roles.projects.strøko,
+                'roles.projects.strøko': strøko,
             });
         } else if(data.permission.name === 'socsam') {
-            let roles.projects.socsam = data.permission.setTo;
+            console.log("Changing permissions for socsam");
+            let socsam = data.permission.setTo;
             await userRef.update({
-                roles.projects.socsam,
+                'roles.projects.socsam': socsam,
             });
         }
     }
