@@ -154,15 +154,14 @@
 
 <MarkdownRenderer {markdownText} />
 
-<div class="grid gap-1 h-auto w-auto">
-    <div class="bg-surface-500/30 p-4 overflow-y-auto">
+<div class="grid gap-1 h-auto w-auto p-4">
+    <div class="bg-surface-500/30 p-4 overflow-y-auto ">
         {#each $comments as comment}
             <div class="grid gap-2">
                 <div class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}>
                     <!-- Added 'my-2' class for margin -->
                     <header class="flex justify-between items-center">
                         <p class="font-bold">{comment.authorName}</p>
-
                         <small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
                     </header>
                     <p>{comment.text}</p>
