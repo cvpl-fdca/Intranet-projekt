@@ -53,14 +53,11 @@
 
 <div class="grid grid-cols-3 gap-4">
 	{#each $posts as post}
-		<div class="card p-4">
+	<a href={`/forum/${post.id}`} class="card card-hover p-4">
 			<h2>{post.title}</h2>
 			<p>{post.authorName}</p>
 			<p>{new Date(post.time).toLocaleString()}</p>
-			<button type="button" class="btn variant-filled" on:click={() => goto(`/forum/${post.id}`)}
-				>view</button
-			>
 			<ImagePlaceholder />
-		</div>
+	</a>
 	{/each}
 </div>
