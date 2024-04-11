@@ -35,8 +35,13 @@ export async function PATCH(event) {
     }
 
     try {
-        // Get the forum post ID from the request body
+        // Get the forum post ID from the URL parameters
         const postId = event.params.postId;
+
+        // Get the title and text from the request body
+        const formData = await event.request.formData();
+        const title = formData.get('title');
+        const text = formData.get('text');
 
         // Get the forum post from Firestore
         const forumPostRef = admin.firestore().collection('OpenForum').doc(postId);
@@ -44,8 +49,11 @@ export async function PATCH(event) {
 
         // Check if the user is the author or an admin
         if (forumPost.exists && (forumPost.data().authorUID === token.uid || token.admin)) {
-            // Delete the forum post
-            await forumPostRef.delete();
+            // Update the forum post
+            await forumPostRef.update({
+                title,
+                text
+            });
 
             return json({ success: true });
         } else {
@@ -57,8 +65,8 @@ export async function PATCH(event) {
             });
         }
     } catch (error) {
-        console.error('Failed to delete forum post:', error);
-        return new Response(JSON.stringify({ error: 'Failed to delete forum post' }), {
+        console.error('Failed to update forum post:', error);
+        return new Response(JSON.stringify({ error: 'Failed to update forum post' }), {
             status: 500,
             headers: {
                 'Content-Type': 'application/json',
