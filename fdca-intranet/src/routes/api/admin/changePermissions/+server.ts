@@ -1,7 +1,6 @@
 import { admin } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import type { User } from '$lib/user.js';
-import firebase from '$lib/firebase';
 import { json } from '@sveltejs/kit';
 
 const db = admin.firestore();
@@ -34,11 +33,35 @@ export async function POST(event) {
             },
         });
     }
-    const data = await event.request.formData();
-    console.log(data);
-    let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
-    if(userDoc.roles.isAdmin) {
-        
-    }
 
+    let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
+
+
+    if(userDoc.roles.isAdmin) {
+        const data = await event.request.formData();
+        const affectedUid = data.user.uid;
+        const affectedPermission = data.permission;
+        const userRef = admin.firestore().collection('users').doc(affectedUid);
+        if(data.permission.name === 'isAdmin') {
+            let roles.isAdmin = data.permission.setTo;
+            await userRef.update({
+                roles.isAdmin,
+            });
+        } else if(data.permission.name === 'karkom') {
+            let roles.projects.karkom = data.permission.setTo;
+            await userRef.update({
+                roles.projects.karkom,
+            });
+        } else if(data.permission.name === 'strøko') {
+            let roles.projects.strøko = data.permission.setTo;
+            await userRef.update({
+                roles.projects.strøko,
+            });
+        } else if(data.permission.name === 'socsam') {
+            let roles.projects.socsam = data.permission.setTo;
+            await userRef.update({
+                roles.projects.socsam,
+            });
+        }
+    }
 }
