@@ -45,7 +45,7 @@
     "@widgetbot/html-embed": "^1.3.0",
     "dayjs": "^1.11.10",
     "dayjs-plugin-utc": "^0.1.2",
-    "firebase": "^10.6.0",
+    "firebase": "^10.8.0",
     "firebase-admin": "^12.0.0",
     "flowbite": "^2.3.0",
     "flowbite-svelte": "^0.44.24",

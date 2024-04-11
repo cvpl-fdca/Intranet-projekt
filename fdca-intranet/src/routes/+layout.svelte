@@ -11,13 +11,15 @@
 		AppRailTile,
 		AppRailAnchor,
 		type DrawerSettings,
-		Drawer
+		Drawer,
+		type PopupSettings,
+		popup
 	} from '@skeletonlabs/skeleton';
 	import { faSearch, faBars, faHome } from '@fortawesome/free-solid-svg-icons'; // Import the faBars icon
 	import Fa from 'svelte-fa';
 	import img from '$lib/images/fdca_logo.svg';
 
-	import { initializeStores } from '@skeletonlabs/skeleton';
+	import { initializeStores, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	initializeStores();
 	import { getModalStore } from '@skeletonlabs/skeleton';
 
@@ -90,6 +92,25 @@
 		console.log('sidebarActive:', sidebarActive);
 	}
 
+	let comboboxKontakt: string = "Kontakt";
+	function handleListBoxClick(value: string) {
+		if(value === 'kontakt') {
+			window.location.href = '/kontakt';
+		}
+		else if (value === 'medlemmer') {
+			window.location.href = '/kontakt/medlemmer';
+		} else if (value === 'forslag') {
+			window.location.href = '/kontakt/forslag';
+		}
+	};
+
+	const popupComboKontakt: PopupSettings = {
+		event: 'click',
+		target: 'popupComboKontakt',
+		placement: 'bottom',
+		closeQuery: '.listbox-item'
+	};
+
 	let currentTile = 0;
 </script>
 
@@ -106,6 +127,15 @@
 	{/if}
 </Drawer>
 
+<div class="card w-48 shadow-xl py-2" data-popup="popupComboKontakt">
+	<ListBox rounded="rounded-none">
+		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="kontakt" on:click={() => handleListBoxClick('kontakt')}>Kontakt</ListBoxItem>
+		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="medlemmer" on:click={() => handleListBoxClick('medlemmer')}>Medlemmer</ListBoxItem>
+		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="forslag" on:click={() => handleListBoxClick('forslag')}>Forslag</ListBoxItem>
+	</ListBox>
+	<div class="arrow bg-surface-100-800-token" />
+</div>
+
 <!-- App Shell -->
 <AppShell slotPageHeader="h-0.5">
 	<svelte:fragment slot="header">
@@ -120,12 +150,15 @@
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<a href="/forum" class="btn variant-filled"> Forum </a>
-				<a href="/artikler" class="btn variant-filled"> Artikler </a>
-				<a href="/kontakt" class="btn variant-filled"> Kontakt </a>
 				{#if $userProfileStore?.roles.isAdmin}
 					<a href="/admin" class="btn variant-filled"> Admin </a>
 				{/if}
+				<a href="/forum" class="btn variant-filled"> Forum </a>
+				<a href="/artikler" class="btn variant-filled"> Artikler </a>
+				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
+					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
+					<span>↓</span>
+				</button>
 				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
 					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
 					<Fa icon={faSearch} class="fa" />

@@ -8,13 +8,12 @@ import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
-console.log(currentTimeInCopenhagen);
 
-// src/routes/api/createForumPost/+server.ts
+// src/routes/api/addComment/+server.ts
 
 const db = admin.firestore();
 let errors: string[] = [];
@@ -30,7 +29,8 @@ export async function POST(event) {
             },
         });
     }
-    let username: string;
+
+    let username: string | undefined;
     let token: DecodedIdToken;
 
     try {
@@ -54,49 +54,19 @@ export async function POST(event) {
     // Extract details from the form data
     console.log('Form data:', data);
 
+    // Extract the forum post ID from the URL parameters
+    const postId = event.params.postId;
 
+    // Extract the comment text from the form data
+    const text = data.get('text');
 
-    //TODO: Validate the form data
-    if (true) {
-        let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
-        username = userDoc.details?.fullName;
+    // Validate the comment text
+    if (text !== null && !validator.isLength(text, { min: 1, max: 1000 })) {
+        errors.push('Comment must be between 1 and 1000 characters');
+    }
 
-        let forumPost = {
-            authorUID: token.uid,
-            authorName: username,
-            text: data.get('text') as string,
-            time: currentTimeInCopenhagen,
-            title: data.get('title') as string,
-        };
-
-        console.log('Forum post:', forumPost);
-        try {
-            console.log('Creating forum post');
-            const forumPostRef = await admin.firestore().collection('OpenForum').add(forumPost);
-            console.log('Successfully created forum post', forumPostRef.id); // Log the document ID
-        
-            // Get the created forum post from Firestore
-            const createdPost = await forumPostRef.get();
-            const createdPostData = createdPost.data();
-        
-            // Enhance the data with the document ID if needed
-            const postDataWithId = {    
-                id: forumPostRef.id, // Include the document ID
-                ...createdPostData,
-            };
-        
-            console.log('Forum post data with ID:', postDataWithId); // Log the complete document data including the ID
-            return json({ success: true, post: postDataWithId });
-        } catch (error) {
-            console.error('Failed to create forum post:', error);
-            return new Response(JSON.stringify({ error: 'Failed to create forum post' }), {
-                status: 500,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
-    } else {
+    // If there are any errors, return them
+    if (errors.length > 0) {
         return new Response(JSON.stringify({ errors }), {
             status: 400,
             headers: {
@@ -104,5 +74,20 @@ export async function POST(event) {
             },
         });
     }
-}
 
+    // Get the user's display name
+    const user = await admin.auth().getUser(token.uid);
+    username = user.displayName;
+    const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
+
+    // Create a new comment document in Firestore
+    const commentRef = db.collection('OpenForum').doc(postId).collection('comments').doc();
+    await commentRef.set({
+        authorUID: token.uid,
+        authorName: username,
+        text,
+        time: currentTimeInCopenhagen,
+    });
+
+    return json({ success: true });
+}
