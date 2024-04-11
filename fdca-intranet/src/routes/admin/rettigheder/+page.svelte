@@ -71,15 +71,15 @@
 				}
 			});
 			console.log('Hello2');
-			console.log(response)
+			console.log(response);
 			return response;
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
 	}
 	type UserMatch = {
-		uid: string,
-		email: string,
+		uid: string;
+		email: string;
 	};
 
 	let users: any;
@@ -88,20 +88,23 @@
 			users = response.data;
 		});
 	});
-	
-	
-	function getUserMatches(users: any) {
+
+	function getUserMatches(usersObj: any) {
+		console.log('users in getUserMatches: ', usersObj);
+
 		try {
+			console.log('processing');
 			let userMatches: UserMatch[] = [];
-			let i = 0;
-			users.forEach(user => {
-				userMatches.push({uid: user.i.uid, email: user.i.email});
+			usersObj.users.forEach((user: { uid: any; email: any }) => {
+				console.log('processing user: ', user);
+				userMatches.push({ uid: user.uid, email: user.email });
 			});
 			return userMatches;
 		} catch (error) {
 			return [];
 		}
-	};
+	}
+
 	$: console.log(users);
 	let userMatches: UserMatch[];
 	$: userMatches = getUserMatches(users);
