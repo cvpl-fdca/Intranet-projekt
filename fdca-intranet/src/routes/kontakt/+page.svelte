@@ -1,22 +1,9 @@
 <script lang="ts">
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton';
-	const drawerStore = getDrawerStore();
+	import app from '$lib/firebase';
+	import { getDocs, collection, onSnapshot, getFirestore, getDoc, doc } from 'firebase/firestore';
+	import { onDestroy } from 'svelte';
 
-	const drawerKontakt: DrawerSettings = {
-		id: 'kontakt-bestyrelse-drawer',
-		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
-		bgBackdrop: 'bg-gray-500 bg-opacity-10',
-		padding: 'p-4',
-		width: 'w-128',
-		height: 'h-128',
-		rounded: 'rounded-xl',
-		position: 'bottom',
-	};
-
-	function openKontaktDrawer() {
-		drawerStore.open(drawerKontakt);
-	}
-					
 	interface BoardMember {
 		name: string;
 		phone: string;
@@ -32,44 +19,67 @@
 		additionalText: string;
 	}
 
-	// Example array of board members
-	let boardMembers: BoardMember[] = [
-		{
-			name: 'Mogens',
-			phone: 'Phone:',
-			address: 'Address:',
-			additionalText: 'Additional info:',
-			imageUrl: 'https://plus.unsplash.com/premium_photo-1669324357471-e33e71e3f3d8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-		},
-		{
-			name: 'Sofie',
-			phone: '123-456-7890',
-			address: '123 Main St',
-			additionalText: 'Additional info',
-			imageUrl: '/path/to/existing/member/image.jpg'
-		},
-		{
-			name: 'Anders',
-			phone: '123-456-7890',
-			address: '123 Main St',
-			additionalText: 'Additional info',
-			imageUrl: '/path/to/existing/member/image.jpg'
-		},
-		{
-			name: 'Anders',
-			phone: '123-456-7890',
-			address: '123 Main St',
-			additionalText: 'Additional info',
-			imageUrl: '/path/to/existing/member/image.jpg'
-		},
-		{
-			name: 'Philip',
-			phone: '123-456-7890',
-			address: '123 Main St',
-			additionalText: 'Additional info',
-			imageUrl: '/path/to/existing/member/image.jpg'
-		}
-	];
+	
+
+
+	const db = getFirestore(app);
+	// Get a reference to the 'groups' collection
+	const groupsCollection = collection(db, 'groups');
+
+	// Get a reference to the 'bestyrelse' document
+	const bestyrelseDocRef = doc(groupsCollection, 'bestyrelse');
+
+	// Fetch the 'bestyrelse' document
+	const bestyrelseDocSnap = getDoc(bestyrelseDocRef);
+
+	// Get the 'members' map
+	const members = bestyrelseDocSnap.data().members;
+
+	// Initialize an empty array for the board members
+	let boardMembers = [] as BoardMember[];
+
+	// For each member in the 'members' map
+	for (const member in members) {
+		// Get the user document reference
+		const userDocRef = members[member];
+
+		// Fetch the user document
+		const userDocSnap = await getDoc(userDocRef);
+
+		// Get the user data
+		const userData = userDocSnap.data();
+
+		// Add the user data to the board members array
+		boardMembers.push({
+			name: userData.name,
+			phone: userData.phone,
+			address: userData.address,
+			imageUrl: userData.imageUrl,
+			additionalText: userData.additionalText
+		});
+	}
+
+	onDestroy(() => {
+		unsubscribe();
+	});
+	const drawerStore = getDrawerStore();
+
+	const drawerKontakt: DrawerSettings = {
+		id: 'kontakt-bestyrelse-drawer',
+		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
+		bgBackdrop: 'bg-gray-500 bg-opacity-10',
+		padding: 'p-4',
+		width: 'w-128',
+		height: 'h-128',
+		rounded: 'rounded-xl',
+		position: 'bottom'
+	};
+
+	function openKontaktDrawer() {
+		drawerStore.open(drawerKontakt);
+	}
+
+
 
 	// Example array of committee members
 	let committeeMembers: CommitteeMember[] = [
@@ -98,32 +108,34 @@
 </script>
 
 <div class="container mx-auto p-4">
-    <!-- Bestyrelse Section -->
-    <div class="card bg-blue-800 shadow-md rounded-lg p-4 mb-4">
-        <h3 class="text-3xl font-semibold text-white mb-4 text-center">Bestyrelse</h3>
-        <div class="text-center mb-4">
-<button class="bg-white text-black py-2 px-8 rounded-full" on:click={openKontaktDrawer}>Skriv til Bestyrelse</button>
-        </div>
-        <div class="grid grid-flow-row-dense grid-cols-auto-fit gap-4">
-            {#each boardMembers as member, i (i)}
-                <div class="card p-4 bg-white rounded shadow-lg">
-                    <div class="flex flex-col items-center">
-                        <img
-                            class="w-24 h-24 rounded-full mb-3"
-                            src={member.imageUrl}
-                            alt={`Picture of ${member.name}`}
-                        />
-                        <div class="text-center">
-                            <h4 class="font-semibold">{member.name}</h4>
-                            <p>{member.phone}</p>
-                            <p class="text-sm">{member.address}</p>
-                            <p class="text-sm">{member.additionalText}</p>
-                        </div>
-                    </div>
-                </div>
-            {/each}
-        </div>
-    </div>
+	<!-- Bestyrelse Section -->
+	<div class="card bg-blue-800 shadow-md rounded-lg p-4 mb-4">
+		<h3 class="text-3xl font-semibold text-white mb-4 text-center">Bestyrelse</h3>
+		<div class="text-center mb-4">
+			<button class="bg-white text-black py-2 px-8 rounded-full" on:click={openKontaktDrawer}
+				>Skriv til Bestyrelse</button
+			>
+		</div>
+		<div class="grid grid-flow-row-dense grid-cols-auto-fit gap-4">
+			{#each boardMembers as member, i (i)}
+				<div class="card p-4 bg-white rounded shadow-lg">
+					<div class="flex flex-col items-center">
+						<img
+							class="w-24 h-24 rounded-full mb-3"
+							src={member.imageUrl}
+							alt={`Picture of ${member.name}`}
+						/>
+						<div class="text-center">
+							<h4 class="font-semibold">{member.name}</h4>
+							<p>{member.phone}</p>
+							<p class="text-sm">{member.address}</p>
+							<p class="text-sm">{member.additionalText}</p>
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 </div>
 
 <!-- Udvalg Section -->
