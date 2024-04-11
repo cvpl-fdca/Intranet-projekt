@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { getToken } from '$lib/login';
 	import { memberStore } from '$lib/memberStore';
 	import type { User } from '$lib/user';
+	import { userProfileStore } from '$lib/userProfileStore';
 	import { Table } from '@skeletonlabs/skeleton';
 	import type { TableSource} from '@skeletonlabs/skeleton';
 	import { tableMapperValues } from '@skeletonlabs/skeleton';
@@ -32,6 +34,7 @@
 		let i = 1;
 		let new_el: Element;
 		members.forEach(member => {
+			
 			new_el = {
 				position: i,
 				name: member.details.fullName,
@@ -47,10 +50,36 @@
 		return sourceData;
 	};
 
+	async function getUsers() {
+		let userDoc;
+		userProfileStore.subscribe((value) => {
+			userDoc = value as User;
+		});
+		try {
+		const token = await getToken();
+
+		const response = await fetch('/api/admin/getUserIdentifier', {
+			method: 'GET',
+			headers: {
+				'X-firebase-token': token
+			}
+		});
+		console.log("Hello2");
+		console.log(response.body);
+		return response;
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+		
+	};
+	let users = getUsers();
+	
+	console.log(users);
 	let sourceData: Element[] = [];
 	let tableSimple: TableSource;
 	$: sourceData = getSourceData(members);
 	$: tableSimple = sourceData ? setTableSource() : undefined;
+
 
 </script>
 
