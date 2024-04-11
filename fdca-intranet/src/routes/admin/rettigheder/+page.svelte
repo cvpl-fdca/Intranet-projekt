@@ -71,7 +71,7 @@
 				}
 			});
 			console.log('Hello2');
-			console.log(response.then);
+			console.log(response)
 			return response;
 		} catch (error) {
 			console.error('Error:', error.message);
