@@ -60,7 +60,7 @@ function getToken(): Promise<string> {
     });
 }
 
-function getUid(): Promise<string> {
+async function getUid(): Promise<string> {
     return new Promise((resolve, reject) => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
