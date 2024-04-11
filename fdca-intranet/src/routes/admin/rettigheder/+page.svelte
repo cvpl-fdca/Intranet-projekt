@@ -77,12 +77,36 @@
 			console.error('Error:', error.message);
 		}
 	}
+	type UserMatch = {
+		uid: string,
+		email: string,
+	};
 
-	let users = getUsers().then((response) => {
-		console.log(response);
+	let users: any;
+	getUsers().then((response) => {
+		response?.json().then((response) => {
+			users = response.data;
+		});
 	});
+	
+	
+	function getUserMatches(users: any) {
+		try {
+			let userMatches: UserMatch[] = [];
+			let i = 0;
+			users.forEach(user => {
+				userMatches.push({uid: user.i.uid, email: user.i.email});
+			});
+			return userMatches;
+		} catch (error) {
+			return [];
+		}
+	};
+	$: console.log(users);
+	let userMatches: UserMatch[];
+	$: userMatches = getUserMatches(users);
+	$: console.log(userMatches);
 
-	console.log(users);
 	let sourceData: Element[] = [];
 	let tableSimple: TableSource;
 	$: sourceData = getSourceData(members);
