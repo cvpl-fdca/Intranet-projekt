@@ -17,9 +17,11 @@
 	import EditForumPost from '$lib/EditForumPost.svelte';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
+	import { tocCrawler, TableOfContents } from '@skeletonlabs/skeleton';
+	import { AppShell } from '@skeletonlabs/skeleton';
 
 	export let data: PageData;
-	let currentMessage = '';
+
 	console.log(data);
 	let userID: string | undefined;
 	userProfileStore.subscribe((value) => {
@@ -82,75 +84,60 @@
 		fetchData();
 	});
 
-	const modalStore = getModalStore();
-	const editForumPost: ModalComponent = { ref: EditForumPost };
-
-	// Reactive statements
-	$: console.log($markdownText);
-	$: console.log($title);
-
-	let modal: ModalSettings;
-
-	// Reactive statement to update the modal object
-	$: {
-		modal = {
-			type: 'component',
-			component: editForumPost,
-			meta: {
-				postId: data.post,
-				title: $title,
-				markdownText: markdownText
-			}
-		};
-	}
-
-	async function openModal() {
-		modalStore.trigger(modal);
-	}
-
-	modalStore.close();
-
+	
 	async function deletePost() {
-		try {
-			const token = await getToken();
-			// Append the postID to the URL as a parameter
-			const response = await fetch(`/api/forum/deleteForumPost/${data.post}`, {
-				method: 'DELETE',
-				headers: {
-					'X-firebase-token': token
-				}
-			});
-		} catch (error) {
-			console.error('Error:', error.message);
-		}
-	}
-	async function addComment() {
-		try {
-			const token = await getToken();
-			const submissionFormData = new FormData();
-			submissionFormData.append('text', currentMessage);
-			// Append the postID to the URL as a parameter
-			const response = await fetch(`/api/forum/addComment/${data.post}`, {
-				method: 'POST',
-				headers: {
-					'X-firebase-token': token
-				},
-				body: submissionFormData
-			});
-		} catch (error) {
-			console.error('Error:', error.message);
-		}
-	}
+    try {
+      const token = await getToken();
+      // Append the postID to the URL as a parameter
+      const response = await fetch(`/api/forum/deleteForumPost/${data.post}`, {
+        method: 'DELETE',
+        headers: {
+          'X-firebase-token': token
+        }
+      });
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  }
+
 </script>
 
+
+<AppShell>
+	<svelte:fragment slot="sidebarLeft">
+    <!-- Table of Contents -->
+    <div use:tocCrawler={{ mode: 'generate' }} class="w-1/8' mr-4 flex-none overflow-x-hidden overflow-y-auto">
+      <h2>Heading 2</h2>
+      <p>...</p>
+      <h3>Heading 3</h3>
+      <p>...</p>
+      <!-- Table of contents will be generated here -->
+    </div>
+	<TableOfContents></TableOfContents>
+  </svelte:fragment>
+
+  <slot>
+	<div class="container mx-auto my-8">
+    <div class="flex justify-center">
+      <!-- Post Content -->
+      <div class="flex flex-col items-center w-3/4">
+        <h1 class="max-w-md px-4 mb-4">{$title}</h1>
+        <div class="markdown-container w-[850px] px-4 py-2">
+          <MarkdownRenderer {markdownText} />
+        </div>
+      </div>
+    </div>
+  </div>
+  </slot>
+  
+</AppShell>
+
 {#if $uid === $authorUID}
-	<button on:click={deletePost} type="button" class="btn variant-filled">Delete</button>
-	<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+  <button on:click={deletePost} type="button" class="btn variant-filled">Delete</button>
+  <button type="button" class="btn variant-filled">Edit</button>
 {/if}
 
 <h1>{$title}</h1>
-<p>{$authorName}</p>
-<p>{new Date($time).toLocaleString()}</p>
 
 <MarkdownRenderer {markdownText} />
 
