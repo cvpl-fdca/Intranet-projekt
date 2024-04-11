@@ -36,7 +36,7 @@
 		};
 	}
 
-	function getSourceData(members: User[]): Element[] {
+	function getSourceData(members: User[], userMatches: UserMatch[]): Element[] {
 		let sourceData: Element[] = [];
 		let i = 1;
 		let new_el: Element;
@@ -44,12 +44,18 @@
 			new_el = {
 				position: i,
 				name: member.details.fullName,
-				user: 'FILLOUT',
+				user: 'Not mapped to member',
 				isAdmin: member.roles.isAdmin,
 				karkom: member.roles.projects.karkom,
 				strøko: member.roles.projects.strøko,
 				socsam: member.roles.projects.socsam
 			};
+			for (let user of userMatches) {
+				if(member.uid === user.uid) {
+					new_el.user = user.email;
+					break;
+				}
+			}
 			sourceData.push(new_el);
 			i += 1;
 		});
@@ -70,8 +76,6 @@
 					'X-firebase-token': token
 				}
 			});
-			console.log('Hello2');
-			console.log(response);
 			return response;
 		} catch (error) {
 			console.error('Error:', error.message);
@@ -90,13 +94,9 @@
 	});
 
 	function getUserMatches(usersObj: any) {
-		console.log('users in getUserMatches: ', usersObj);
-
 		try {
-			console.log('processing');
 			let userMatches: UserMatch[] = [];
 			usersObj.users.forEach((user: { uid: any; email: any }) => {
-				console.log('processing user: ', user);
 				userMatches.push({ uid: user.uid, email: user.email });
 			});
 			return userMatches;
@@ -105,14 +105,12 @@
 		}
 	}
 
-	$: console.log(users);
 	let userMatches: UserMatch[];
 	$: userMatches = getUserMatches(users);
-	$: console.log(userMatches);
 
 	let sourceData: Element[] = [];
 	let tableSimple: TableSource;
-	$: sourceData = getSourceData(members);
+	$: sourceData = getSourceData(members, userMatches);
 	$: tableSimple = sourceData ? setTableSource() : undefined;
 </script>
 
