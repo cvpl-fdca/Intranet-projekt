@@ -154,8 +154,6 @@
 
 <MarkdownRenderer {markdownText} />
 
-<div class="grid gap-1 h-auto w-auto">
-    <div class="bg-surface-500/30 p-4 overflow-y-auto">
 
 <div class="grid gap-1 h-auto w-auto p-4">
     <div class="bg-surface-500/30 p-4 overflow-y-auto ">
