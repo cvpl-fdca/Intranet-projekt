@@ -32,11 +32,11 @@
 				'Strategi/Økonomi',
 				'Socialt sammenhold'
 			],
-			body: tableMapperValues(sourceData, ['name', 'user', 'isAdmin', 'karkom', 'socsam'])
+			body: tableMapperValues(sourceData, ['name', 'user', 'isAdmin', 'karkom', 'strøko', 'socsam'])
 		};
 	}
 
-	function getSourceData(members: User[]): Element[] {
+	function getSourceData(members: User[], userMatches: UserMatch[]): Element[] {
 		let sourceData: Element[] = [];
 		let i = 1;
 		let new_el: Element;
@@ -44,12 +44,18 @@
 			new_el = {
 				position: i,
 				name: member.details.fullName,
-				user: 'FILLOUT',
+				user: 'Not mapped to member',
 				isAdmin: member.roles.isAdmin,
 				karkom: member.roles.projects.karkom,
 				strøko: member.roles.projects.strøko,
-				socsam: member.roles.projects.socsam
+				socsam: member.roles.projects.socsam,
 			};
+			for (let user of userMatches) {
+				if(member.uid === user.uid) {
+					new_el.user = user.email;
+					break;
+				}
+			}
 			sourceData.push(new_el);
 			i += 1;
 		});
@@ -70,22 +76,64 @@
 					'X-firebase-token': token
 				}
 			});
-			console.log('Hello2');
-			console.log(response)
 			return response;
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
 	}
+	type UserMatch = {
+		uid: string;
+		email: string;
+	};
 
-	let users = getUsers().then((response) => {
-		console.log(response);
+	let users: any;
+	getUsers().then((response) => {
+		response?.json().then((response) => {
+			users = response.data;
+		});
 	});
 
-	console.log(users);
+	function getUserMatches(usersObj: any) {
+		try {
+			let userMatches: UserMatch[] = [];
+			usersObj.users.forEach((user: { uid: any; email: any }) => {
+				userMatches.push({ uid: user.uid, email: user.email });
+			});
+			return userMatches;
+		} catch (error) {
+			return [];
+		}
+	}
+
+	async function changePermission(userid: string, name: string, setTo: boolean) {
+		try {
+			const token = await getToken();
+			const requestBody = {
+				uid: userid,
+				permission: {
+					name: name,
+					setTo: setTo,
+				}
+			}
+			const response = await fetch('/api/admin/changePermissions', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-firebase-token': token
+					},
+					body: JSON.stringify(requestBody)
+				});
+		} catch (error) {
+		}
+	}
+
+	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true); THIS IS HOW WE HAVE TO DO IT!
+	let userMatches: UserMatch[];
+	$: userMatches = getUserMatches(users);
+
 	let sourceData: Element[] = [];
 	let tableSimple: TableSource;
-	$: sourceData = getSourceData(members);
+	$: sourceData = getSourceData(members, userMatches);
 	$: tableSimple = sourceData ? setTableSource() : undefined;
 </script>
 

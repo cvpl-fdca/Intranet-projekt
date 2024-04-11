@@ -1,13 +1,11 @@
 import { admin } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import type { User } from '$lib/user.js';
-import firebase from '$lib/firebase';
 import { json } from '@sveltejs/kit';
-
 
 const db = admin.firestore();
 
-export async function GET(event) {
+export async function POST(event) {
     // Retrieve Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
@@ -37,14 +35,37 @@ export async function GET(event) {
     }
 
     let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
+
+
     if(userDoc.roles.isAdmin) {
-        let users = await admin.auth().listUsers()
-        return json({ success: true, data: users});
+        const data: {uid: string, permission: {name: string, setTo: boolean}} = await event.request.json();
+        const affectedUid = data.uid;
+        const affectedPermission = data.permission;
+        
+        console.log(data.uid);
+        const userRef = admin.firestore().collection('users').doc(affectedUid);
+        if(data.permission.name === 'isAdmin') {
+            let isAdmin = data.permission.setTo;
+            await userRef.update({
+                'roles.isAdmin': isAdmin
+            });
+        } else if(data.permission.name === 'karkom') {
+            let karkom = data.permission.setTo;
+            await userRef.update({
+                'roles.projects.karkom': karkom,
+            });
+        } else if(data.permission.name === 'strøko') {
+            console.log("Changing permissions for strøko");
+            let strøko = data.permission.setTo;
+            await userRef.update({
+                'roles.projects.strøko': strøko,
+            });
+        } else if(data.permission.name === 'socsam') {
+            console.log("Changing permissions for socsam");
+            let socsam = data.permission.setTo;
+            await userRef.update({
+                'roles.projects.socsam': socsam,
+            });
+        }
     }
-    return new Response(JSON.stringify({error: 'Permission denied'}), {
-        status: 403,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
 }
