@@ -38,36 +38,31 @@ export async function POST(event) {
 
 
     if(userDoc.roles.isAdmin) {
-        const data: {uid: string, permission: {name: string, setTo: boolean}} = await event.request.json();
+        const data: {uid: string, permission: {name: string, setTo: boolean, role: string}} = await event.request.json();
         const affectedUid = data.uid;
         const affectedPermission = data.permission;
         
         console.log(data.uid);
         const userRef = admin.firestore().collection('users').doc(affectedUid);
+        //ADMINISTRATOR
         if(data.permission.name === 'isAdmin') {
             let isAdmin = data.permission.setTo;
             await userRef.update({
                 'roles.isAdmin': isAdmin
             });
-        } else if(data.permission.name === 'karkom') {
-            let karkom = data.permission.setTo;
-            await userRef.update({
-                'roles.projects.karkom': karkom,
-            });
-        } else if(data.permission.name === 'strøko') {
-            console.log("Changing permissions for strøko");
-            let strøko = data.permission.setTo;
-            await userRef.update({
-                'roles.projects.strøko': strøko,
-            });
-        } else if(data.permission.name === 'socsam') {
-            console.log("Changing permissions for socsam");
-            let socsam = data.permission.setTo;
-            await userRef.update({
-                'roles.projects.socsam': socsam,
-            });
+        } else {
+            const groupRef = admin.firestore().collection('groups').doc(data.permission.name);
+            let docRef: admin.firestore.DocumentReference = admin.firestore().doc(`users/${data.uid}`);
+            let updateGroupObject = {[`members.${data.uid}`]: {role: data.permission.role, userRef: docRef}};
+            if (data.permission.setTo) {
+                await groupRef.update(updateGroupObject);
+            } else {
+                await groupRef.update({ [`members.${data.uid}`]: admin.firestore.FieldValue.delete()});
+            }
+            let updateUserObject = {[`roles.projects.${data.permission.name}`]: data.permission.setTo};
+            await userRef.update(updateUserObject);
         }
-        return json({ success: true });
+    return json({ success: true });
     } else {
         new Response(JSON.stringify({ error: 'Permission denied' }), {
             status: 403,
