@@ -5,6 +5,8 @@
 	import { getDocs, collection, onSnapshot, getFirestore, getDoc, doc } from 'firebase/firestore';
 	import { onDestroy } from 'svelte';
 	import { User } from '$lib/user';
+	import type { DocumentReference } from '@firebase/firestore-types';
+	import { memberStore } from '$lib/memberStore';
 
 	const db = getFirestore(app);
 	const groupsCollection = collection(db, 'groups');
@@ -14,10 +16,18 @@
 	$: console.log($committees);
 	$: console.log($bestyrelse);
 	// Define the Committee interface
+	interface GroupMember {
+		role: string,
+		userRef: DocumentReference,
+	}
 	interface Committee {
 		name: string;
-		members: User[];
+		members: GroupMember[];
 	}
+	let allMembers: User[] = [];
+			$: {
+				allMembers = $memberStore;
+			};
 
 	// Subscribe to the 'groups' collection
 	const unsubscribe = onSnapshot(groupsCollection, async (snapshot) => {
@@ -39,7 +49,7 @@
 				const userDocRef = members[member];
 
 				// Fetch the user document
-				const userDocSnap = await getDoc(userDocRef);
+				const userDocSnap = await getDoc(userDocRef.userRef);
 
 				// Get the user data
 				const userData = userDocSnap.data() as User;
