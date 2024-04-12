@@ -159,9 +159,6 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<button class="btn w-4 btn-align" on:click={toggleSidebar}>
-					<Fa icon={faBars} class="fa" />
-				</button>
 				<a href="/">
 					<img src={img} alt="FDCA Logo" style="height: 40px;" />
 				</a>
@@ -191,37 +188,6 @@
 				/>
 			</svelte:fragment>
 		</AppBar>
-	</svelte:fragment>
-	<svelte:fragment slot="sidebarLeft">
-		<div class="flex items-center justify-center lg:items-start lg:justify-start">
-			<div id="sidebar-left" class={sidebarActive ? 'block' : 'hidden'}>
-				<AppRail width="w-28">
-					<!-- Place the Home link directly inside the AppRail, without using a slot -->
-					<AppRailAnchor href="/" class="flex flex-col items-center">
-						<Fa icon={faHome} class="fa" />
-						<span class="mt-1">Home</span>
-					</AppRailAnchor>
-					<AppRailTile
-						bind:group={currentTile}
-						name="tile-2"
-						value={1}
-						title="tile-2"
-						height="h-10"
-					>
-						<svelte:fragment slot="lead">Artikler</svelte:fragment>
-						<span>Tile 1</span>
-					</AppRailTile>
-					<AppRailTile bind:group={currentTile} name="tile-3" value={2} title="tile-3">
-						<svelte:fragment slot="lead">(icon)</svelte:fragment>
-						<span>Tile 2</span>
-					</AppRailTile>
-					<AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
-						<svelte:fragment slot="lead">Disskusioner</svelte:fragment>
-						<span>Tile 3</span>
-					</AppRailTile>
-				</AppRail>
-			</div>
-		</div>
 	</svelte:fragment>
 	<slot />
 </AppShell>
