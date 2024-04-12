@@ -61,6 +61,15 @@
 			if (committee.name === 'bestyrelse') {
 				bestyrelse.set(committee);
 			} else {
+				if(committee.name === 'strøko') {
+					committee.name = 'Strategi / Økonomi';
+				}
+				else if(committee.name === 'karkom') {
+					committee.name = 'Karriere- / Kompetenceudvikling';
+				}
+				else if(committee.name === 'socsam') {
+					committee.name = 'Socialt sammenhold';
+				}
 				newCommittees.push(committee);
 			}
 		}
