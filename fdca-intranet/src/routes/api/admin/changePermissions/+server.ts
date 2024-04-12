@@ -67,5 +67,13 @@ export async function POST(event) {
                 'roles.projects.socsam': socsam,
             });
         }
+        return json({ success: true });
+    } else {
+        new Response(JSON.stringify({ error: 'Permission denied' }), {
+            status: 403,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
     }
 }
