@@ -105,7 +105,7 @@
 		}
 	}
 
-	async function changePermission(userid: string, name: string, setTo: boolean) {
+	async function changePermission(userid: string, name: string, setTo: boolean, role: string) {
 		try {
 			const token = await getToken();
 			const requestBody = {
@@ -113,6 +113,7 @@
 				permission: {
 					name: name,
 					setTo: setTo,
+					role: role
 				}
 			}
 			const response = await fetch('/api/admin/changePermissions', {
@@ -127,7 +128,7 @@
 		}
 	}
 
-	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true); THIS IS HOW WE HAVE TO DO IT!
+	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true, 'PoC'); 
 	let userMatches: UserMatch[];
 	$: userMatches = getUserMatches(users);
 
