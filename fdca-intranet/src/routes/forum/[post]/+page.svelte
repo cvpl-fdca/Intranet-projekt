@@ -17,6 +17,7 @@
 	import EditForumPost from '$lib/EditForumPost.svelte';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
+	import { navigate } from 'svelte-routing';
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -27,7 +28,7 @@
 	});
 
 	$: console.log('uid', userID);
-	
+
 	let db = getFirestore(app);
 	let title = writable('');
 	let markdownText = writable('');
@@ -111,17 +112,25 @@
 	modalStore.close();
 
 	async function deletePost() {
-		try {
-			const token = await getToken();
-			// Append the postID to the URL as a parameter
-			const response = await fetch(`/api/forum/deleteForumPost/${data.post}`, {
-				method: 'DELETE',
-				headers: {
-					'X-firebase-token': token
+		if (confirm('Are you sure you want to delete this post?')) {
+			try {
+				const token = await getToken();
+				// Append the postID to the URL as a parameter
+				const response = await fetch(`/api/forum/deleteForumPost/${data.post}`, {
+					method: 'DELETE',
+					headers: {
+						'X-firebase-token': token
+					}
+				});
+	
+				// If the post was successfully deleted, navigate to the forum
+				if (response.ok) {
+					navigate('/forum');
+					location.reload();
 				}
-			});
-		} catch (error) {
-			console.error('Error:', error.message);
+			} catch (error) {
+				console.error('Error:', error.message);
+			}
 		}
 	}
 	async function addComment() {
@@ -140,48 +149,72 @@
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
+		currentMessage = '';
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			addComment();
+		}
 	}
 </script>
 
-{#if $uid === $authorUID}
-	<button on:click={deletePost} type="button" class="btn variant-filled">Delete</button>
-	<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
-{/if}
-
-<h1>{$title}</h1>
-<p>{$authorName}</p>
-<p>{new Date($time).toLocaleString()}</p>
-
-<MarkdownRenderer {markdownText} />
-
-
-<div class="grid gap-1 h-auto w-auto p-4">
-    <div class="bg-surface-500/30 p-4 overflow-y-auto ">
-        {#each $comments as comment}
-            <div class="grid gap-2">
-                <div class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}>
-                    <!-- Added 'my-2' class for margin -->
-                    <header class="flex justify-between items-center">
-                        <p class="font-bold">{comment.authorName}</p>
-                        <small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
-                    </header>
-                    <p>{comment.text}</p>
-                </div>
-            </div>
-        {/each}
+<div class="relative mt-8 mb-4 px-4">
+    <!-- Center-aligned Title, Author, and Date -->
+    <div class="text-center mx-auto" style="max-width: 800px;">
+        <h1 class="text-4xl font-bold">{$title}</h1>
+        <p class="text-sm">{$authorName}</p>
+        <p class="text-sm">{new Date($time).toLocaleString()}</p>
     </div>
-	<div class="bg-surface-500/30 p-4">
-		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
-			<button class="input-group-shim">+</button>
-			<textarea
-				bind:value={currentMessage}
-				class="bg-transparent border-0 ring-0"
-				name="prompt"
-				id="prompt"
-				placeholder="Write a message..."
-				rows="1"
-			/>
-			<button class="variant-filled-primary" on:click={addComment}>Send</button>
+
+    <!-- Right-aligned Delete/Edit Buttons -->
+    {#if $uid === $authorUID}
+        <div class="absolute right-0 top-0">
+            <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+            <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+        </div>
+    {/if}
+</div>
+
+<!-- Main content area -->
+<div class="w-[800px] mx-auto">
+	<div>
+		<MarkdownRenderer {markdownText} />
+	</div>
+	<div class="grid gap-1 h-auto w-auto p-4">
+		<div class="bg-surface-500/30 p-4 rounded">
+			<div
+				class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token"
+			>
+				<button class="input-group-shim">+</button>
+				<textarea
+					bind:value={currentMessage}
+					class="bg-transparent border-0 ring-0"
+					name="prompt"
+					id="prompt"
+					placeholder="Write a message..."
+					rows="1"
+					on:keydown={handleKeydown}
+				/>
+				<button class="variant-filled-primary" on:click={addComment}>Send</button>
+			</div>
+		</div>
+		<div class="bg-surface-500/30 p-4 overflow-y-auto rounded">
+			{#each $comments as comment}
+				<div class="grid gap-2">
+					<div
+						class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}
+					>
+						<!-- Added 'my-2' class for margin -->
+						<header class="flex justify-between items-center">
+							<p class="font-bold">{comment.authorName}</p>
+							<small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
+						</header>
+						<p>{comment.text}</p>
+					</div>
+				</div>
+			{/each}
 		</div>
 	</div>
 </div>

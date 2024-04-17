@@ -9,6 +9,10 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { ImagePlaceholder } from 'flowbite-svelte';
+
+	import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from 'flowbite-svelte';
+	import { AngleDownOutline} from 'flowbite-svelte-icons';
+
 	let db = getFirestore(app);
 
 	// Subscribe to updates in the 'OpenForum' collection
@@ -45,22 +49,44 @@
 	}
 
 	modalStore.close();
+
+	let selected = 'Sort';
+  	const selectItem = (item) => selected = item;
+
 </script>
 
-<h1>Forum!!</h1>
 
-<button type="button" class="btn variant-filled" on:click={openModal}>Add a post</button>
+<style>
+	.center-content {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 10px;
+	  height: 200px;
+	}
+  </style>
+  
+
+  
+<div class="center-content">
+	<h1>Forum</h1>
+	<button type="button" class="btn variant-filled" on:click={openModal}>Add a post</button>
+	<button type="button" class="btn" >{selected}<AngleDownOutline/></button>
+	<Dropdown>
+		<DropdownItem on:click={() => selectItem('Newest')}>Newest</DropdownItem>
+  		<DropdownItem on:click={() => selectItem('Oldest')}>Oldest</DropdownItem>
+  		<DropdownItem on:click={() => selectItem('Best')}>Best</DropdownItem>
+	</Dropdown>
+</div>
 
 <div class="grid grid-cols-3 gap-4">
 	{#each $posts as post}
-		<div class="card p-4">
+	<a href={`/forum/${post.id}`} class="card card-hover p-4">
 			<h2>{post.title}</h2>
 			<p>{post.authorName}</p>
 			<p>{new Date(post.time).toLocaleString()}</p>
-			<button type="button" class="btn variant-filled" on:click={() => goto(`/forum/${post.id}`)}
-				>view</button
-			>
 			<ImagePlaceholder />
-		</div>
+	</a>
 	{/each}
 </div>
