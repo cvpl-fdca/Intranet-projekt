@@ -31,7 +31,7 @@ function setTableSource(): TableSource {
 function getSourceData(members: User[]): Element[] {
 	let sourceData: Element[] = [];
 	let i = 1;
-		var new_el: Element;
+	let new_el: Element;
 	members.forEach(member => {
 		try {new_el = {
 			position: i,

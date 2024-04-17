@@ -92,21 +92,30 @@
 		console.log('sidebarActive:', sidebarActive);
 	}
 
-	let comboboxKontakt: string = "Kontakt";
 	function handleListBoxClick(value: string) {
 		if(value === 'kontakt') {
 			window.location.href = '/kontakt';
-		}
-		else if (value === 'medlemmer') {
+		} else if (value === 'medlemmer') {
 			window.location.href = '/kontakt/medlemmer';
 		} else if (value === 'forslag') {
 			window.location.href = '/kontakt/forslag';
+		} else if (value === 'admin') {
+			window.location.href = '/admin'
+		} else if (value === 'rettigheder') {
+			window.location.href = '/admin/rettigheder';
 		}
 	};
-
+	let comboboxKontakt: string = "Kontakt";
 	const popupComboKontakt: PopupSettings = {
 		event: 'click',
 		target: 'popupComboKontakt',
+		placement: 'bottom',
+		closeQuery: '.listbox-item'
+	};
+	let comboboxAdmin: string = "Admin";
+	const popupComboAdmin: PopupSettings = {
+		event: 'click',
+		target: 'popupComboAdmin',
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
 	};
@@ -136,22 +145,30 @@
 	<div class="arrow bg-surface-100-800-token" />
 </div>
 
+<div class="card w-48 shadow-xl py-2" data-popup="popupComboAdmin">
+	<ListBox rounded="rounded-none">
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="admin" on:click={() => handleListBoxClick('admin')}>Admin</ListBoxItem>
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="rettigheder" on:click={() => handleListBoxClick('rettigheder')}>Rettigheder</ListBoxItem>
+	</ListBox>
+	<div class="arrow bg-surface-100-800-token" />
+</div>
+
 <!-- App Shell -->
 <AppShell slotPageHeader="h-0.5">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<button class="btn w-4 btn-align" on:click={toggleSidebar}>
-					<Fa icon={faBars} class="fa" />
-				</button>
 				<a href="/">
 					<img src={img} alt="FDCA Logo" style="height: 40px;" />
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				{#if $userProfileStore?.roles.isAdmin}
-					<a href="/admin" class="btn variant-filled"> Admin </a>
+					<button class="btn variant-filled justify-between" use:popup={popupComboAdmin}>
+						<span class="capitalize">{comboboxAdmin ?? 'Trigger'}</span>
+						<span>↓</span>
+					</button>
 				{/if}
 				<a href="/forum" class="btn variant-filled"> Forum </a>
 				<a href="/artikler" class="btn variant-filled"> Artikler </a>
@@ -171,37 +188,6 @@
 				/>
 			</svelte:fragment>
 		</AppBar>
-	</svelte:fragment>
-	<svelte:fragment slot="sidebarLeft">
-		<div class="flex items-center justify-center lg:items-start lg:justify-start">
-			<div id="sidebar-left" class={sidebarActive ? 'block' : 'hidden'}>
-				<AppRail width="w-28">
-					<!-- Place the Home link directly inside the AppRail, without using a slot -->
-					<AppRailAnchor href="/" class="flex flex-col items-center">
-						<Fa icon={faHome} class="fa" />
-						<span class="mt-1">Home</span>
-					</AppRailAnchor>
-					<AppRailTile
-						bind:group={currentTile}
-						name="tile-2"
-						value={1}
-						title="tile-2"
-						height="h-10"
-					>
-						<svelte:fragment slot="lead">Artikler</svelte:fragment>
-						<span>Tile 1</span>
-					</AppRailTile>
-					<AppRailTile bind:group={currentTile} name="tile-3" value={2} title="tile-3">
-						<svelte:fragment slot="lead">(icon)</svelte:fragment>
-						<span>Tile 2</span>
-					</AppRailTile>
-					<AppRailTile bind:group={currentTile} name="tile-1" value={0} title="tile-1">
-						<svelte:fragment slot="lead">Disskusioner</svelte:fragment>
-						<span>Tile 3</span>
-					</AppRailTile>
-				</AppRail>
-			</div>
-		</div>
 	</svelte:fragment>
 	<slot />
 </AppShell>
