@@ -3,10 +3,13 @@
 	import { getToken } from '$lib/login';
 	import { memberStore } from '$lib/memberStore';
 	import type { User } from '$lib/user';
+	import EditPermissions from '$lib/EditPermissions.svelte';
 	import { userProfileStore } from '$lib/userProfileStore';
-	import { Table } from '@skeletonlabs/skeleton';
 	import type { TableSource } from '@skeletonlabs/skeleton';
-	import { tableMapperValues } from '@skeletonlabs/skeleton';
+	import {tableMapperValues } from '@skeletonlabs/skeleton';
+	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	
+
 
 	let members: User[] = [];
 	let groups: Group[] = [];
@@ -48,7 +51,7 @@
 				'Rolle',
 				'Socialt sammenhold',
 				'Rolle',
-				'Redigér',
+
 			],
 			body: tableMapperValues(sourceData, [
 				'name',
@@ -60,9 +63,6 @@
 				'strøko_role',
 				'socsam',
 				'socsam_role',
-				(row: Element) => {
-					return `<button on:click={() => openEditPopup(row)}>Edit</button>`;
-				}
 			])
 		};
 	}
@@ -174,14 +174,60 @@
 		}
 	}
 
-	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true, 'PoC'); 
 	let userMatches: UserMatch[];
 	$: userMatches = getUserMatches(users);
 
 	let sourceData: Element[] = [];
-	let tableSimple: TableSource;
 	$: sourceData = getSourceData(members, userMatches);
-	$: tableSimple = sourceData ? setTableSource() : undefined;
+
+	const modalStore = getModalStore();
+
+	const editPermissions: ModalComponent = { ref: EditPermissions };
+
+	const modal: ModalSettings = {
+		type: 'component',
+		component: editPermissions
+	};
+	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true, 'PoC'); 
+	async function openModal() {
+		modalStore.trigger(modal);
+	}
+
+	modalStore.close();
+
 </script>
 
-<Table source={tableSimple} />
+<div class="table-container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>User</th>
+				<th>Admin</th>
+				<th>Karriere/Kompetence</th>
+				<th>Rolle</th>
+				<th>Strategi/Økonomi</th>
+				<th>Rolle</th>
+				<th>Socialt Sammenhold</th>
+				<th>Rolle</th>
+				<th>Redigér</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each sourceData as user}
+				<tr key={user.user}>
+					<td>{user.name}</td>
+					<td>{user.user}</td>
+					<td>{user.isAdmin}</td>
+					<td>{user.karkom}</td>
+					<td>{user.karkom_role}</td>
+					<td>{user.strøko}</td>
+					<td>{user.strøko_role}</td>
+					<td>{user.socsam}</td>
+					<td>{user.socsam_role}</td>
+					<td><button class="btn variant-filled" on:click={openModal}>Redigér</button></td>
+				</tr>
+				{/each}
+		</tbody>
+	</table>
+</div>
