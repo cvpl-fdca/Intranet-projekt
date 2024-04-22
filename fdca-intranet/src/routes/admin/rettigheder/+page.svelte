@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { groupStore } from '$lib/groupStore';
 	import { getToken } from '$lib/login';
 	import { memberStore } from '$lib/memberStore';
 	import type { User } from '$lib/user';
@@ -8,18 +9,31 @@
 	import { tableMapperValues } from '@skeletonlabs/skeleton';
 
 	let members: User[] = [];
+	let groups: Group[] = [];
 	$: {
 		members = $memberStore;
+		groups = $groupStore;
 	}
-
+	
+	type GroupMember = {
+		role: string;
+		userRef: any;
+	}
+	type Group = {
+		id: string;
+		members: { [uid: string]: GroupMember};
+	}
 	type Element = {
 		position: number;
 		name: string;
 		user: string;
 		isAdmin: boolean;
 		karkom: boolean;
+		karkom_role: string;
 		strøko: boolean;
+		strøko_role: string;
 		socsam: boolean;
+		socsam_role: string;
 	};
 
 	function setTableSource(): TableSource {
@@ -29,10 +43,27 @@
 				'User',
 				'Admin',
 				'Karriere/Kompetence',
+				'Rolle',
 				'Strategi/Økonomi',
-				'Socialt sammenhold'
+				'Rolle',
+				'Socialt sammenhold',
+				'Rolle',
+				'Redigér',
 			],
-			body: tableMapperValues(sourceData, ['name', 'user', 'isAdmin', 'karkom', 'strøko', 'socsam'])
+			body: tableMapperValues(sourceData, [
+				'name',
+				'user',
+				'isAdmin',
+				'karkom',
+				'karkom_role',
+				'strøko',
+				'strøko_role',
+				'socsam',
+				'socsam_role',
+				(row: Element) => {
+					return `<button on:click={() => openEditPopup(row)}>Edit</button>`;
+				}
+			])
 		};
 	}
 
@@ -41,14 +72,29 @@
 		let i = 1;
 		let new_el: Element;
 		members.forEach((member) => {
+			let karkom_role = '';
+			let strøko_role = '';
+			let socsam_role = '';
+			groups.forEach((group) => {
+				if(member.roles.projects.karkom && group.id === 'karkom') {
+					karkom_role = group?.members?.[member.uid]?.role;
+				} else if (member.roles.projects.strøko && group.id === 'strøko') {
+					strøko_role = group?.members?.[member.uid]?.role;
+				} else if (member.roles.projects.socsam && group.id === 'socsam') {
+					socsam_role = group?.members?.[member.uid]?.role;
+				}
+			});
 			new_el = {
 				position: i,
 				name: member.details.fullName,
 				user: 'Not mapped to member',
 				isAdmin: member.roles.isAdmin,
 				karkom: member.roles.projects.karkom,
+				karkom_role: karkom_role,
 				strøko: member.roles.projects.strøko,
+				strøko_role: strøko_role,
 				socsam: member.roles.projects.socsam,
+				socsam_role: socsam_role,
 			};
 			for (let user of userMatches) {
 				if(member.uid === user.uid) {

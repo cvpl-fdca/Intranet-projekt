@@ -15,7 +15,6 @@ export const userProfileStore = writable<User | null>(null);
 onAuthStateChanged(auth, (user) => {
   if (user) {
     const uid = user.uid;
-    console.log(uid);
 
     // Subscribe to the user's profile document
     const unsubscribe = onSnapshot(doc(db, 'users', uid), (doc) => {
