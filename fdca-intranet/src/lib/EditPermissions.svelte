@@ -36,7 +36,7 @@
         socsam_role: '',
     };
 
-    export let parent: SvelteComponent;
+    let parent: SvelteComponent;
     const modalStore = getModalStore();
     let user: Element;
     let roles: Roles = noRoles;
