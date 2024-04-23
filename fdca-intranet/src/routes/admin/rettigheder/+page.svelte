@@ -8,8 +8,11 @@
 	import type { TableSource } from '@skeletonlabs/skeleton';
 	import {tableMapperValues } from '@skeletonlabs/skeleton';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { Modal } from 'flowbite';
+	import { writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 	
-
+	let showModal = false;
 
 	let members: User[] = [];
 	let groups: Group[] = [];
@@ -151,29 +154,6 @@
 		}
 	}
 
-	async function changePermission(userid: string, name: string, setTo: boolean, role: string) {
-		try {
-			const token = await getToken();
-			const requestBody = {
-				uid: userid,
-				permission: {
-					name: name,
-					setTo: setTo,
-					role: role
-				}
-			}
-			const response = await fetch('/api/admin/changePermissions', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-firebase-token': token
-					},
-					body: JSON.stringify(requestBody)
-				});
-		} catch (error) {
-		}
-	}
-
 	let userMatches: UserMatch[];
 	$: userMatches = getUserMatches(users);
 
@@ -184,15 +164,35 @@
 
 	const editPermissions: ModalComponent = { ref: EditPermissions };
 
-	const modal: ModalSettings = {
-		type: 'component',
-		component: editPermissions
-	};
-	// changePermission('WGExMFtCN7SkYzrY4krJGrlDE6c2','karkom', true, 'PoC'); 
-	async function openModal() {
+	let modal: ModalSettings;
+
+	function findUID(user: Element) {
+		let uid: string = '';
+		for (let match of userMatches) {
+			if(user.user === match.email) {
+				uid = match.uid;
+				break;
+			}
+		};
+		return uid;
+	}
+
+	async function openModal(element: Element) {
+		let uid = findUID(element);
+		modal = {
+			type: 'component',
+			component: editPermissions,
+			meta: {
+				user: element,
+				uid: uid,
+			}
+		};
 		modalStore.trigger(modal);
 	}
 
+	function closeModal() {
+		showModal = false;
+	}
 	modalStore.close();
 
 </script>
@@ -225,7 +225,7 @@
 					<td>{user.strøko_role}</td>
 					<td>{user.socsam}</td>
 					<td>{user.socsam_role}</td>
-					<td><button class="btn variant-filled" on:click={openModal}>Redigér</button></td>
+					<td><button class="btn variant-filled" on:click={openModal(user)}>Redigér</button></td>
 				</tr>
 				{/each}
 		</tbody>
