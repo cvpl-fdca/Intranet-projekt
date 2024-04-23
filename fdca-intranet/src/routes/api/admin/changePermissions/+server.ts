@@ -42,9 +42,7 @@ export async function POST(event) {
         const affectedUid = data.uid;
         const affectedPermission = data.permission;
         
-        console.log(data.uid);
         const userRef = admin.firestore().collection('users').doc(affectedUid);
-        //ADMINISTRATOR
         if(data.permission.name === 'isAdmin') {
             let isAdmin = data.permission.setTo;
             await userRef.update({
