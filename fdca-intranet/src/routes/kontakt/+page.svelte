@@ -101,7 +101,14 @@
 	}
 </script>
 
-<div class="container mx-auto p-4"></div>
+<div class="container mx-auto p-4">
+	<h3 class="text-3xl font-semibold text-white mb-4 text-center">Foreningens sider</h3>
+	<div class="text-center mb-4">
+		<a href="https://fdca.dk" class="btn variant-filled" data-sveltekit-preload-data="hover">Hjemmeside</a>
+		<a href="https://dk.linkedin.com/company/foreningen-for-danske-cyber-alumner" class="btn variant-filled" data-sveltekit-preload-data="hover">LinkedIn</a>
+		<a href="https://www.instagram.com/fdca.dk/" class="btn variant-filled" data-sveltekit-preload-data="hover">Instagram</a>
+	</div>
+</div>
 <!-- Bestyrelse Section -->
 <div class="card bg-blue-800 shadow-md rounded-lg p-4 mb-4">
 	<h3 class="text-3xl font-semibold text-white mb-4 text-center">Bestyrelsen</h3>
