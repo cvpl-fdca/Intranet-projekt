@@ -72,7 +72,7 @@
 			<!-- Phone -->
 			<li class="p-2 rounded-md font-semibold">Phone</li>
 			{#each Object.entries(userDoc?.details?.phone || {}) as [key, value]}
-				{#if value}
+				{#if value && key !== 'work'}
 					<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{key}: {value}</li>
 				{/if}
 			{/each}
@@ -82,7 +82,7 @@
 			<!-- Mail -->
 			<li class="p-2 rounded-md font-semibold">Emails</li>
 			{#each Object.entries(userDoc?.details?.email || {}) as [key, value]}
-				{#if value}
+				{#if value && key !== 'work'}
 					<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{key}: {value}</li>
 				{/if}
 			{/each}

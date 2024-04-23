@@ -90,16 +90,6 @@
 			</label>
 
 			<label class="label">
-				<span>Arbejds tlf</span>
-				<input
-					class="input"
-					type="tel"
-					bind:value={formData.telWork}
-					placeholder="Indtast arbejdsnummer..."
-				/>
-			</label>
-
-			<label class="label">
 				<span>Privat email</span>
 				<input
 					class="input"
@@ -107,11 +97,6 @@
 					bind:value={formData.emailPrivate}
 					placeholder={userDoc.details.email.private}
 				/>
-			</label>
-
-			<label class="label">
-				<span>Arbejds email</span>
-				<input class="input" type="email" bind:value={formData.emailWork} />
 			</label>
 
 			<label class="label">

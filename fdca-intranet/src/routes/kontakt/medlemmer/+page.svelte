@@ -23,8 +23,8 @@ type Element = {
 
 function setTableSource(): TableSource {
 	return {
-		head: ['Name', 'Discord', 'Mail privat', 'Mail FDCA', 'Mail arbejde', 'Telefon privat', 'Telefon arbejde'],
-		body: tableMapperValues(sourceData, ['name', 'discord', 'pmail', 'fmail', 'wmail', 'pphone', 'wphone']),
+		head: ['Name', 'Discord', 'Mail privat', 'Mail FDCA',  'Telefon privat'],
+		body: tableMapperValues(sourceData, ['name', 'discord', 'pmail', 'fmail',  'pphone']),
 	}
 };
 
