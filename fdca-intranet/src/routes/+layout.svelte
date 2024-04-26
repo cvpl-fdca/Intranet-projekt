@@ -135,8 +135,8 @@
 		<KontaktDrawer />
 	{/if}
 </Drawer>
-
-<div class="card w-48 shadow-xl py-2" data-popup="popupComboKontakt">
+<!-- The combobox for "kontakt", adjust the z-index to make it the top element (needs to be higher than everything else) -->
+<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboKontakt">
 	<ListBox rounded="rounded-none">
 		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="kontakt" on:click={() => handleListBoxClick('kontakt')}>Kontakt</ListBoxItem>
 		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="medlemmer" on:click={() => handleListBoxClick('medlemmer')}>Medlemmer</ListBoxItem>
