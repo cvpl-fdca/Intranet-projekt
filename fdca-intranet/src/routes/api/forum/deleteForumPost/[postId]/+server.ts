@@ -4,6 +4,8 @@ import { type DecodedIdToken } from 'firebase-admin/auth';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
+
+
 export async function DELETE(event) {
     // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
@@ -24,6 +26,7 @@ export async function DELETE(event) {
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);
+        console.log("token: ", token);
     } catch (error) {
         console.error('Error verifying Firebase token:', error);
         return new Response(JSON.stringify({ error: 'Failed to authenticate Firebase token' }), {
@@ -33,7 +36,7 @@ export async function DELETE(event) {
             },
         });
     }
-
+    
     try {
         // Get the forum post ID from the request body
         const postId = event.params.postId;
@@ -41,9 +44,13 @@ export async function DELETE(event) {
         // Get the forum post from Firestore
         const forumPostRef = admin.firestore().collection('OpenForum').doc(postId);
         const forumPost = await forumPostRef.get();
+        
+        const userRef = admin.firestore().collection('users').doc(token.uid);
+        console.log("UID HERE: ", token.uid);
+        let user = (await userRef.get()).data();
 
         // Check if the user is the author or an admin
-        if (forumPost.exists && (forumPost.data().authorUID === token.uid || token.admin)) {
+        if (forumPost.exists && (forumPost.data().authorUID === token.uid || user?.roles?.isAdmin)) {
             // Delete the forum post
             await forumPostRef.delete();
 
