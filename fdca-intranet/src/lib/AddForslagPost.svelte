@@ -33,7 +33,7 @@
 			const submissionFormData = new FormData();
 			submissionFormData.append('text', $text);
 			submissionFormData.append('title', title);
-			const response = await fetch('/api/forum/createForumPost', {
+			const response = await fetch('/api/kontakt/createForslagPost', {
 				method: 'POST',
 				body: submissionFormData,
 				headers: {
