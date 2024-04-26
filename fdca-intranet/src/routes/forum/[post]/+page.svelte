@@ -5,6 +5,7 @@
 		getFirestore,
 		collection,
 		doc,
+		addDoc,
 		getDoc,
 		onSnapshot,
 		getDocs,
@@ -37,6 +38,7 @@
 	let authorName = writable('');
 	let time = writable('');
 	let comments = writable<DocumentData[]>([]);
+	let likes = writable<DocumentData[]>([]);
 
 	getUid()
 		.then((uidValue) => {
@@ -74,6 +76,14 @@
 
 			commentsData.sort((a, b) => b.time - a.time); // Sort comments by time
 			comments.set(commentsData);
+		});
+
+		  // Subscribe to likes subcollection
+		  const likesRef = collection(postRef, 'likes');
+
+		onSnapshot(likesRef, (snapshot) => {
+  			let likesData = snapshot.docs.map((doc) => doc.data());
+  			likes.set(likesData);
 		});
 
 		return unsubscribe;
@@ -133,6 +143,27 @@
 			}
 		}
 	}
+
+	async function likePost() {
+  		try {
+    		const token = await getToken();
+    		const submissionFormData = new FormData();
+		if (userID) {
+			submissionFormData.append('uid', userID);
+		}
+
+    		const response = await fetch(`/api/forum/addLike/${data.post}`, {
+      		method: 'POST',
+      		headers: {
+        		'X-firebase-token': token
+      		},
+      	body: submissionFormData
+    	});
+  	} catch (error) {
+      console.error('Error:', error.message);
+    }
+}
+
 	async function addComment() {
 		try {
 			const token = await getToken();
@@ -170,11 +201,12 @@
 
     <!-- Right-aligned Delete/Edit Buttons -->
     {#if $uid === $authorUID}
-        <div class="absolute right-0 top-0">
-            <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-            <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
-        </div>
-    {/if}
+    <div class="absolute right-0 top-0">
+        <button on:click={likePost} type="button" class="btn variant-filled mr-4">Like</button>
+        <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+        <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+    </div>
+{/if}
 </div>
 
 <!-- Main content area -->
