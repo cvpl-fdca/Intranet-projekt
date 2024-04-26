@@ -72,8 +72,9 @@ modalStore.close();
 
 <div class="center-content"> 
 	<h1>Socialt Sammenhold</h1>
+	{#if $userProfileStore?.roles.projects.socsam}
 	<button type="button" class="btn variant-filled" on:click={openModal}>Add an article</button>
-	
+	{/if}
 </div>
 
 <div class="grid grid-cols-3 gap-4">
