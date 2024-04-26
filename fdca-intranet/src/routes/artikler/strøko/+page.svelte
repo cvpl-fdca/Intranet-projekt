@@ -7,6 +7,7 @@
 		getDoc,
 		onSnapshot,
 		getDocs,
+		query,
 		type DocumentData
 	} from 'firebase/firestore';
 	import { writable } from 'svelte/store';
@@ -14,11 +15,28 @@
 	import { getToken, getUid } from '$lib/login';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import type { User } from '$lib/user';
+	import { onMount } from 'svelte';
 	import AddArticle from '$lib/AddArticle.svelte';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 
 
 let db = getFirestore(app);
+
+onMount(() => {
+		const articleCollection = collection(db, 'articles/strøko/posts');
+		const articlesQuery = query(articleCollection);
+		const unsubscribe = onSnapshot(
+			articlesQuery,
+			(querySnapshot) => {
+				const articlesData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+				articles.set(articlesData);
+				console.log(articlesData);
+			},
+			(error) => {
+				console.error('Error getting articles:', error);
+			}
+		);
+	});;
 
 const modalStore = getModalStore();
 let markdownText = writable('');
@@ -41,6 +59,31 @@ modalStore.close();
 
 </script>
 
-<h1>Strategi/Økonomi</h1>
+<style>
+	.center-content {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 10px;
+	  height: 200px;
+	}
+</style>
 
-<button type="button" class="btn variant-filled" on:click={openModal}>Add a post</button>
+<div class="center-content"> 
+	<h1>Strategi/Økonomi</h1>
+	<button type="button" class="btn variant-filled" on:click={openModal}>Add an article</button>
+	
+</div>
+
+<div class="grid grid-cols-3 gap-4">
+	{#each $articles as article}
+	<a href= {`/artikler/strøko/${article.id}`} class="card card-hover p-4">
+		<h2>{article.title}</h2>
+		<p>{article.authorName}</p>
+		<p>{new Date(article.time).toLocaleString()}</p>
+	</a>
+	{/each}
+</div>
+
+
