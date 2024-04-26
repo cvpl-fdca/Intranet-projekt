@@ -169,12 +169,15 @@
     </div>
 
     <!-- Right-aligned Delete/Edit Buttons -->
-    {#if $uid === $authorUID}
         <div class="absolute right-0 top-0">
+			{#if $uid === $authorUID || $userProfileStore?.roles.isAdmin}
             <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-            <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+            {/if}
+			{#if $uid === $authorUID}
+			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+			{/if}
         </div>
-    {/if}
+    
 </div>
 
 <!-- Main content area -->
