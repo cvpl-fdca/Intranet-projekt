@@ -103,6 +103,12 @@
 			window.location.href = '/admin'
 		} else if (value === 'rettigheder') {
 			window.location.href = '/admin/rettigheder';
+		} else if (value === 'karkom') {
+			window.location.href = '/artikler/karkom';
+		} else if (value === 'strøko') {
+			window.location.href = '/artikler/strøko';
+		} else if (value === 'socsam') {
+			window.location.href = '/artikler/socsam';
 		}
 	};
 	let comboboxKontakt: string = "Kontakt";
@@ -118,6 +124,13 @@
 		target: 'popupComboAdmin',
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
+	};
+	let comboboxArtikler: string = "Artikler";
+	const popupComboArtikler: PopupSettings = {
+		event: 'click',
+		target: 'popupComboArtikler',
+		placement: 'bottom',
+		closeQuery: '.listbox-item',
 	};
 
 	let currentTile = 0;
@@ -152,6 +165,14 @@
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
+<div class="card w-48 shadow-xl py-2" data-popup="popupComboArtikler">
+	<ListBox rounded="rounded-none">
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="karkom" on:click={() => handleListBoxClick('karkom')}>Karriere/Kompetence</ListBoxItem>
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="strøko" on:click={() => handleListBoxClick('strøko')}>Strategi/Økonomi</ListBoxItem>
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="socsam" on:click={() => handleListBoxClick('socsam')}>Socialt Sammenhold</ListBoxItem>
+	</ListBox>
+	<div class="arrow bg-surface-100-800-token" />
+</div>
 
 <!-- App Shell -->
 <AppShell slotPageHeader="h-0.5">
@@ -171,7 +192,10 @@
 					</button>
 				{/if}
 				<a href="/forum" class="btn variant-filled"> Forum </a>
-				<a href="/artikler" class="btn variant-filled"> Artikler </a>
+				<button class="btn variant-filled justify-between" use:popup={popupComboArtikler}>
+					<span class="capitalize">{comboboxArtikler ?? 'Trigger'}</span>
+					<span>↓</span>
+				</button>
 				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
 					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>

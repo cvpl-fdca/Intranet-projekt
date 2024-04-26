@@ -23,15 +23,18 @@
 	let text = writable('');
 
 	export let parent: SvelteComponent;
-
+	console.log(parent);
 	const modalStore = getModalStore();
+	
 
 	async function addArticle() {
 		try {
+			const project: string = $modalStore[0]?.meta?.project;
 			const token = await getToken();
 			const submissionFormData = new FormData();
 			submissionFormData.append('text', $text);
 			submissionFormData.append('title', title);
+			submissionFormData.append('project', project);
 			const response = await fetch('/api/artikler/createArticle', {
 				method: 'POST',
 				body: submissionFormData,
