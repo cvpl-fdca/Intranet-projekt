@@ -3,7 +3,6 @@
     import { getToken } from './login';
     import { writable } from 'svelte/store';
 
-    let text = writable('');
     let body = writable('');
     let subject = writable('');
 
@@ -11,7 +10,6 @@
         try {
             const token = await getToken();
             const submissionFormData = new FormData();
-            submissionFormData.append('text', $text);
             submissionFormData.append('body', $body);
             submissionFormData.append('subject', $subject);
 
@@ -33,11 +31,12 @@
     <div class="flex flex-col justify-between h-full">
         <div class="text-center p-2">
             <form>
+                <input class="input" bind:value={$subject} placeholder="Emne" />
                 <Textarea
                     class="mb-2 text-white"
                     placeholder="Stil bestyrelsen et spørgsmål."
                     style="height: 150px; background-color: #27313e; box-shadow: 0 0 0 2px gray inset;"
-                    bind:value={$text}
+                    bind:value={$body}
                 />
                 <div class="flex items-center justify-between">
                     <Button

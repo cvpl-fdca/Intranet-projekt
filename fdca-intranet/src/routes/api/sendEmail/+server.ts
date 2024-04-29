@@ -10,9 +10,7 @@ import keys from '/secrets/fdca-intranet-dev-test-0fcb3c7d3892.json';
 
 
 export async function POST(event) {
-    console.log(keys.private_key)
-    console.log(keys.client_id)
-
+    // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
         return json({ error: 'Firebase token not provided' }, { status: 401 });
@@ -51,7 +49,7 @@ export async function POST(event) {
     const mailOptions = {
         from: token.email,
         to: "dm@fdca.dk", // todo, change to kontakt@fdca.dk to hit the real inbox
-        subject: "Besked fra intranet",
+        subject: "Intranet: " + subject,
         text: body,
     };
 
