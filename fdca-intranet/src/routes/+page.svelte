@@ -3,24 +3,15 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
     import AddEvent from '$lib/AddEvent.svelte';
     import { onMount } from 'svelte';
-	import { getToken } from '$lib/login';
-    import MarkdownEditor from '$lib/MarkdownEditor.svelte';
-	import MarkdownRenderer from '$lib/MarkdownRenderer.svelte';
 	import app from '$lib/firebase';
-	import { getFirestore, collection, query, getDocs, onSnapshot } from 'firebase/firestore';
-	import { goto } from '$app/navigation';
-	import { ImagePlaceholder } from 'flowbite-svelte';
+	import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
     import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
-
-	import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from 'flowbite-svelte';
-	import { AngleDownOutline} from 'flowbite-svelte-icons';
 	import { userProfileStore } from '$lib/userProfileStore';
 
 	// You can add your script here if you need to handle any logic
 
     const modalStore = getModalStore();
 
-    let markdownText = writable('');
     let events = writable([]);
 
     const addEvent: ModalComponent = { ref: AddEvent };
