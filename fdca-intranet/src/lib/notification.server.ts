@@ -6,12 +6,27 @@ import nodemailer from 'nodemailer';
 import type { User } from '$lib/user.js';
 import path from 'path';
 import keys from '/secrets/fdca-intranet-dev-test-0fcb3c7d3892.json';
+import { getDocs } from 'firebase/firestore';
 
 
+const db = admin.firestore();
 
-
-
-export async function sendNotification(userFirebaseToken: string, to: string, subject: string, body: string, page: string, post: string) {
+/**
+ * Sends notification emails to all subscribers of a specific post.
+ *
+ * @param {string} userFirebaseToken - The Firebase token of the user.
+ * @param {string} subject - The subject of the email.
+ * @param {string} body - The body of the email.
+ * @param {string} page - The page where the post is located.
+ * @param {string} post - The post that the subscribers are subscribed to.
+ * 
+ * @returns {Promise<object>} A promise that resolves to an object containing the result of the operation.
+ * 
+ * @throws {Error} If the Firebase token is not provided or fails to authenticate.
+ * @throws {Error} If an invalid email address is provided.
+ * @throws {Error} If there's an error sending the email.
+ */
+export async function sendNotifications(userFirebaseToken: string, subject: string, body: string, page: string, post: string) {
     // Retrieve the Firebase token from the request headers 
     if (!userFirebaseToken) {
         return json({ error: 'Firebase token not provided' }, { status: 401 });
@@ -26,6 +41,8 @@ export async function sendNotification(userFirebaseToken: string, to: string, su
         return json({ error: 'Failed to authenticate Firebase token' }, { status: 403 });
     }
 
+
+
     // Initialize nodemailer transporter
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -33,46 +50,42 @@ export async function sendNotification(userFirebaseToken: string, to: string, su
         secure: true,
         auth: {
             type: 'OAuth2',
-            user: token.email,
+            user: "fdca-intranet@fdca.dk",
             privateKey: keys.private_key,
             serviceClient: keys.client_id
         }
     });
 
-    // Validate recipient email format
-    if (!validator.isEmail(to)) {
-        return json({ error: 'Invalid email address provided.' }, { status: 400 });
-    }
-
-    const mailOptions = {
-        from: token.email,
-        to: "dm@fdca.dk", // todo, change to kontakt@fdca.dk to hit the real inbox
-        subject: "Intranet: " + subject,
-        text: body,
-    };
 
 
+    // Fetch the list of subscribers from the database
+    const subscribersCollection = db.collection('emailList').doc(page).collection('posts').doc(post).collection('subscribers');
+    const snapshot = await subscribersCollection.get();
+    const subscribers = snapshot.docs.map(doc => doc.data());
+    console.log('Subscribers:', subscribers);
+    // Iterate over the list of subscribers and send an email to each one
+    for (const subscriber of subscribers) {
+        // Validate recipient email format
+        if (!validator.isEmail(subscriber.email)) {
+            return json({ error: 'Invalid email address provided.' }, { status: 400 });
+        }
 
-    try {
-        console.log('Verifying transporter...');
-        await transporter.verify((error, success) => {
-            if (error) {
-                console.error('Verification error:', error);
-            } else {
-                console.log('Verification result:', success);
-            }
-        });
-        console.log('Sending mail...');
-        const info = await transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('SendMail error:', error);
-            } else {
-                console.log('SendMail result:', info);
-            }
-        });
-        return json({ success: true, message: 'Email sent successfully' });
-    } catch (error) {
-        console.error('Error sending email:', error);
-        return json({ error: 'Failed to send email' }, { status: 500 });
+
+        console.log('Sending mail to:', subscriber);
+        const mailOptions = {
+            from: "fdca-intranet@fdca.dk",
+            replyTo: token.email,
+            to: subscriber.email, // Send the email to the subscriber
+            subject: "Intranet: " + subject,
+            html: body,
+        };
+
+        try {
+            console.log('Sending mail to:', subscriber.email);
+            const info = await transporter.sendMail(mailOptions);
+            console.log('SendMail result:', info);
+        } catch (error) {
+            console.error('Error sending email to:', subscriber.email, error);
+        }
     }
 }

@@ -5,6 +5,7 @@ import { type DecodedIdToken } from 'firebase-admin/auth';
 import { admin } from '$lib/firebaseAdmin.server.js';
 import { json } from '@sveltejs/kit';
 import type { User } from '$lib/user';
+import { sendNotifications } from '$lib/notification.server';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -63,10 +64,22 @@ export async function POST(event) {
 
         try {
             const articleRef = await admin.firestore().collection('articles').doc(project).collection('posts').add(article);
- 
+            // Send notifications to subscribers of the forum
+            sendNotifications(firebaseToken, article.title,
+                (`
+                 <html>
+                     <body>
+                         <h1>New Article</h1>
+                         <h2>Title: ${article.title}</h2>
+                         <h3>Author: ${article.authorName}</h3>
+                         <a href="https://intranet.fdca.dk/artikler/${project}/${articleRef.id}">View post</a>
+                     </body>
+                 </html>
+         `), project, "all");
+
         } catch (error) {
             console.error('Failed to create article:', error);
-            return new Response(JSON.stringify({error: 'Failed to create article'}), {
+            return new Response(JSON.stringify({ error: 'Failed to create article' }), {
                 status: 500,
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,5 +96,5 @@ export async function POST(event) {
     }
 
 
-    return json({success: true});
+    return json({ success: true });
 }
