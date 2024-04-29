@@ -10,6 +10,8 @@
 	import { userProfileStore } from '$lib/userProfileStore';
     import Fa from 'svelte-fa';
     import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { getToken } from '$lib/login';
+	import { navigate } from 'svelte-routing';
 
 	// You can add your script here if you need to handle any logic
 
@@ -63,6 +65,32 @@
     }
 
     $: console.log("EVENTS: ");
+
+    async function deleteEvent(eventId: string) {
+        if (confirm('Are you sure you want to delete this post?')) {
+			try {
+				const token = await getToken();
+				// Append the postID to the URL as a parameter
+                const submissionFormData = new FormData();
+                submissionFormData.append('eventId', eventId);
+				const response = await fetch(`/api/calendar/deleteEvent`, {
+					method: 'DELETE',
+                    body: submissionFormData,
+					headers: {
+						'X-firebase-token': token,
+					}
+				});
+
+				// If the post was successfully deleted, navigate to the forum
+				if (response.ok) {
+					navigate('/');
+					location.reload();
+				}
+			} catch (error) {
+				console.error('Error:', error.message);
+			}
+		}
+    }
 
     modalStore.close();
 
@@ -125,7 +153,7 @@
                             <button type="button" class="btn variant-filled" on:click={openEditModal(event)}>
                                 <Fa icon={faPenToSquare}/>
                             </button>
-                            <button type="button" class="btn variant-filled">
+                            <button type="button" class="btn variant-filled" on:click={deleteEvent(event.id)}>
                                 <Fa icon={faTrash}/>
                             </button>
                         {/if}
