@@ -56,13 +56,13 @@
 
 	// Notifications buttons logic
 	let subscribed = false;
+	let page = 'forum';
 	$: {
 		(async () => {
 			subscribed = await isSubscribed(page);
 		})();
 	}
 
-	let page = 'forum';
 	async function handleSubscribe() {
 		await subscribeToPage(page);
 		subscribed = await isSubscribed(page);
@@ -72,7 +72,7 @@
 		await unsubscribeFromPage(page);
 		subscribed = await isSubscribed(page);
 	}
-
+	
 </script>
 
 <div class="center-content">
