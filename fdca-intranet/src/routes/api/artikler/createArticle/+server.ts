@@ -51,6 +51,7 @@ export async function POST(event) {
     if (true) {
         let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
         username = userDoc.details?.fullName;
+        let project = data.get('project') as string;
 
         let article = {
             authorUID: token.uid,
@@ -61,8 +62,8 @@ export async function POST(event) {
         };
 
         try {
-            const articleRef = await admin.firestore().collection('articles').doc('karkom').collection('posts').add(article);
-
+            const articleRef = await admin.firestore().collection('articles').doc(project).collection('posts').add(article);
+ 
         } catch (error) {
             console.error('Failed to create article:', error);
             return new Response(JSON.stringify({error: 'Failed to create article'}), {
