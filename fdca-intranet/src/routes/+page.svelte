@@ -59,6 +59,23 @@
 
 </script>
 
+<style>
+    .accordion-container {
+        display: flex;
+        flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+    }
+
+    .accordion-item {
+        flex: 1 1 300px; /* Adjust the width of each item as needed */
+        margin: 0 10px; /* Adjust margin between items */
+    }
+
+    .event-time {
+        flex-basis: 400px; /* Set a fixed width for the event title column */
+        min-width: 300px;
+    }
+</style>
+
 <div class="container mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Calendar and News/Articles Card -->
     <div>
@@ -69,10 +86,12 @@
             {#if $userProfileStore?.roles.isAdmin}
                 <button type="button" class="btn variant-filled" on:click={openModal}>Tilføj event</button>
             {/if}
-            <Accordion>
+            <Accordion class="accordion-container">
                 {#each $events as event}
-                    <AccordionItem closed>
-                        <svelte:fragment slot="lead">{event.eventStart}</svelte:fragment>
+                    <AccordionItem class="accordion-item" closed>
+                        <svelte:fragment slot="lead">
+                            <div class="event-time">{event.eventStart} til {event.eventEnd}</div>
+                        </svelte:fragment>
                         <svelte:fragment slot="summary">{event.title}</svelte:fragment>
                         <svelte:fragment slot="content">{event.description}</svelte:fragment>
                     </AccordionItem>
