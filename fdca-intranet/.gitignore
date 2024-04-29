@@ -9,3 +9,6 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 fdca-intranet-dev-test-firebase-adminsdk-e9ktp-e1032c03a1.json
+./secrets
+/.secrets
+/secrets
