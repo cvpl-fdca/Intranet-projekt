@@ -2,12 +2,12 @@
     import { writable } from 'svelte/store';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
     import AddEvent from '$lib/AddEvent.svelte';
+    import EditEvent from '$lib/EditEvent.svelte';
     import { onMount } from 'svelte';
 	import app from '$lib/firebase';
 	import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
     import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
-    import { Button } from 'flowbite-svelte';
     import Fa from 'svelte-fa';
     import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -19,10 +19,14 @@
 
     const addEvent: ModalComponent = { ref: AddEvent };
 
-    const modal: ModalSettings = {
+    const addModal: ModalSettings = {
         type: 'component',
         component: addEvent
     };
+
+    const editEvent: ModalComponent = { ref: EditEvent };
+
+    let editModal: ModalSettings;
 
     let db = getFirestore(app);
 
@@ -43,8 +47,19 @@
             
 	});
 
-    async function openModal() {
-        modalStore.trigger(modal);
+    async function openAddModal() {
+        modalStore.trigger(addModal);
+    }
+
+    async function openEditModal(event) {
+        editModal = {
+            type: 'component',
+            component: editEvent,
+            meta: {
+                eventId: event.id,
+            },
+        };
+        modalStore.trigger(editModal);
     }
 
     $: console.log("EVENTS: ");
@@ -92,7 +107,7 @@
 			<!-- Add margin-bottom here -->
             <h3 class="card-title text-lg font-semibold">Kalender</h3>
             {#if $userProfileStore?.roles.isAdmin}
-                <button type="button" class="btn variant-filled" on:click={openModal}>Tilføj event</button>
+                <button type="button" class="btn variant-filled" on:click={openAddModal}>Tilføj event</button>
             {/if}
             <Accordion class="accordion-container">
                 {#each $events as event}
@@ -107,7 +122,7 @@
                             <svelte:fragment slot="content">{event.description}</svelte:fragment>
                         </AccordionItem>
                         {#if $userProfileStore?.roles.isAdmin}
-                            <button type="button" class="btn variant-filled">
+                            <button type="button" class="btn variant-filled" on:click={openEditModal(event)}>
                                 <Fa icon={faPenToSquare}/>
                             </button>
                             <button type="button" class="btn variant-filled">
