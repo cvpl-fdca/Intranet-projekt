@@ -59,7 +59,7 @@ export async function POST(event) {
 
     // Extract the comment text from the form data
     const text = data.get('text');
-
+    console.log('Comment text:', text);
     // Validate the comment text
     if (text !== null && !validator.isLength(text, { min: 1, max: 1000 })) {
         errors.push('Comment must be between 1 and 1000 characters');
