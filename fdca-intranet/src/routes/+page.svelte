@@ -7,6 +7,7 @@
 	import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
     import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
+    import { Button } from 'flowbite-svelte';
 
 	// You can add your script here if you need to handle any logic
 
@@ -56,14 +57,28 @@
         flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
     }
 
-    .accordion-item {
-        flex: 1 1 300px; /* Adjust the width of each item as needed */
+    .event-container {
+        display: flex;
+        align-items: center; /* Align items vertically */
         margin: 0 10px; /* Adjust margin between items */
+    }
+
+    .accordion-item {
+        flex: 1 1 auto; /* Let items grow and shrink as needed */
+        min-width: 300px; /* Set a minimum width for each item */
     }
 
     .event-time {
         flex-basis: 400px; /* Set a fixed width for the event title column */
-        min-width: 300px;
+        min-width: 300px; /* Set a minimum width for the event title column */
+    }
+
+    .event-title {
+        min-width: 100px;
+    }
+
+    .btn {
+        margin-left: auto; /* Push the button to the right */
     }
 </style>
 
@@ -79,13 +94,19 @@
             {/if}
             <Accordion class="accordion-container">
                 {#each $events as event}
-                    <AccordionItem class="accordion-item" closed>
-                        <svelte:fragment slot="lead">
-                            <div class="event-time">{event.eventStart} til {event.eventEnd}</div>
-                        </svelte:fragment>
-                        <svelte:fragment slot="summary">{event.title}</svelte:fragment>
-                        <svelte:fragment slot="content">{event.description}</svelte:fragment>
-                    </AccordionItem>
+                    <div class="event-container">
+                        <AccordionItem class="accordion-item" closed>
+                            <svelte:fragment slot="lead">
+                                <div class="event-time">{event.eventStart} til {event.eventEnd}</div>
+                            </svelte:fragment>
+                            <svelte:fragment slot="summary">
+                                <div class="event-title">{event.title}</div>
+                            </svelte:fragment>
+                            <svelte:fragment slot="content">{event.description}</svelte:fragment>
+                        </AccordionItem>
+                        <button type="button" class="btn variant-filled">Redigér</button>
+                        <button type="button" class="btn variant-filled">Slet</button>
+                    </div>
                 {/each}
             </Accordion>
         </div>
