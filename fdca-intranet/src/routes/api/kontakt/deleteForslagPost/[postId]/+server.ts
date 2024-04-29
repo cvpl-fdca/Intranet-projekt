@@ -34,6 +34,7 @@ export async function DELETE(event) {
         });
     }
 
+    
     try {
         // Get the forslag post ID from the request body
         const postId = event.params.postId;

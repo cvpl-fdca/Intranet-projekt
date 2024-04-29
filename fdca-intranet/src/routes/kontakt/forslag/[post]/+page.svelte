@@ -14,7 +14,7 @@
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { getToken, getUid } from '$lib/login';
-	import EditForumPost from '$lib/EditForumPost.svelte';
+	import EditForslagPost from '$lib/EditForslagPost.svelte';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
@@ -84,7 +84,7 @@
 	});
 
 	const modalStore = getModalStore();
-	const editForumPost: ModalComponent = { ref: EditForumPost };
+	const editForslagPost: ModalComponent = { ref: EditForslagPost };
 
 	// Reactive statements
 	$: console.log($markdownText);
@@ -96,7 +96,7 @@
 	$: {
 		modal = {
 			type: 'component',
-			component: editForumPost,
+			component: editForslagPost,
 			meta: {
 				postId: data.post,
 				title: $title,
@@ -123,9 +123,9 @@
 					}
 				});
 	
-				// If the post was successfully deleted, navigate to the forum
+				// If the post was successfully deleted, navigate to the forslag
 				if (response.ok) {
-					navigate('/forum');
+					navigate('/forslag');
 					location.reload();
 				}
 			} catch (error) {
