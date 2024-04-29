@@ -9,7 +9,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { ImagePlaceholder } from 'flowbite-svelte';
-
+	import Fa from 'svelte-fa';
+	import {faBell, faBellSlash} from '@fortawesome/free-solid-svg-icons';
 	import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from 'flowbite-svelte';
 	import { AngleDownOutline } from 'flowbite-svelte-icons';
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
@@ -82,13 +83,13 @@
 		<button
 			type="button"
 			class="btn variant-filled"
-			on:click={async () => await handleUnsubscribe()}>Unsubscribe</button
+			on:click={async () => await handleUnsubscribe()}><Fa icon={faBellSlash}/></button
 		>
 	{:else}
 		<button
 			type="button"
 			class="btn variant-filled"
-			on:click={async () => await handleSubscribe()}>Notify me</button
+			on:click={async () => await handleSubscribe()}><Fa icon={faBell}/></button
 		>
 	{/if}
 
