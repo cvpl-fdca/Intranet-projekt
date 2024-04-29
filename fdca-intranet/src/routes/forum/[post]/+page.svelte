@@ -18,6 +18,8 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
+	import Fa from 'svelte-fa';
+	import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -37,6 +39,8 @@
 	let authorName = writable('');
 	let time = writable('');
 	let comments = writable<DocumentData[]>([]);
+	let editingComment = '';
+	let editCommentText = writable('');
 
 	getUid()
 		.then((uidValue) => {
@@ -66,6 +70,7 @@
 		onSnapshot(commentsRef, (snapshot) => {
 			let commentsData = snapshot.docs.map((doc) => {
 				let data = doc.data();
+				data.commentId = doc.id; // Add the document ID to the data
 				if (typeof data.time === 'string') {
 					data.time = new Date(data.time); // Parse string to Date
 				}
@@ -122,7 +127,7 @@
 						'X-firebase-token': token
 					}
 				});
-	
+
 				// If the post was successfully deleted, navigate to the forum
 				if (response.ok) {
 					navigate('/forum');
@@ -133,6 +138,7 @@
 			}
 		}
 	}
+
 	async function addComment() {
 		try {
 			const token = await getToken();
@@ -152,32 +158,64 @@
 		currentMessage = '';
 	}
 
+	async function editComment(commentId: string) {
+		try {
+			console.log('text', $editCommentText);
+			console.log('commentId:', commentId);
+			const token = await getToken();
+			const submissionFormData = new FormData();
+			submissionFormData.append('text', $editCommentText);
+			submissionFormData.append('commentId', commentId);
+			// Append the postID to the URL as a parameter
+			const response = await fetch(`/api/forum/editComment/${data.post}`, {
+				method: 'POST',
+				headers: {
+					'X-firebase-token': token
+				},
+				body: submissionFormData
+			});
+
+			editingComment = '';
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+		currentMessage = '';
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
 			addComment();
 		}
 	}
+
+	function toggleEditComment(commentId: string, text: string) {
+		console.log('editingComment:', commentId);
+
+		if (editingComment === commentId) {
+			editingComment = '';
+		} else {
+			editingComment = commentId;
+			$editCommentText=text;
+		}
+	}	
 </script>
 
 <div class="relative mt-8 mb-4 px-4">
-    <!-- Center-aligned Title, Author, and Date -->
-    <div class="text-center mx-auto" style="max-width: 800px;">
-        <h1 class="text-4xl font-bold">{$title}</h1>
-        <p class="text-sm">{$authorName}</p>
-        <p class="text-sm">{new Date($time).toLocaleString()}</p>
-    </div>
+	<!-- Center-aligned Title, Author, and Date -->
+	<div class="text-center mx-auto" style="max-width: 800px;">
+		<h1 class="text-4xl font-bold">{$title}</h1>
+		<p class="text-sm">{$authorName}</p>
+		<p class="text-sm">{new Date($time).toLocaleString()}</p>
+	</div>
 
-    <!-- Right-aligned Delete/Edit Buttons -->
-        <div class="absolute right-0 top-0">
-			{#if $uid === $authorUID || $userProfileStore?.roles.isAdmin}
-            <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-            {/if}
-			{#if $uid === $authorUID}
+	<!-- Right-aligned Delete/Edit Buttons -->
+	{#if $uid === $authorUID}
+		<div class="absolute right-0 top-0">
+			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
 			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
-			{/if}
-        </div>
-    
+		</div>
+	{/if}
 </div>
 
 <!-- Main content area -->
@@ -207,14 +245,39 @@
 			{#each $comments as comment}
 				<div class="grid gap-2">
 					<div
-						class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}
+						class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost-primary' : 'variant-soft'}`}
 					>
-						<!-- Added 'my-2' class for margin -->
 						<header class="flex justify-between items-center">
 							<p class="font-bold">{comment.authorName}</p>
 							<small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
 						</header>
-						<p>{comment.text}</p>
+						{#if editingComment == comment.commentId}
+						<textarea class="textarea" bind:value={$editCommentText} />
+						{:else}
+							<p class="text-sm">{comment.text}</p>
+						{/if}
+						{#if userID === comment.authorUID}
+							{#if editingComment != comment.commentId}
+								<button
+									class="btn variant-filled-primary"
+									on:click={() => toggleEditComment(comment.commentId, comment.text)}
+								>
+									<Fa icon={faEdit} />
+								</button>
+							{:else}
+								<button
+									class="btn variant-filled-primary"
+									on:click={() => editComment(comment.commentId)}
+								>
+									save
+								</button>
+								<button
+									class="btn variant-filled-primary"
+									on:click={() => toggleEditComment(comment.commentId, comment.text)}
+									>cancel
+								</button>
+							{/if}
+						{/if}
 					</div>
 				</div>
 			{/each}
