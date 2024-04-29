@@ -7,22 +7,12 @@ import type { User } from '$lib/user.js';
 import path from 'path';
 import keys from '/secrets/fdca-intranet-dev-test-0fcb3c7d3892.json';
 
-// Initialize nodemailer transporter
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        type: 'OAuth2',
-        user: 'dm@fdca.dk',
-        clientId: keys.client_id,
-        privateKey: keys.private_key,
-        accessUrl: keys.token_uri,
-        serviceClient: keys.client_email
-    }
-});
+
 
 export async function POST(event) {
+    console.log(keys.private_key)
+    console.log(keys.client_id)
+
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
         return json({ error: 'Firebase token not provided' }, { status: 401 });
@@ -36,7 +26,18 @@ export async function POST(event) {
         console.error('Error verifying Firebase token:', error);
         return json({ error: 'Failed to authenticate Firebase token' }, { status: 403 });
     }
-
+    // Initialize nodemailer transporter
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            type: 'OAuth2',
+            user: token.email,
+            privateKey: keys.private_key,
+            serviceClient: keys.client_id
+        }
+    });
     const formData = await event.request.formData();
     const to = formData.get('to')?.toString() || "default@example.com";
     const subject = formData.get('subject')?.toString() || "No Subject";
@@ -48,10 +49,10 @@ export async function POST(event) {
     }
 
     const mailOptions = {
-        from: `dm@fdca.dk`,
-        to: "dm@fdca.dk",
-        subject: "test",
-        text: "test",
+        from: token.email,
+        to: "dm@fdca.dk", // todo, change to kontakt@fdca.dk to hit the real inbox
+        subject: "Besked fra intranet",
+        text: body,
     };
 
 
@@ -73,8 +74,7 @@ export async function POST(event) {
                 console.log('SendMail result:', info);
             }
         });
-        console.log('Message sent:', info.messageId);
-        return json({ success: true, message: 'Email sent successfully', messageId: info.messageId });
+        return json({ success: true, message: 'Email sent successfully' });
     } catch (error) {
         console.error('Error sending email:', error);
         return json({ error: 'Failed to send email' }, { status: 500 });
