@@ -64,7 +64,7 @@ export async function POST(event) {
 
         try {
             const articleRef = await admin.firestore().collection('articles').doc(project).collection('posts').add(article);
-            // Send notifications to subscribers of the forum
+            // Send notifications to subscribers of articles
             sendNotifications(firebaseToken, article.title,
                 (`
                  <html>

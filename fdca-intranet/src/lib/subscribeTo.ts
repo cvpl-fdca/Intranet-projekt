@@ -44,7 +44,8 @@ async function subscribeToPost(page: string, post: string) {
         const token = await getToken();
         const submissionFormData = new FormData();
         submissionFormData.append('page', page);
-        submissionFormData.append('page', post);
+        submissionFormData.append('post', post);
+        console.log(`Subscribing to page: ${page} and post: ${post}`);
 
         // Append the postID to the URL as a parameter
         const response = await fetch(`/api/notification/subscribe`, {
@@ -75,6 +76,7 @@ async function unsubscribeFromPost(page: string, post: string) {
         const submissionFormData = new FormData();
         submissionFormData.append('page', page);
         submissionFormData.append('post', post);
+        console.log(`Subscribing to page: ${page} and post: ${post}`);
 
         // Append the postID to the URL as a parameter
         const response = await fetch(`/api/notification/unsubscribe`, {

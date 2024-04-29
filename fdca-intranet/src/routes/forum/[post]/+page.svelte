@@ -19,7 +19,8 @@
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
 	import Fa from 'svelte-fa';
-	import { faEdit } from '@fortawesome/free-solid-svg-icons';
+	import { faBell, faBellSlash, faEdit } from '@fortawesome/free-solid-svg-icons';
+	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -88,13 +89,15 @@
 		fetchData();
 	});
 
-	const modalStore = getModalStore();
-	const editForumPost: ModalComponent = { ref: EditForumPost };
+
 
 	// Reactive statements
 	$: console.log($markdownText);
 	$: console.log($title);
 
+	
+	const modalStore = getModalStore();
+	const editForumPost: ModalComponent = { ref: EditForumPost };
 	let modal: ModalSettings;
 
 	// Reactive statement to update the modal object
@@ -196,9 +199,30 @@
 			editingComment = '';
 		} else {
 			editingComment = commentId;
-			$editCommentText=text;
+			$editCommentText = text;
 		}
-	}	
+	}
+
+	// Notifications buttons logic
+	let subscribed = false;
+	let page = 'forum';
+	let post = data.post;
+	$: {
+		(async () => {
+			subscribed = await isSubscribed(page);
+		})();
+	}
+
+	async function handleSubscribe() {
+		await subscribeToPage(page);
+		subscribed = await isSubscribed(page);
+	}
+
+	async function handleUnsubscribe() {
+		await unsubscribeFromPage(page);
+		subscribed = await isSubscribed(page);
+	}
+	
 </script>
 
 <div class="relative mt-8 mb-4 px-4">
@@ -208,6 +232,18 @@
 		<p class="text-sm">{$authorName}</p>
 		<p class="text-sm">{new Date($time).toLocaleString()}</p>
 	</div>
+
+	{#if subscribed}
+		<button
+			type="button"
+			class="btn variant-filled"
+			on:click={async () => await handleUnsubscribe()}><Fa icon={faBellSlash} /></button
+		>
+	{:else}
+		<button type="button" class="btn variant-filled" on:click={async () => await handleSubscribe()}
+			><Fa icon={faBell} /></button
+		>
+	{/if}
 
 	<!-- Right-aligned Delete/Edit Buttons -->
 	{#if $uid === $authorUID}
@@ -252,7 +288,7 @@
 							<small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
 						</header>
 						{#if editingComment == comment.commentId}
-						<textarea class="textarea" bind:value={$editCommentText} />
+							<textarea class="textarea" bind:value={$editCommentText} />
 						{:else}
 							<p class="text-sm">{comment.text}</p>
 						{/if}
