@@ -158,6 +158,24 @@
 			addComment();
 		}
 	}
+
+	async function vote(voteDirection: string) {
+		try {
+			const token = await getToken();	
+			const submissionFormData = new FormData();
+			submissionFormData.append('voteDirection', voteDirection);
+
+			const response = await fetch(`/api/kontakt/voteOnForslag/${data.post}`, {
+				method: 'POST',
+				headers: {
+					'X-firebase-token': token
+				},
+				body: submissionFormData,
+			});
+		} catch (error) {
+			console.error('Error:', error.message);	
+		}
+	}
 </script>
 
 <div class="relative mt-8 mb-4 px-4">
