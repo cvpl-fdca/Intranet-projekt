@@ -8,6 +8,8 @@
     import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
     import { Button } from 'flowbite-svelte';
+    import Fa from 'svelte-fa';
+    import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 	// You can add your script here if you need to handle any logic
 
@@ -74,7 +76,7 @@
     }
 
     .event-title {
-        min-width: 100px;
+        min-width: 200px;
     }
 
     .btn {
@@ -104,8 +106,14 @@
                             </svelte:fragment>
                             <svelte:fragment slot="content">{event.description}</svelte:fragment>
                         </AccordionItem>
-                        <button type="button" class="btn variant-filled">Redigér</button>
-                        <button type="button" class="btn variant-filled">Slet</button>
+                        {#if $userProfileStore?.roles.isAdmin}
+                            <button type="button" class="btn variant-filled">
+                                <Fa icon={faPenToSquare}/>
+                            </button>
+                            <button type="button" class="btn variant-filled">
+                                <Fa icon={faTrash}/>
+                            </button>
+                        {/if}
                     </div>
                 {/each}
             </Accordion>
