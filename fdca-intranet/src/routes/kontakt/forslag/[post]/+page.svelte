@@ -18,6 +18,7 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
+	
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -37,6 +38,8 @@
 	let authorName = writable('');
 	let time = writable('');
 	let comments = writable<DocumentData[]>([]);
+	let upvotesCount = writable('');
+    let downvotesCount = writable('');
 
 	getUid()
 		.then((uidValue) => {
@@ -57,6 +60,9 @@
 				authorName.set(postData.authorName);
 				time.set(postData.time);
 				console.log(markdownText);
+
+				// Fetch vote counts after fetching post data
+				fetchVoteCounts(data.post);
 			}
 		});
 
@@ -176,7 +182,62 @@
 			console.error('Error:', error.message);	
 		}
 	}
+
+	async function fetchVoteCounts(postId: string) {
+    try {
+        const token = await getToken(); // Assumed function to get user's auth token
+        const response = await fetch(`/api/kontakt/countVotesOnForslag/${postId}`, {
+            method: 'GET',
+            headers: {
+                'X-firebase-token': token
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(`Upvotes: ${data.upvotesCount}, Downvotes: ${data.downvotesCount}`);
+
+            // Example: Update UI elements or state with these counts
+            upvotesCount.set(data.upvotesCount);
+            downvotesCount.set(data.downvotesCount);
+        } else {
+            throw new Error('Failed to fetch vote counts');
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+        // Optionally handle the error in UI, like showing an error message to the user
+    }
+}
 </script>
+
+<style>
+		.center-content {
+		  display: flex;
+		  flex-direction: column;
+		  align-items: center;
+		  justify-content: center;
+		  gap: 10px;
+		  height: 200px;
+		}
+	
+		.voting-buttons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 10px; /* Space above the voting buttons */
+	  }
+	
+	  .vote-button {
+		border: none;
+		background: none;
+		cursor: pointer;
+		font-size: 18px; /* Size of the vote buttons */
+		color: #ffffff; /* Color of the vote buttons */
+		margin: 0 5px; /* Space between the vote count and buttons */
+	  }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <div class="relative mt-8 mb-4 px-4">
     <!-- Center-aligned Title, Author, and Date -->
@@ -200,6 +261,18 @@
 	<div>
 		<MarkdownRenderer {markdownText} />
 	</div>
+	<div class="grid grid-cols-3 items-center">
+		<button class="vote-button" on:click={() => vote('upvote')} aria-label="Upvote">
+			<i class="fas fa-arrow-alt-circle-up"></i>
+		</button>
+		<p id="upvoteCount">{$upvotesCount}</p>
+		<p id="downvoteCount">{$downvotesCount}</p>
+		<button class="vote-button" on:click={() => vote('downvote')} aria-label="Downvote">
+			<i class="fas fa-arrow-alt-circle-down"></i>
+		</button>
+	</div>
+	
+
 	<div class="grid gap-1 h-auto w-auto p-4">
 		<div class="bg-surface-500/30 p-4 rounded">
 			<div

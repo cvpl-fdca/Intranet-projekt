@@ -182,6 +182,7 @@
 	<div>
 		<MarkdownRenderer {markdownText} />
 	</div>
+
 	<div class="grid gap-1 h-auto w-auto p-4">
 		<div class="bg-surface-500/30 p-4 rounded">
 			<div
