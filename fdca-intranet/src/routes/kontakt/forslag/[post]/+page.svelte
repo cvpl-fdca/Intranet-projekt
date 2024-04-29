@@ -139,7 +139,7 @@
 			const submissionFormData = new FormData();
 			submissionFormData.append('text', currentMessage);
 			// Append the postID to the URL as a parameter
-			const response = await fetch(`/api/forum/addComment/${data.post}`, {
+			const response = await fetch(`/api/kontakt/addForslagComment/${data.post}`, {
 				method: 'POST',
 				headers: {
 					'X-firebase-token': token
