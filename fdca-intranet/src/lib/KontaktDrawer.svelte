@@ -31,7 +31,7 @@
     <div class="flex flex-col justify-between h-full">
         <div class="text-center p-2">
             <form>
-                <input class="input" bind:value={$subject} placeholder="Emne" />
+                <input class="input text-white" type="text" bind:value={$subject} placeholder="Emne" />
                 <Textarea
                     class="mb-2 text-white"
                     placeholder="Stil bestyrelsen et spørgsmål."
