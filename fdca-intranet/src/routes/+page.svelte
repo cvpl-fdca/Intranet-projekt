@@ -2,33 +2,33 @@
     import { writable } from 'svelte/store';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
     import AddEvent from '$lib/AddEvent.svelte';
+    import EditEvent from '$lib/EditEvent.svelte';
     import { onMount } from 'svelte';
-	import { getToken } from '$lib/login';
-    import MarkdownEditor from '$lib/MarkdownEditor.svelte';
-	import MarkdownRenderer from '$lib/MarkdownRenderer.svelte';
 	import app from '$lib/firebase';
-	import { getFirestore, collection, query, getDocs, onSnapshot } from 'firebase/firestore';
-	import { goto } from '$app/navigation';
-	import { ImagePlaceholder } from 'flowbite-svelte';
+	import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
     import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
-
-	import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from 'flowbite-svelte';
-	import { AngleDownOutline} from 'flowbite-svelte-icons';
 	import { userProfileStore } from '$lib/userProfileStore';
+    import Fa from 'svelte-fa';
+    import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { getToken } from '$lib/login';
+	import { navigate } from 'svelte-routing';
 
 	// You can add your script here if you need to handle any logic
 
     const modalStore = getModalStore();
 
-    let markdownText = writable('');
     let events = writable([]);
 
     const addEvent: ModalComponent = { ref: AddEvent };
 
-    const modal: ModalSettings = {
+    const addModal: ModalSettings = {
         type: 'component',
         component: addEvent
     };
+
+    const editEvent: ModalComponent = { ref: EditEvent };
+
+    let editModal: ModalSettings;
 
     let db = getFirestore(app);
 
@@ -49,11 +49,48 @@
             
 	});
 
-    async function openModal() {
-        modalStore.trigger(modal);
+    async function openAddModal() {
+        modalStore.trigger(addModal);
+    }
+
+    async function openEditModal(event) {
+        editModal = {
+            type: 'component',
+            component: editEvent,
+            meta: {
+                eventId: event.id,
+            },
+        };
+        modalStore.trigger(editModal);
     }
 
     $: console.log("EVENTS: ");
+
+    async function deleteEvent(eventId: string) {
+        if (confirm('Are you sure you want to delete this post?')) {
+			try {
+				const token = await getToken();
+				// Append the postID to the URL as a parameter
+                const submissionFormData = new FormData();
+                submissionFormData.append('eventId', eventId);
+				const response = await fetch(`/api/calendar/deleteEvent`, {
+					method: 'DELETE',
+                    body: submissionFormData,
+					headers: {
+						'X-firebase-token': token,
+					}
+				});
+
+				// If the post was successfully deleted, navigate to the forum
+				if (response.ok) {
+					navigate('/');
+					location.reload();
+				}
+			} catch (error) {
+				console.error('Error:', error.message);
+			}
+		}
+    }
 
     modalStore.close();
 
@@ -65,14 +102,28 @@
         flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
     }
 
-    .accordion-item {
-        flex: 1 1 300px; /* Adjust the width of each item as needed */
+    .event-container {
+        display: flex;
+        align-items: center; /* Align items vertically */
         margin: 0 10px; /* Adjust margin between items */
+    }
+
+    .accordion-item {
+        flex: 1 1 auto; /* Let items grow and shrink as needed */
+        min-width: 300px; /* Set a minimum width for each item */
     }
 
     .event-time {
         flex-basis: 400px; /* Set a fixed width for the event title column */
-        min-width: 300px;
+        min-width: 300px; /* Set a minimum width for the event title column */
+    }
+
+    .event-title {
+        min-width: 200px;
+    }
+
+    .btn {
+        margin-left: auto; /* Push the button to the right */
     }
 </style>
 
@@ -84,17 +135,29 @@
 			<!-- Add margin-bottom here -->
             <h3 class="card-title text-lg font-semibold">Kalender</h3>
             {#if $userProfileStore?.roles.isAdmin}
-                <button type="button" class="btn variant-filled" on:click={openModal}>Tilføj event</button>
+                <button type="button" class="btn variant-filled" on:click={openAddModal}>Tilføj event</button>
             {/if}
             <Accordion class="accordion-container">
                 {#each $events as event}
-                    <AccordionItem class="accordion-item" closed>
-                        <svelte:fragment slot="lead">
-                            <div class="event-time">{event.eventStart} til {event.eventEnd}</div>
-                        </svelte:fragment>
-                        <svelte:fragment slot="summary">{event.title}</svelte:fragment>
-                        <svelte:fragment slot="content">{event.description}</svelte:fragment>
-                    </AccordionItem>
+                    <div class="event-container">
+                        <AccordionItem class="accordion-item" closed>
+                            <svelte:fragment slot="lead">
+                                <div class="event-time">{event.eventStart} til {event.eventEnd}</div>
+                            </svelte:fragment>
+                            <svelte:fragment slot="summary">
+                                <div class="event-title">{event.title}</div>
+                            </svelte:fragment>
+                            <svelte:fragment slot="content">{event.description}</svelte:fragment>
+                        </AccordionItem>
+                        {#if $userProfileStore?.roles.isAdmin}
+                            <button type="button" class="btn variant-filled" on:click={openEditModal(event)}>
+                                <Fa icon={faPenToSquare}/>
+                            </button>
+                            <button type="button" class="btn variant-filled" on:click={deleteEvent(event.id)}>
+                                <Fa icon={faTrash}/>
+                            </button>
+                        {/if}
+                    </div>
                 {/each}
             </Accordion>
         </div>
