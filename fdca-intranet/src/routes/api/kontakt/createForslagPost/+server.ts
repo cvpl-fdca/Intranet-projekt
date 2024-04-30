@@ -7,14 +7,14 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
-import { cp } from 'fs';
-
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
+console.log(currentTimeInCopenhagen);
 
-// src/routes/api/addComment/+server.ts
+// src/routes/api/kontakt/createForslagPost/+server.ts
 
 const db = admin.firestore();
 let errors: string[] = [];
@@ -30,8 +30,7 @@ export async function POST(event) {
             },
         });
     }
-
-    let username: string | undefined;
+    let username: string;
     let token: DecodedIdToken;
 
     try {
@@ -55,20 +54,49 @@ export async function POST(event) {
     // Extract details from the form data
     console.log('Form data:', data);
 
-    // Extract the forum post ID from the URL parameters
-    const postId = event.params.postId;
 
-    // Extract the comment text from the form data
-    const text = data.get('text');
-    console.log('Comment text:', text);
 
-    // Validate the comment text
-    if (text !== null && !validator.isLength(text, { min: 1, max: 1000 })) {
-        errors.push('Comment must be between 1 and 1000 characters');
-    }
+    //TODO: Validate the form data
+    if (true) {
+        let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
+        username = userDoc.details?.fullName;
 
-    // If there are any errors, return them
-    if (errors.length > 0) {
+        let forslagPost = {
+            authorUID: token.uid,
+            authorName: username,
+            text: data.get('text') as string,
+            time: currentTimeInCopenhagen,
+            title: data.get('title') as string,
+        };
+
+        console.log('Forslag post:', forslagPost);
+        try {
+            console.log('Creating forslag');
+            const forslagPostRef = await admin.firestore().collection('OpenForslag').add(forslagPost);
+            console.log('Successfully created forslag post', forslagPostRef.id); // Log the document ID
+        
+            // Get the created forum post from Firestore
+            const createdPost = await forslagPostRef.get();
+            const createdPostData = createdPost.data();
+        
+            // Enhance the data with the document ID if needed
+            const postDataWithId = {    
+                id: forslagPostRef.id, // Include the document ID
+                ...createdPostData,
+            };
+        
+            console.log('Forslag data with ID:', postDataWithId); // Log the complete document data including the ID
+            return json({ success: true, post: postDataWithId });
+        } catch (error) {
+            console.error('Failed to create forslag:', error);
+            return new Response(JSON.stringify({ error: 'Failed to create forslag' }), {
+                status: 500,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+    } else {
         return new Response(JSON.stringify({ errors }), {
             status: 400,
             headers: {
@@ -76,20 +104,5 @@ export async function POST(event) {
             },
         });
     }
-
-    // Get the user's display name
-    const user = await admin.auth().getUser(token.uid);
-    username = user.displayName;
-    const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
-
-    // Create a new comment document in Firestore
-    const commentRef = db.collection('OpenForum').doc(postId).collection('comments').doc();
-    await commentRef.set({
-        authorUID: token.uid,
-        authorName: username,
-        text,
-        time: currentTimeInCopenhagen,
-    });
-
-    return json({ success: true });
 }
+

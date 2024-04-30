@@ -7,14 +7,6 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
-import { cp } from 'fs';
-
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-
-// src/routes/api/addComment/+server.ts
 
 const db = admin.firestore();
 let errors: string[] = [];
@@ -50,46 +42,38 @@ export async function POST(event) {
         });
     }
 
-    // Proceed to create a forum post in Firestore
+    // Proceed to create a post in Firestore
     const data = await event.request.formData();
     // Extract details from the form data
     console.log('Form data:', data);
 
-    // Extract the forum post ID from the URL parameters
+    const voteDirection = data.get('voteDirection');
+
+    // Extract the forslag post ID from the URL parameters
     const postId = event.params.postId;
 
-    // Extract the comment text from the form data
-    const text = data.get('text');
-    console.log('Comment text:', text);
+    // Get the user's display name
+    const user = await admin.auth().getUser(token.uid);
+    username = user.displayName;
 
-    // Validate the comment text
-    if (text !== null && !validator.isLength(text, { min: 1, max: 1000 })) {
-        errors.push('Comment must be between 1 and 1000 characters');
-    }
-
-    // If there are any errors, return them
-    if (errors.length > 0) {
-        return new Response(JSON.stringify({ errors }), {
+    // Create a new comment document in Firestore
+    if(voteDirection === 'upvote') {
+        const commentRef = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
+        await commentRef.set({
+            voted: true
+        });
+    } else if (voteDirection === 'downvote') {
+        const commentRef = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
+        await commentRef.set({
+            voted: true
+        });
+    } else {
+        return new Response(JSON.stringify({ error: 'Vote failed' }), {
             status: 400,
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     }
-
-    // Get the user's display name
-    const user = await admin.auth().getUser(token.uid);
-    username = user.displayName;
-    const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
-
-    // Create a new comment document in Firestore
-    const commentRef = db.collection('OpenForum').doc(postId).collection('comments').doc();
-    await commentRef.set({
-        authorUID: token.uid,
-        authorName: username,
-        text,
-        time: currentTimeInCopenhagen,
-    });
-
     return json({ success: true });
 }
