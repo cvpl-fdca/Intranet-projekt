@@ -21,6 +21,7 @@
 	import Fa from 'svelte-fa';
 	import { faBell, faBellSlash, faEdit } from '@fortawesome/free-solid-svg-icons';
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -226,6 +227,8 @@
 	}
 	
 </script>
+
+<ReportPage />
 
 <div class="relative mt-8 mb-4 px-4">
 	<!-- Center-aligned Title, Author, and Date -->
