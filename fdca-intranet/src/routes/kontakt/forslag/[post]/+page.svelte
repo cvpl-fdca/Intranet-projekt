@@ -166,6 +166,7 @@
 	}
 
 	async function vote(voteDirection: string) {
+		if (confirm('Are you sure you want to vote? You can not take your vote back')) {
 		try {
 			const token = await getToken();
 			const submissionFormData = new FormData();
@@ -182,6 +183,7 @@
 			console.error('Error:', error.message);
 		}
 	}
+}
 
 	async function fetchVoteCounts(postId: string) {
 		try {
