@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
-import { validateData } from '$lib/ValidateEventData.server.js';
+import { validateData } from '$lib/ValidateEventData.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
