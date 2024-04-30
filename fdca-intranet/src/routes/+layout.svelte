@@ -157,7 +157,7 @@
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
-
+<!-- Combobox for Admin -->
 <div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboAdmin">
 	<ListBox rounded="rounded-none">
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="admin" on:click={() => handleListBoxClick('admin')}>Admin</ListBoxItem>
@@ -165,7 +165,8 @@
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
-<div class="card w-48 shadow-xl py-2" data-popup="popupComboArtikler">
+<!-- Combobox for Artikler -->
+<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboArtikler">
 	<ListBox rounded="rounded-none">
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="karkom" on:click={() => handleListBoxClick('karkom')}>Karriere/Kompetence</ListBoxItem>
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="strøko" on:click={() => handleListBoxClick('strøko')}>Strategi/Økonomi</ListBoxItem>
