@@ -32,8 +32,10 @@
 	let currentMessage = '';
 	console.log(data);
 	let userID: string | undefined;
+	let isAdmin: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
+		isAdmin = value?.roles.isAdmin;
 	});
 
 	$: console.log('uid', userID);
@@ -126,6 +128,8 @@
 		subscribed = await isSubscribed(page, post);
 		console.log('subscribed: ' + subscribed);
 	}
+
+
 </script>
 
 <div class="relative mt-8 mb-4 px-4">
@@ -152,7 +156,7 @@
 		{/if}
 	</div>
 </div>
-
+	
 <!-- Main content area -->
 <div class="w-[800px] mx-auto">
 	<div>
