@@ -101,8 +101,6 @@
 			window.location.href = '/kontakt/medlemmer';
 		} else if (value === 'forslag') {
 			window.location.href = '/kontakt/forslag';
-		} else if (value === 'admin') {
-			window.location.href = '/admin'
 		} else if (value === 'rettigheder') {
 			window.location.href = '/admin/rettigheder';
 		} else if (value === 'karkom') {
@@ -159,15 +157,15 @@
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
-
+<!-- Combobox for Admin -->
 <div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboAdmin">
 	<ListBox rounded="rounded-none">
-		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="admin" on:click={() => handleListBoxClick('admin')}>Admin</ListBoxItem>
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="rettigheder" on:click={() => handleListBoxClick('rettigheder')}>Rettigheder</ListBoxItem>
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
-<div class="card w-48 shadow-xl py-2" data-popup="popupComboArtikler">
+<!-- Combobox for Artikler -->
+<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboArtikler">
 	<ListBox rounded="rounded-none">
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="karkom" on:click={() => handleListBoxClick('karkom')}>Karriere/Kompetence</ListBoxItem>
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="strøko" on:click={() => handleListBoxClick('strøko')}>Strategi/Økonomi</ListBoxItem>
@@ -201,10 +199,6 @@
 				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
 					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>
-				</button>
-				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
-					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
-					<Fa icon={faSearch} class="fa" />
 				</button>
 				<Avatar
 					src={$userProfileStore ? $userProfileStore?.photoURL : 'https://as1.ftcdn.net/v2/jpg/02/06/31/74/1000_F_206317459_rBWbtrfefGmZYllRMITPwjxWf5VEmHkT.jpg'}

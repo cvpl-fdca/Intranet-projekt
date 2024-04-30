@@ -21,6 +21,7 @@
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
 	import Fa from 'svelte-fa';
 	import {faBell, faBellSlash} from '@fortawesome/free-solid-svg-icons';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 
 let db = getFirestore(app);
@@ -91,6 +92,8 @@ modalStore.close();
 	  height: 200px;
 	}
 </style>
+<ReportPage />
+
 
 <div class="center-content"> 
 	<h1>Socialt Sammenhold</h1>

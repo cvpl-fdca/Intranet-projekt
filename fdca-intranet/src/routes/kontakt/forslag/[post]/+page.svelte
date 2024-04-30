@@ -18,14 +18,17 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 
 	export let data: PageData;
 	let currentMessage = '';
 	console.log(data);
 	let userID: string | undefined;
+	let isAdmin: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
+		isAdmin = value?.roles.isAdmin;
 	});
 
 	$: console.log('uid', userID);
@@ -131,7 +134,7 @@
 
 				// If the post was successfully deleted, navigate to the forslag
 				if (response.ok) {
-					navigate('/forslag');
+					navigate('/kontakt/forslag');
 					location.reload();
 				}
 			} catch (error) {
@@ -218,6 +221,9 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
 />
 
+<ReportPage />
+
+
 <div class="relative mt-8 mb-4 px-4">
 	<!-- Center-aligned Title, Author, and Date -->
 	<div class="text-center mx-auto" style="max-width: 800px;">
@@ -227,7 +233,7 @@
 	</div>
 
 	<!-- Right-aligned Delete/Edit Buttons -->
-	{#if $uid === $authorUID}
+	{#if $uid === $authorUID || isAdmin}
 		<div class="absolute right-0 top-0">
 			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
 			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>

@@ -5,7 +5,7 @@ import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
 
-
+const db = admin.firestore();
 export async function DELETE(event) {
     // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
@@ -36,7 +36,7 @@ export async function DELETE(event) {
             },
         });
     }
-    
+
     try {
         // Get the forum post ID from the request body
         const postId = event.params.postId;
@@ -44,16 +44,19 @@ export async function DELETE(event) {
         // Get the forum post from Firestore
         const forumPostRef = admin.firestore().collection('OpenForum').doc(postId);
         const forumPost = await forumPostRef.get();
-        
-        const userRef = admin.firestore().collection('users').doc(token.uid);
-        console.log("UID HERE: ", token.uid);
-        let user = (await userRef.get()).data();
+
+        let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
+
+        let isAdmin = userDoc.roles.isAdmin;
+
+        console.log('is the user admin: ', isAdmin);
 
         // Check if the user is the author or an admin
-        if (forumPost.exists && (forumPost.data().authorUID === token.uid || user?.roles?.isAdmin)) {
+        if (forumPost.exists && (forumPost.data().authorUID === token.uid || isAdmin === true)) {
+            console.log("Deleting forum post");
             // Delete the forum post
             await forumPostRef.delete();
-
+            console.log("Forum post deleted");
             return json({ success: true });
         } else {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {

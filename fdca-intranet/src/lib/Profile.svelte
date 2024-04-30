@@ -75,8 +75,10 @@
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Phone -->
+
 			<li class="p-1 rounded-md font-bold" style="list-style-type: none; font-size: 15px">Certificates:</li>
 			<li class="hover:bg-gray-700 p-1 rounded-md" style="list-style-type: circle;">{userDoc?.details.certificate}</li>
+
 
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />

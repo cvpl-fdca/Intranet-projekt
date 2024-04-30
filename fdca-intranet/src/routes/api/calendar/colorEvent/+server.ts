@@ -3,10 +3,12 @@ import { admin } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone.js';
+import validator from 'validator';
 
-const db = admin.firestore();
-
-export async function DELETE(event) {
+export async function POST(event) {
     // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
@@ -19,7 +21,7 @@ export async function DELETE(event) {
     }
     let username: string;
     let token: DecodedIdToken;
-
+    const db = admin.firestore();
 
     try {
         // Verify the Firebase token and decode it to get the UID
@@ -27,7 +29,6 @@ export async function DELETE(event) {
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);
-        console.log('Token:', token);
     } catch (error) {
         console.error('Error verifying Firebase token:', error);
         return new Response(JSON.stringify({ error: 'Failed to authenticate Firebase token' }), {
@@ -38,28 +39,33 @@ export async function DELETE(event) {
         });
     }
 
-    let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
-
-    let isAdmin = userDoc.roles.isAdmin;
-
     try {
-        // Get the forslag post ID from the request body
-        const postId = event.params.postId;
+        let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
 
-        // Get the forslag post from Firestore
-        const forslagPostRef = admin.firestore().collection('OpenForslag').doc(postId);
-        const forslagPost = await forslagPostRef.get();
+        // Get the title and text from the request body
+        const data = await event.request.formData();
+        
+        let eventId = data.get('eventId') as string;
+        let color = data.get('color') as string;
+        if(!validator.isAlpha(color)) {
+            return new Response(JSON.stringify({ error: 'Unaccepted color'}), {
+                status: 403,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+        }
+        // Get the event from Firestore
+        const eventRef = admin.firestore().collection('events').doc(eventId);
+        const eventFromDb = await eventRef.get();
 
-        // Check if the user is the author or an admin
-        console.log('is the user admin: ', isAdmin);
+        // Check if the user is allowed
+        if (eventFromDb.exists && userDoc.roles.isAdmin) {
+            // Update the event
+            await eventRef.update({
+                color: color
+            });
 
-
-
-        if (forslagPost.exists && (forslagPost.data().authorUID === token.uid || isAdmin === true)) {
-            console.log('Deleting forslag post');
-            // Delete the forslag post
-            await forslagPostRef.delete();
-            console.log('Forslag post deleted');
             return json({ success: true });
         } else {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -70,8 +76,8 @@ export async function DELETE(event) {
             });
         }
     } catch (error) {
-        console.error('Failed to delete forslag post:', error);
-        return new Response(JSON.stringify({ error: 'Failed to delete forslag post' }), {
+        console.error('Failed to update event:', error);
+        return new Response(JSON.stringify({ error: 'Failed to update event' }), {
             status: 500,
             headers: {
                 'Content-Type': 'application/json',
