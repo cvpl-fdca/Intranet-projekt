@@ -75,6 +75,8 @@
 		response: (r: string) => console.log('response:', r)
 	};
 
+	
+
 	let drawerSettings: DrawerSettings = {
 		id: 'example-3',
 		bgDrawer: 'bg-gray-800 text-white ring-2 ring-gray-700 ring-opacity-100',
@@ -199,6 +201,7 @@
 					<span>↓</span>
 				</button>
 				<Avatar
+					src={$userProfileStore ? $userProfileStore?.photoURL : 'https://as1.ftcdn.net/v2/jpg/02/06/31/74/1000_F_206317459_rBWbtrfefGmZYllRMITPwjxWf5VEmHkT.jpg'}
 					class="w-10"
 					border="border-4 border-surface-300-600-token hover:!border-primary-500"
 					cursor="cursor-pointer"
