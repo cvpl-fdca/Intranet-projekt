@@ -28,7 +28,7 @@ export function validateData(eventData: EventData) {
         return false;
     } if(!validator.whitelist(eventData.timeCreated, '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}')) {
         return false;
-    } if(!validator.whitelist(eventData.description, '[a-zA-Z0-9æøåÆØÅ ,.\'!?]:()/&-<>')) {
+    } if(!validator.whitelist(eventData.description, '[a-zA-Z0-9æøåÆØÅ ,.\'!?:()/&-<>]')) {
         return false;
     }
     return true;
