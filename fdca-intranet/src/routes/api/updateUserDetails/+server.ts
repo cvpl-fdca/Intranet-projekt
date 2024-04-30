@@ -123,7 +123,7 @@ function validate(userDetails: { get: (arg0: string) => any; }) {
     if (certificate && !validator.isAlpha(certificate, 'da-DK', { ignore: ', ' })) {
         errors.push('Invalid certificate');
     }
-    if (arbejde && !validator.isAlpha(arbejde, 'da-DK', { ignore: ',' })) {
+    if (arbejde && !validator.isAlpha(arbejde, 'da-DK', { ignore: ', ' })) {
         errors.push('Invalid arbejde');
     }
     console.log("errors", errors);
