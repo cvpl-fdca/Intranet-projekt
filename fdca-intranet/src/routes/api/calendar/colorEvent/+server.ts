@@ -6,6 +6,7 @@ import type { User } from '$lib/user.js';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone.js';
+import validator from 'validator';
 
 export async function POST(event) {
     // Retrieve the Firebase token from the request headers
@@ -46,7 +47,14 @@ export async function POST(event) {
         
         let eventId = data.get('eventId') as string;
         let color = data.get('color') as string;
-
+        if(!validator.isAlpha(color)) {
+            return new Response(JSON.stringify({ error: 'Unaccepted color'}), {
+                status: 403,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+        }
         // Get the event from Firestore
         const eventRef = admin.firestore().collection('events').doc(eventId);
         const eventFromDb = await eventRef.get();
