@@ -6,6 +6,7 @@ import type { User } from '$lib/user.js';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone.js';
+import { validateData } from '$lib/ValidateEventData.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -60,6 +61,25 @@ export async function PATCH(event) {
         let timeCreated =  currentTimeInCopenhagen;
         let title = data.get('title') as string;
         let eventId = data.get('eventId') as string;
+
+        let eventData = {
+            authorUID,
+            authorName,
+            eventStart,
+            eventEnd,
+            description,
+            timeCreated,
+            title,
+            eventId
+        }
+        if(!validateData(eventData)) {
+            return new Response(JSON.stringify({ error: 'Validation failed' }), {
+                status: 400,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
 
         // Get the event from Firestore
         const eventRef = admin.firestore().collection('events').doc(eventId);
