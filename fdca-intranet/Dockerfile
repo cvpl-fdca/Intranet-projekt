@@ -13,6 +13,8 @@ RUN npm install
 # Build the app using SvelteKit
 RUN npm run build
 
+# Set the ORIGIN environment variable
+ENV ORIGIN=http://localhost:3000
 # Expose the port on which the app will be served
 EXPOSE 3000
 

@@ -99,10 +99,14 @@
 			window.location.href = '/kontakt/medlemmer';
 		} else if (value === 'forslag') {
 			window.location.href = '/kontakt/forslag';
-		} else if (value === 'admin') {
-			window.location.href = '/admin'
 		} else if (value === 'rettigheder') {
 			window.location.href = '/admin/rettigheder';
+		} else if (value === 'karkom') {
+			window.location.href = '/artikler/karkom';
+		} else if (value === 'strøko') {
+			window.location.href = '/artikler/strøko';
+		} else if (value === 'socsam') {
+			window.location.href = '/artikler/socsam';
 		}
 	};
 	let comboboxKontakt: string = "Kontakt";
@@ -118,6 +122,13 @@
 		target: 'popupComboAdmin',
 		placement: 'bottom',
 		closeQuery: '.listbox-item'
+	};
+	let comboboxArtikler: string = "Artikler";
+	const popupComboArtikler: PopupSettings = {
+		event: 'click',
+		target: 'popupComboArtikler',
+		placement: 'bottom',
+		closeQuery: '.listbox-item',
 	};
 
 	let currentTile = 0;
@@ -135,8 +146,8 @@
 		<KontaktDrawer />
 	{/if}
 </Drawer>
-
-<div class="card w-48 shadow-xl py-2" data-popup="popupComboKontakt">
+<!-- These comboboxes need to be on top, adjust the z-index to make it the top element -->
+<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboKontakt">
 	<ListBox rounded="rounded-none">
 		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="kontakt" on:click={() => handleListBoxClick('kontakt')}>Kontakt</ListBoxItem>
 		<ListBoxItem bind:group={comboboxKontakt} name="medium" value="medlemmer" on:click={() => handleListBoxClick('medlemmer')}>Medlemmer</ListBoxItem>
@@ -144,11 +155,19 @@
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
-
-<div class="card w-48 shadow-xl py-2" data-popup="popupComboAdmin">
+<!-- Combobox for Admin -->
+<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboAdmin">
 	<ListBox rounded="rounded-none">
-		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="admin" on:click={() => handleListBoxClick('admin')}>Admin</ListBoxItem>
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="rettigheder" on:click={() => handleListBoxClick('rettigheder')}>Rettigheder</ListBoxItem>
+	</ListBox>
+	<div class="arrow bg-surface-100-800-token" />
+</div>
+<!-- Combobox for Artikler -->
+<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboArtikler">
+	<ListBox rounded="rounded-none">
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="karkom" on:click={() => handleListBoxClick('karkom')}>Karriere/Kompetence</ListBoxItem>
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="strøko" on:click={() => handleListBoxClick('strøko')}>Strategi/Økonomi</ListBoxItem>
+		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="socsam" on:click={() => handleListBoxClick('socsam')}>Socialt Sammenhold</ListBoxItem>
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
 </div>
@@ -171,7 +190,10 @@
 					</button>
 				{/if}
 				<a href="/forum" class="btn variant-filled"> Forum </a>
-				<a href="/artikler" class="btn variant-filled"> Artikler </a>
+				<button class="btn variant-filled justify-between" use:popup={popupComboArtikler}>
+					<span class="capitalize">{comboboxArtikler ?? 'Trigger'}</span>
+					<span>↓</span>
+				</button>
 				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
 					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>

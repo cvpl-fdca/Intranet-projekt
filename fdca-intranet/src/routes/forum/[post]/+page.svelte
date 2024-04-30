@@ -19,14 +19,19 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
-	
+	import Fa from 'svelte-fa';
+	import { faBell, faBellSlash, faEdit } from '@fortawesome/free-solid-svg-icons';
+	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
+
 
 	export let data: PageData;
 	let currentMessage = '';
 	console.log(data);
 	let userID: string | undefined;
+	let isAdmin: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
+		isAdmin = value?.roles.isAdmin;
 	});
 
 	$: console.log('uid', userID);
@@ -41,6 +46,9 @@
 	let comments = writable<DocumentData[]>([]);
 	let likes = writable(0);
 	let likesCount = writable(0);
+	let editingComment = '';
+	let editCommentText = writable('');
+
 
 	getUid()
 		.then((uidValue) => {
@@ -71,6 +79,7 @@
 		onSnapshot(commentsRef, (snapshot) => {
 			let commentsData = snapshot.docs.map((doc) => {
 				let data = doc.data();
+				data.commentId = doc.id; // Add the document ID to the data
 				if (typeof data.time === 'string') {
 					data.time = new Date(data.time); // Parse string to Date
 				}
@@ -96,13 +105,15 @@
 		fetchData();
 	});
 
-	const modalStore = getModalStore();
-	const editForumPost: ModalComponent = { ref: EditForumPost };
+
 
 	// Reactive statements
 	$: console.log($markdownText);
 	$: console.log($title);
 
+	
+	const modalStore = getModalStore();
+	const editForumPost: ModalComponent = { ref: EditForumPost };
 	let modal: ModalSettings;
 
 	// Reactive statement to update the modal object
@@ -135,7 +146,7 @@
 						'X-firebase-token': token
 					}
 				});
-	
+
 				// If the post was successfully deleted, navigate to the forum
 				if (response.ok) {
 					navigate('/forum');
@@ -146,6 +157,7 @@
 			}
 		}
 	}
+
 
 	async function likePost(postId: string) {  // Add postId as a parameter with type string
         try {
@@ -186,18 +198,75 @@
 		currentMessage = '';
 	}
 
+	async function editComment(commentId: string) {
+		try {
+			console.log('text', $editCommentText);
+			console.log('commentId:', commentId);
+			const token = await getToken();
+			const submissionFormData = new FormData();
+			submissionFormData.append('text', $editCommentText);
+			submissionFormData.append('commentId', commentId);
+			// Append the postID to the URL as a parameter
+			const response = await fetch(`/api/forum/editComment/${data.post}`, {
+				method: 'POST',
+				headers: {
+					'X-firebase-token': token
+				},
+				body: submissionFormData
+			});
+
+			editingComment = '';
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+		currentMessage = '';
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
 			addComment();
 		}
 	}
+
+	function toggleEditComment(commentId: string, text: string) {
+		console.log('editingComment:', commentId);
+
+		if (editingComment === commentId) {
+			editingComment = '';
+		} else {
+			editingComment = commentId;
+			$editCommentText = text;
+		}
+	}
+
+	// Notifications buttons logic
+	let subscribed = false;
+	let page = 'forum';
+	let post = data.post;
+	$: {
+		(async () => {
+			subscribed = await isSubscribed(page);
+		})();
+	}
+
+	async function handleSubscribe() {
+		await subscribeToPage(page);
+		subscribed = await isSubscribed(page);
+	}
+
+	async function handleUnsubscribe() {
+		await unsubscribeFromPage(page);
+		subscribed = await isSubscribed(page);
+	}
+	
 </script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <div class="relative mt-8 mb-4 px-4">
-    <!-- Center-aligned Title, Author, and Date -->
+
+	<!-- Center-aligned Title, Author, and Date -->
     <div class="text-center mx-auto" style="max-width: 800px;">
         <h1 class="text-4xl font-bold">{$title}</h1>
         <p class="text-sm">{$authorName}</p>
@@ -210,14 +279,25 @@
 		</div>
     </div>
 
-    <!-- Right-aligned Delete/Edit Buttons -->
-    {#if $uid === $authorUID}
-    <div class="absolute right-0 top-0">
+	{#if subscribed}
+		<button
+			type="button"
+			class="btn variant-filled"
+			on:click={async () => await handleUnsubscribe()}><Fa icon={faBellSlash} /></button
+		>
+	{:else}
+		<button type="button" class="btn variant-filled" on:click={async () => await handleSubscribe()}
+			><Fa icon={faBell} /></button
+		>
+	{/if}
 
-        <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-        <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
-    </div>
-{/if}
+	<!-- Right-aligned Delete/Edit Buttons -->
+	{#if $uid === $authorUID || isAdmin}
+		<div class="absolute right-0 top-0">
+			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+		</div>
+	{/if}
 </div>
 
 <!-- Main content area -->
@@ -225,6 +305,7 @@
 	<div>
 		<MarkdownRenderer {markdownText} />
 	</div>
+
 	<div class="grid gap-1 h-auto w-auto p-4">
 		<div class="bg-surface-500/30 p-4 rounded">
 			<div
@@ -247,14 +328,39 @@
 			{#each $comments as comment}
 				<div class="grid gap-2">
 					<div
-						class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost' : 'variant-soft'}`}
+						class={`card p-4  rounded-tl-none space-y-2 my-2 ${userID === comment.authorUID ? 'variant-ghost-primary' : 'variant-soft'}`}
 					>
-						<!-- Added 'my-2' class for margin -->
 						<header class="flex justify-between items-center">
 							<p class="font-bold">{comment.authorName}</p>
 							<small class="opacity-50">{new Date(comment.time).toLocaleString()}</small>
 						</header>
-						<p>{comment.text}</p>
+						{#if editingComment == comment.commentId}
+							<textarea class="textarea" bind:value={$editCommentText} />
+						{:else}
+							<p class="text-sm">{comment.text}</p>
+						{/if}
+						{#if userID === comment.authorUID}
+							{#if editingComment != comment.commentId}
+								<button
+									class="btn variant-filled-primary"
+									on:click={() => toggleEditComment(comment.commentId, comment.text)}
+								>
+									<Fa icon={faEdit} />
+								</button>
+							{:else}
+								<button
+									class="btn variant-filled-primary"
+									on:click={() => editComment(comment.commentId)}
+								>
+									save
+								</button>
+								<button
+									class="btn variant-filled-primary"
+									on:click={() => toggleEditComment(comment.commentId, comment.text)}
+									>cancel
+								</button>
+							{/if}
+						{/if}
 					</div>
 				</div>
 			{/each}

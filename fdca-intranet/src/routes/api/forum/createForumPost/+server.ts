@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
+import { sendNotifications } from '$lib/notification.server';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -75,18 +76,32 @@ export async function POST(event) {
             console.log('Creating forum post');
             const forumPostRef = await admin.firestore().collection('OpenForum').add(forumPost);
             console.log('Successfully created forum post', forumPostRef.id); // Log the document ID
-        
+
             // Get the created forum post from Firestore
             const createdPost = await forumPostRef.get();
             const createdPostData = createdPost.data();
-        
+
             // Enhance the data with the document ID if needed
-            const postDataWithId = {    
+            const postDataWithId = {
                 id: forumPostRef.id, // Include the document ID
                 ...createdPostData,
             };
-        
+
             console.log('Forum post data with ID:', postDataWithId); // Log the complete document data including the ID
+
+            // Send notifications to subscribers of the forum
+            sendNotifications(firebaseToken, forumPost.title,
+                (`
+                    <html>
+                        <body>
+                            <h1>New Forum Post</h1>
+                            <p>Title: ${forumPost.title}</p>
+                            <p>Author: ${forumPost.authorName}</p>
+                            <a href="https://intranet.fdca.dk/forum/${forumPostRef.id}">View post</a>
+                        </body>
+                    </html>
+            `), "forum", "all");
+
             return json({ success: true, post: postDataWithId });
         } catch (error) {
             console.error('Failed to create forum post:', error);

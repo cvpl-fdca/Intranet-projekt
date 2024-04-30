@@ -36,6 +36,7 @@ export async function POST(event) {
 
     // Proceed to use the UID to update Firestore as before
     const data = await event.request.formData();
+    console.log('Form data:', data);
     // Extract details from the form data
 
     if (validate(data) === true) {
@@ -52,6 +53,8 @@ export async function POST(event) {
                     work: data.get('emailWork'),
                 },
                 discordName: data.get('discordName'),
+                certificate: data.get('certificate'),
+                arbejde: data.get('arbejde'),
             },
         };
 
@@ -92,29 +95,36 @@ export async function POST(event) {
         });
     }
 }
-
 function validate(userDetails: { get: (arg0: string) => any; }) {
     errors = [];
-    if (!validator.isAlpha(userDetails.get('name'), 'da-DK', { ignore: ' ' })) {
+    const name = userDetails.get('name');
+    const telPrivate = userDetails.get('telPrivate');
+    const emailFDCA = userDetails.get('emailFDCA');
+    const emailPrivate = userDetails.get('emailPrivate');
+    const discordName = userDetails.get('discordName');
+    const certificate = userDetails.get('certificate');
+    const arbejde = userDetails.get('arbejde');
+
+    if (name && !validator.isAlpha(name, 'da-DK', { ignore: ' ' })) {
         errors.push('Invalid name');
     }
-    if (!validator.isMobilePhone(userDetails.get('telPrivate'))) {
+    if (telPrivate && !validator.isMobilePhone(telPrivate)) {
         errors.push('Invalid private phone number');
     }
-    if (!validator.isMobilePhone(userDetails.get('telWork'))) {
-        errors.push('Invalid work phone number');
-    }
-    if (!validator.isEmail(userDetails.get('emailFDCA'))) {
+    if (emailFDCA && !validator.isEmail(emailFDCA)) {
         errors.push('Invalid FDCA email');
     }
-    if (!validator.isEmail(userDetails.get('emailPrivate'))) {
+    if (emailPrivate && !validator.isEmail(emailPrivate)) {
         errors.push('Invalid private email');
     }
-    if (!validator.isEmail(userDetails.get('emailWork'))) {
-        errors.push('Invalid work email');
-    }
-    if (!validator.matches(userDetails.get('discordName'), /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
+    if (discordName && !validator.matches(discordName, /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
         errors.push('Invalid discord name');
+    }
+    if (certificate && !validator.isAlpha(certificate, 'da-DK', { ignore: ', ' })) {
+        errors.push('Invalid certificate');
+    }
+    if (arbejde && !validator.isAlpha(arbejde, 'da-DK', { ignore: ',' })) {
+        errors.push('Invalid arbejde');
     }
     console.log("errors", errors);
     return errors.length === 0 ? true : false;

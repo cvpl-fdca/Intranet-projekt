@@ -19,12 +19,14 @@ type Element = {
 	wmail: string;
 	pphone: string;
 	wphone: string;
+	work: string;
+	certs: string;
 };
 
 function setTableSource(): TableSource {
 	return {
-		head: ['Name', 'Discord', 'Mail privat', 'Mail FDCA',  'Telefon privat'],
-		body: tableMapperValues(sourceData, ['name', 'discord', 'pmail', 'fmail',  'pphone']),
+		head: ['Navn', 'Discord', 'Mail privat', 'Mail FDCA',  'Telefon privat', 'Arbejde', 'Certifikater'],
+		body: tableMapperValues(sourceData, ['name', 'discord', 'pmail', 'fmail',  'pphone', 'work', 'certs']),
 	}
 };
 
@@ -42,6 +44,8 @@ function getSourceData(members: User[]): Element[] {
 			wmail: member.details.email.work,
 			pphone: member.details.phone.private,
 			wphone: member.details.phone.work,
+			work: member.details.arbejde,
+			certs: member.details.certificate,
 		};
 		console.log(new_el);
 		sourceData.push(new_el);
