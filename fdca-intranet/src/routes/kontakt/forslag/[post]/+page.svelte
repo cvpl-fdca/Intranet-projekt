@@ -18,6 +18,7 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 
 	export let data: PageData;
@@ -219,6 +220,9 @@
 	rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
 />
+
+<ReportPage />
+
 
 <div class="relative mt-8 mb-4 px-4">
 	<!-- Center-aligned Title, Author, and Date -->

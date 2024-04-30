@@ -27,6 +27,7 @@
 	import { faBellSlash, faBell } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import EditArticle from '$lib/EditArticle.svelte';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -127,6 +128,8 @@
 	}
 </script>
 
+<ReportPage />
+
 <div class="relative mt-8 mb-4 px-4">
 	<!-- Center-aligned Title, Author, and Date -->
 	<div class="text-center mx-auto" style="max-width: 800px;">
@@ -148,7 +151,7 @@
 		{/if}
 		<!-- Right-aligned Delete/Edit Buttons -->
 		{#if $uid === $authorUID || isAdmin}
-				<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
 		{/if}
 	</div>
 </div>

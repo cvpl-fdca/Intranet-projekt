@@ -40,15 +40,24 @@ export async function POST(event) {
     const to = formData.get('to')?.toString() || "default@example.com";
     const subject = formData.get('subject')?.toString() || "No Subject";
     const body = formData.get('body')?.toString() || "No Content";
+    const type = formData.get('type')?.toString() || ""; // The type of email sent. Only type report is supported for now. The default is an empty string and sends the email to the board 
+    let toInbox = "";
 
     // Validate recipient email format
     if (!validator.isEmail(to)) {
         return json({ error: 'Invalid email address provided.' }, { status: 400 });
     }
 
+    if (type === "report") {
+        toInbox = "dm@fdca.dk" // TODO: Send to the admin inbox
+    }
+    else {
+        toInbox = "dm@fdca.dk" // TODO: When ready, change to Kontakt@fdca.dk
+    }
+
     const mailOptions = {
         from: token.email,
-        to: "dm@fdca.dk", // todo, change to kontakt@fdca.dk to hit the real inbox
+        to: toInbox,
         subject: "Intranet: " + subject,
         text: body,
     };

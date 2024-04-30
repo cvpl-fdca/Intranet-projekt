@@ -22,6 +22,7 @@
 	import Fa from 'svelte-fa';
 	import { faBell, faBellSlash, faEdit } from '@fortawesome/free-solid-svg-icons';
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 
 	export let data: PageData;
@@ -262,7 +263,9 @@
 	
 </script>
 
+<ReportPage />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 
 <div class="relative mt-8 mb-4 px-4">
 
