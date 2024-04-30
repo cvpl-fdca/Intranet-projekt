@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
+import { validateData } from '$lib/ValidateEventData.server.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -68,6 +69,14 @@ export async function POST(event) {
                 timeCreated: currentTimeInCopenhagen,
                 title: data.get('title') as string,
             };
+            if(!validateData(eventData)) {
+                return new Response(JSON.stringify({ error: 'Validation failed' }), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
 
             console.log('Event:', eventData);
             try {
