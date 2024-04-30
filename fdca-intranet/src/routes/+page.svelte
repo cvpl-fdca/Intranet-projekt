@@ -9,26 +9,16 @@
     import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
     import Fa from 'svelte-fa';
-    import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+    import { faPenToSquare, faTrash, faPalette } from '@fortawesome/free-solid-svg-icons';
 	import { getToken } from '$lib/login';
 	import { navigate } from 'svelte-routing';
+    import ColorEvent from '$lib/ColorEvent.svelte';
 
 	// You can add your script here if you need to handle any logic
 
     const modalStore = getModalStore();
 
     let events = writable([]);
-
-    const addEvent: ModalComponent = { ref: AddEvent };
-
-    const addModal: ModalSettings = {
-        type: 'component',
-        component: addEvent
-    };
-
-    const editEvent: ModalComponent = { ref: EditEvent };
-
-    let editModal: ModalSettings;
 
     let db = getFirestore(app);
 
@@ -49,10 +39,17 @@
             
 	});
 
+    const addEvent: ModalComponent = { ref: AddEvent };
+    const addModal: ModalSettings = {
+        type: 'component',
+        component: addEvent
+    };
     async function openAddModal() {
         modalStore.trigger(addModal);
     }
 
+    const editEvent: ModalComponent = { ref: EditEvent };
+    let editModal: ModalSettings;
     async function openEditModal(event) {
         editModal = {
             type: 'component',
@@ -92,6 +89,19 @@
 		}
     }
 
+    const colorEvent: ModalComponent = { ref: ColorEvent };
+    let colorModal: ModalSettings;
+    async function editColor(eventId: string) {
+        colorModal = {
+            type: 'component',
+            component: colorEvent,
+            meta: {
+                eventId: eventId,
+            },
+        }
+        modalStore.trigger(colorModal);
+    }
+
     modalStore.close();
 
 </script>
@@ -115,7 +125,7 @@
 
     .event-time {
         flex-basis: 400px; /* Set a fixed width for the event title column */
-        min-width: 300px; /* Set a minimum width for the event title column */
+        min-width: 250px; /* Set a minimum width for the event title column */
     }
 
     .event-title {
@@ -152,6 +162,9 @@
                         {#if $userProfileStore?.roles.isAdmin}
                             <button type="button" class="btn variant-filled" on:click={openEditModal(event)}>
                                 <Fa icon={faPenToSquare}/>
+                            </button>
+                            <button type="button" class="btn variant-filled" on:click={editColor(event.id)}>
+                                <Fa icon={faPalette}/>
                             </button>
                             <button type="button" class="btn variant-filled" on:click={deleteEvent(event.id)}>
                                 <Fa icon={faTrash}/>
