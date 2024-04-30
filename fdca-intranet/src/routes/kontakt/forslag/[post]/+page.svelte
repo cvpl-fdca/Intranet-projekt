@@ -18,7 +18,7 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
-	
+
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -39,7 +39,7 @@
 	let time = writable('');
 	let comments = writable<DocumentData[]>([]);
 	let upvotesCount = writable('');
-    let downvotesCount = writable('');
+	let downvotesCount = writable('');
 
 	getUid()
 		.then((uidValue) => {
@@ -128,7 +128,7 @@
 						'X-firebase-token': token
 					}
 				});
-	
+
 				// If the post was successfully deleted, navigate to the forslag
 				if (response.ok) {
 					navigate('/forslag');
@@ -167,7 +167,7 @@
 
 	async function vote(voteDirection: string) {
 		try {
-			const token = await getToken();	
+			const token = await getToken();
 			const submissionFormData = new FormData();
 			submissionFormData.append('voteDirection', voteDirection);
 
@@ -179,102 +179,79 @@
 				body: submissionFormData,
 			});
 		} catch (error) {
-			console.error('Error:', error.message);	
+			console.error('Error:', error.message);
 		}
 	}
 
 	async function fetchVoteCounts(postId: string) {
-    try {
-        const token = await getToken(); // Assumed function to get user's auth token
-        const response = await fetch(`/api/kontakt/countVotesOnForslag/${postId}`, {
-            method: 'GET',
-            headers: {
-                'X-firebase-token': token
-            }
-        });
+		try {
+			const token = await getToken(); // Assumed function to get user's auth token
+			const response = await fetch(`/api/kontakt/countVotesOnForslag/${postId}`, {
+				method: 'GET',
+				headers: {
+					'X-firebase-token': token
+				}
+			});
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log(`Upvotes: ${data.upvotesCount}, Downvotes: ${data.downvotesCount}`);
+			if (response.ok) {
+				const data = await response.json();
+				console.log(`Upvotes: ${data.upvotesCount}, Downvotes: ${data.downvotesCount}`);
 
-            // Example: Update UI elements or state with these counts
-            upvotesCount.set(data.upvotesCount);
-            downvotesCount.set(data.downvotesCount);
-        } else {
-            throw new Error('Failed to fetch vote counts');
-        }
-    } catch (error) {
-        console.error('Error:', error.message);
-        // Optionally handle the error in UI, like showing an error message to the user
-    }
-}
+				// Update UI elements or state with these counts
+				upvotesCount.set(data.upvotesCount);
+				downvotesCount.set(data.downvotesCount);
+			} else {
+				throw new Error('Failed to fetch vote counts');
+			}
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+	}
+
+
 </script>
 
-<style>
-		.center-content {
-		  display: flex;
-		  flex-direction: column;
-		  align-items: center;
-		  justify-content: center;
-		  gap: 10px;
-		  height: 200px;
-		}
-	
-		.voting-buttons {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-top: 10px; /* Space above the voting buttons */
-	  }
-	
-	  .vote-button {
-		border: none;
-		background: none;
-		cursor: pointer;
-		font-size: 18px; /* Size of the vote buttons */
-		color: #ffffff; /* Color of the vote buttons */
-		margin: 0 5px; /* Space between the vote count and buttons */
-	  }
-</style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link
+	rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
 
 <div class="relative mt-8 mb-4 px-4">
-    <!-- Center-aligned Title, Author, and Date -->
-    <div class="text-center mx-auto" style="max-width: 800px;">
-        <h1 class="text-4xl font-bold">{$title}</h1>
-        <p class="text-sm">{$authorName}</p>
-        <p class="text-sm">{new Date($time).toLocaleString()}</p>
-    </div>
+	<!-- Center-aligned Title, Author, and Date -->
+	<div class="text-center mx-auto" style="max-width: 800px;">
+		<h1 class="text-4xl font-bold">{$title}</h1>
+		<p class="text-sm">{$authorName}</p>
+		<p class="text-sm">{new Date($time).toLocaleString()}</p>
+	</div>
 
-    <!-- Right-aligned Delete/Edit Buttons -->
-    {#if $uid === $authorUID}
-        <div class="absolute right-0 top-0">
-            <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-            <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
-        </div>
-    {/if}
+	<!-- Right-aligned Delete/Edit Buttons -->
+	{#if $uid === $authorUID}
+		<div class="absolute right-0 top-0">
+			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+		</div>
+	{/if}
 </div>
 
 <!-- Main content area -->
 <div class="w-[800px] mx-auto">
 	<div>
 		<MarkdownRenderer {markdownText} />
-	</div>
-	<div class="grid grid-cols-3 items-center">
-		<button class="vote-button" on:click={() => vote('upvote')} aria-label="Upvote">
-			<i class="fas fa-arrow-alt-circle-up"></i>
-		</button>
-		<p id="upvoteCount">{$upvotesCount}</p>
-		<p id="downvoteCount">{$downvotesCount}</p>
-		<button class="vote-button" on:click={() => vote('downvote')} aria-label="Downvote">
-			<i class="fas fa-arrow-alt-circle-down"></i>
-		</button>
-	</div>
-	
+</div>
+<div class="grid grid-cols-[auto_auto_1fr] items-center gap-x-2">
+	<button class="vote-button" on:click={() => vote('upvote')} aria-label="Upvote">
+		<i class="fas fa-arrow-alt-circle-up"></i>
+	</button>
+<p id="upvoteCount">{$upvotesCount}</p>
+<div></div>
+	<button class="vote-button" on:click={() => vote('downvote')} aria-label="Downvote">
+		<i class="fas fa-arrow-alt-circle-down"></i>
+	</button>
+<p id="downvoteCount">{$downvotesCount}</p>
 
-	<div class="grid gap-1 h-auto w-auto p-4">
-		<div class="bg-surface-500/30 p-4 rounded">
+</div>
+	<div class="grid gap-1 h-auto w-auto p-4 flex justify-end">
+		<div class="bg-surface-500/30 p-4 rounded w-[700px]">
 			<div
 				class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token"
 			>
@@ -309,3 +286,30 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.center-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		height: 200px;
+	}
+
+	.voting-buttons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 10px; /* Space above the voting buttons */
+	}
+
+	.vote-button {
+		border: none;
+		background: none;
+		cursor: pointer;
+		font-size: 18px; /* Size of the vote buttons */
+		color: #ffffff; /* Color of the vote buttons */
+		margin: 0 5px; /* Space between the vote count and buttons */
+	}
+</style>
