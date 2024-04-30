@@ -76,7 +76,7 @@
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
 			<!-- Phone -->
 			<li class="p-2 rounded-md font-semibold">Certificates</li>
-			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{userDoc?.details.arbejde}</li>
+			<li class="hover:bg-gray-700 p-2 rounded-md font-semibold">{userDoc?.details.certificate}</li>
 
 			<!-- Divider Line -->
 			<hr class="my-2 border-t border-gray-600 h-px bg-gray-600 w-5/7 mx-auto" />
