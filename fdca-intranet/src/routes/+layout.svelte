@@ -99,8 +99,6 @@
 			window.location.href = '/kontakt/medlemmer';
 		} else if (value === 'forslag') {
 			window.location.href = '/kontakt/forslag';
-		} else if (value === 'admin') {
-			window.location.href = '/admin'
 		} else if (value === 'rettigheder') {
 			window.location.href = '/admin/rettigheder';
 		} else if (value === 'karkom') {
@@ -160,7 +158,6 @@
 <!-- Combobox for Admin -->
 <div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboAdmin">
 	<ListBox rounded="rounded-none">
-		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="admin" on:click={() => handleListBoxClick('admin')}>Admin</ListBoxItem>
 		<ListBoxItem bind:group={comboboxAdmin} name="medium" value="rettigheder" on:click={() => handleListBoxClick('rettigheder')}>Rettigheder</ListBoxItem>
 	</ListBox>
 	<div class="arrow bg-surface-100-800-token" />
@@ -200,10 +197,6 @@
 				<button class="btn variant-filled justify-between" use:popup={popupComboKontakt}>
 					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>
-				</button>
-				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
-					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
-					<Fa icon={faSearch} class="fa" />
 				</button>
 				<Avatar
 					class="w-10"

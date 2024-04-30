@@ -10,7 +10,9 @@ export class User {
         phone: {
             private: "",
             work: ""
-        }
+        },
+        certificate: "", // Add this line if certificate is a string
+        arbejde: ""
     };
     public roles = {
         isAdmin: false,

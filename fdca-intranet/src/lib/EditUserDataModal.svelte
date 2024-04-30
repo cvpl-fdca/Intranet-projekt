@@ -16,6 +16,8 @@
 	// Form Data
 	const formData = {
 		name: userDoc.details.fullName,
+		arbejde: userDoc.details.arbejde || '',
+		certificate: userDoc.details.certificate || '',
 		telPrivate: userDoc.details.phone.private,
 		telWork: userDoc.details.phone.work,
 		emailFDCA: userDoc.details.email.fdca,
@@ -26,12 +28,15 @@
 
 	// Function to submit form data to the server
     async function onFormSubmit(): Promise<void> {
+		console.log(formData);
         if (browser) {
             // Create a new FormData instance
             const submissionFormData = new FormData();
             // Populate it with the current state of the reactive formData object
             for (const key in formData) {
+				
                 if (formData.hasOwnProperty(key)) {
+					console.log(key);
                     submissionFormData.append(key, (formData as any)[key] as string);
                 }
             }
@@ -77,6 +82,26 @@
 			<label class="label">
 				<span>Navn</span>
 				<input class="input" type="text" bind:value={formData.name} placeholder="indtast navn..." />
+			</label>
+
+			<label class="label">
+				<span>Arbejde</span>
+				<input
+					class="input"
+					type="text"
+					bind:value={formData.arbejde}
+					placeholder="Indtast arbejde..."
+				/>
+			</label>
+
+			<label class="label">
+				<span>Certificates</span>
+				<input
+					class="input"
+					type="text"
+					bind:value={formData.certificate}
+					placeholder="Indtast certificate..."
+				/>
 			</label>
 
 			<label class="label">
