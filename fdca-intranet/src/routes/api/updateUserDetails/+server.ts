@@ -120,7 +120,7 @@ function validate(userDetails: { get: (arg0: string) => any; }) {
     if (discordName && !validator.matches(discordName, /^(?!.*?\.{2,})[a-z0-9_\.]{2,32}$/)) {
         errors.push('Invalid discord name');
     }
-    if (certificate && !validator.isAlpha(certificate, 'da-DK', { ignore: ',' })) {
+    if (certificate && !validator.isAlpha(certificate, 'da-DK', { ignore: ', ' })) {
         errors.push('Invalid certificate');
     }
     if (arbejde && !validator.isAlpha(arbejde, 'da-DK', { ignore: ',' })) {
