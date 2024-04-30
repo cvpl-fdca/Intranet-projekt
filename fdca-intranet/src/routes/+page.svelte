@@ -31,7 +31,6 @@
 			(querySnapshot) => {
 				const eventsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 				events.set(eventsData);
-				console.log(eventsData);
 			},
 			(error) => {
 				console.error('Error getting events:', error);
@@ -61,8 +60,6 @@
         };
         modalStore.trigger(editModal);
     }
-
-    $: console.log("EVENTS: ");
 
     async function deleteEvent(eventId: string) {
         if (confirm('Are you sure you want to delete this post?')) {
