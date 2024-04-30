@@ -13,6 +13,7 @@
 	import { getToken } from '$lib/login';
 	import { navigate } from 'svelte-routing';
     import ColorEvent from '$lib/ColorEvent.svelte';
+	import type { stringify } from 'querystring';
 
 	// You can add your script here if you need to handle any logic
 
@@ -152,10 +153,10 @@
                     <div class="event-container">
                         <AccordionItem class="accordion-item" closed>
                             <svelte:fragment slot="lead">
-                                <div class="event-time">{event.eventStart} til {event.eventEnd}</div>
+                                <div class="event-time" style="color: {event.color}">{event.eventStart} til {event.eventEnd}</div>
                             </svelte:fragment>
                             <svelte:fragment slot="summary">
-                                <div class="event-title">{event.title}</div>
+                                <div class="event-title" style="color: {event.color}">{event.title}</div>
                             </svelte:fragment>
                             <svelte:fragment slot="content">{event.description}</svelte:fragment>
                         </AccordionItem>
