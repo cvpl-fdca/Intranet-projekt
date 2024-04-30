@@ -198,10 +198,6 @@
 					<span class="capitalize">{comboboxKontakt ?? 'Trigger'}</span>
 					<span>↓</span>
 				</button>
-				<button class="btn variant-filled" on:click={() => modalStore.trigger(searchModal)}>
-					&nbsp&nbsp&nbspSearch&nbsp&nbsp&nbsp&nbsp&nbsp;
-					<Fa icon={faSearch} class="fa" />
-				</button>
 				<Avatar
 					class="w-10"
 					border="border-4 border-surface-300-600-token hover:!border-primary-500"
