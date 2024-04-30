@@ -21,6 +21,7 @@ export class User {
         },
     };
     public uid = "";
+    public photoURL: string = "";
     constructor(uid: string) {
         this.uid = uid;
     }
