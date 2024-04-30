@@ -19,6 +19,7 @@
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
+	
 
 	export let data: PageData;
 	let currentMessage = '';
@@ -38,7 +39,8 @@
 	let authorName = writable('');
 	let time = writable('');
 	let comments = writable<DocumentData[]>([]);
-	let likes = writable<DocumentData[]>([]);
+	let likes = writable(0);
+	let likesCount = writable(0);
 
 	getUid()
 		.then((uidValue) => {
@@ -59,6 +61,7 @@
 				authorName.set(postData.authorName);
 				time.set(postData.time);
 				console.log(markdownText);
+				likes.set(postData.likes.length);
 			}
 		});
 
@@ -78,12 +81,12 @@
 			comments.set(commentsData);
 		});
 
-		  // Subscribe to likes subcollection
-		  const likesRef = collection(postRef, 'likes');
+		// Subscribe to likes subcollection
+		const likesRef = collection(postRef, 'likes');
 
 		onSnapshot(likesRef, (snapshot) => {
-  			let likesData = snapshot.docs.map((doc) => doc.data());
-  			likes.set(likesData);
+			let likesData = snapshot.docs.map((doc) => doc.data());
+			likes.set(likesData.length);
 		});
 
 		return unsubscribe;
@@ -144,25 +147,25 @@
 		}
 	}
 
-	async function likePost() {
-  		try {
-    		const token = await getToken();
-    		const submissionFormData = new FormData();
-		if (userID) {
-			submissionFormData.append('uid', userID);
-		}
+	async function likePost(postId: string) {  // Add postId as a parameter with type string
+        try {
+            const token = await getToken();
+            const submissionFormData = new FormData();
+            if (userID) {
+                submissionFormData.append('uid', userID);
+            }
 
-    		const response = await fetch(`/api/forum/addLike/${data.post}`, {
-      		method: 'POST',
-      		headers: {
-        		'X-firebase-token': token
-      		},
-      	body: submissionFormData
-    	});
-  	} catch (error) {
-      console.error('Error:', error.message);
+            const response = await fetch(`/api/forum/addLike/${postId}`, {  // Use postId instead of data.post
+                method: 'POST',
+                headers: {
+                    'X-firebase-token': token
+                },
+                body: submissionFormData
+            });
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
     }
-}
 
 	async function addComment() {
 		try {
@@ -191,18 +194,26 @@
 	}
 </script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 <div class="relative mt-8 mb-4 px-4">
     <!-- Center-aligned Title, Author, and Date -->
     <div class="text-center mx-auto" style="max-width: 800px;">
         <h1 class="text-4xl font-bold">{$title}</h1>
         <p class="text-sm">{$authorName}</p>
-        <p class="text-sm">{new Date($time).toLocaleString()}</p>
+        <p class="text-sm">{new Date($time).toLocaleString()}</p>        
+		<div class="flex justify-start">
+			<button on:click={() => likePost(data.post)} type="button" class="btn variant-filled mr-4">
+				<i class="fas fa-thumbs-up"></i>
+			</button>
+			<p>Likes: {$likes}</p>
+		</div>
     </div>
 
     <!-- Right-aligned Delete/Edit Buttons -->
     {#if $uid === $authorUID}
     <div class="absolute right-0 top-0">
-        <button on:click={likePost} type="button" class="btn variant-filled mr-4">Like</button>
+
         <button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
         <button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
     </div>

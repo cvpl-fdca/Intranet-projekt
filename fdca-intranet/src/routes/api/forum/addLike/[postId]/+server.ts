@@ -62,11 +62,46 @@ export async function POST(event) {
         });
     }
 
-    // Add a like to the forum post document in Firestore
+    // Fetch the forum post document from Firestore
     const postRef = admin.firestore().collection('OpenForum').doc(postId);
+    const postDoc = await postRef.get();
+
+    if (!postDoc.exists) {
+    return new Response(JSON.stringify({ error: 'Post not found' }), {
+        status: 404,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+    const postData = postDoc.data();
+
+    // Check if the user's ID is already in the likes array
+if (postData.likes.includes(uid)) {
+    // If it is, remove it
+    await postRef.update({
+        likes: admin.firestore.FieldValue.arrayRemove(uid)
+    });
+
+    // Remove the like document
+    const likeRef = admin.firestore().collection('likes').doc(uid);
+    await likeRef.delete();
+} else {
+    // If it's not, add it
     await postRef.update({
         likes: admin.firestore.FieldValue.arrayUnion(uid)
     });
+
+    // Add a new like document
+    const likeRef = admin.firestore().collection('likes').doc(uid);
+    await likeRef.set({
+        postId: postId,
+        userId: uid,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+}
+
 
     return json({ success: true });
 }
