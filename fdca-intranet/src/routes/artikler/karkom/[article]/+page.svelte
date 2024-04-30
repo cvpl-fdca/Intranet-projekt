@@ -32,8 +32,10 @@
 	let currentMessage = '';
 	console.log(data);
 	let userID: string | undefined;
+	let isAdmin: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
+		isAdmin = value?.roles.isAdmin;
 	});
 
 	$: console.log('uid', userID);
@@ -145,7 +147,7 @@
 			>
 		{/if}
 		<!-- Right-aligned Delete/Edit Buttons -->
-		{#if $uid === $authorUID}
+		{#if $uid === $authorUID || isAdmin}
 				<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
 		{/if}
 	</div>

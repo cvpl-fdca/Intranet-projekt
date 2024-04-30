@@ -4,6 +4,8 @@ import { type DecodedIdToken } from 'firebase-admin/auth';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
+const db = admin.firestore();
+
 export async function DELETE(event) {
     // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
@@ -18,12 +20,14 @@ export async function DELETE(event) {
     let username: string;
     let token: DecodedIdToken;
 
+
     try {
         // Verify the Firebase token and decode it to get the UID
         console.log('Verifying Firebase token:', firebaseToken);
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);
+        console.log('Token:', token);
     } catch (error) {
         console.error('Error verifying Firebase token:', error);
         return new Response(JSON.stringify({ error: 'Failed to authenticate Firebase token' }), {
@@ -34,7 +38,10 @@ export async function DELETE(event) {
         });
     }
 
-    
+    let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
+
+    let isAdmin = userDoc.roles.isAdmin;
+
     try {
         // Get the forslag post ID from the request body
         const postId = event.params.postId;
@@ -44,10 +51,15 @@ export async function DELETE(event) {
         const forslagPost = await forslagPostRef.get();
 
         // Check if the user is the author or an admin
-        if (forslagPost.exists && (forslagPost.data().authorUID === token.uid || token.admin)) {
+        console.log('is the user admin: ', isAdmin);
+
+
+
+        if (forslagPost.exists && (forslagPost.data().authorUID === token.uid || isAdmin === true)) {
+            console.log('Deleting forslag post');
             // Delete the forslag post
             await forslagPostRef.delete();
-
+            console.log('Forslag post deleted');
             return json({ success: true });
         } else {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
