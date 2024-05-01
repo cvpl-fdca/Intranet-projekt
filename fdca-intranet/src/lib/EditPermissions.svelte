@@ -87,6 +87,7 @@
             changePermission(uid, 'socsam', roles.socsam, roles.socsam_role);
         }
         navigate('/admin/rettigheder');
+        location.reload();
     }
     
 
