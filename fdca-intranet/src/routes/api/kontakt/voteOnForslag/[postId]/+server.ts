@@ -58,11 +58,33 @@ export async function POST(event) {
 
     // Create a new comment document in Firestore
     if(voteDirection === 'upvote') {
+        const downvoted = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
+        try {
+            if((await downvoted.get()).data().voted) {
+                return new Response(JSON.stringify({ error: 'Already voted.'}), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+        } catch (error) {}
         const commentRef = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
         await commentRef.set({
             voted: true
         });
     } else if (voteDirection === 'downvote') {
+        const upvoted = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
+        try {
+            if((await upvoted.get()).data().voted) {
+                return new Response(JSON.stringify({error: 'Already voted.'}), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+        } catch (error) {}
         const commentRef = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
         await commentRef.set({
             voted: true
