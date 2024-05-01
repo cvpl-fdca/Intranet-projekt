@@ -3,6 +3,7 @@
     import { createEventDispatcher, onDestroy, onMount, SvelteComponent} from 'svelte';
     import { getToken } from '$lib/login';
 	import { faGaugeSimpleMed } from '@fortawesome/free-solid-svg-icons';
+	import { navigate } from 'svelte-routing';
 
     type Roles = {
         isAdmin: boolean;
@@ -85,7 +86,7 @@
         } if (roles.socsam !== roles_before.socsam || roles.socsam_role !== roles_before.socsam_role) {
             changePermission(uid, 'socsam', roles.socsam, roles.socsam_role);
         }
-
+        navigate('/admin/rettigheder');
     }
     
 

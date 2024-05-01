@@ -12,6 +12,7 @@
 	import type { User } from './user';
 	import { writable, type Writable } from 'svelte/store';
 	import MarkdownRenderer from './MarkdownRenderer.svelte';
+	import { navigate } from 'svelte-routing';
 
 	let userDoc;
 	userProfileStore.subscribe((value) => {
@@ -47,6 +48,10 @@
 					'X-firebase-token': token
 				}
 			});
+			if (response.ok) {
+					navigate(`/forum/${postId}`);
+					location.reload();
+				}
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
