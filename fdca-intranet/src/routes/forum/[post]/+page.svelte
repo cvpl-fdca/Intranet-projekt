@@ -281,11 +281,16 @@
 	{/if}
 
 	<!-- Right-aligned Delete/Edit Buttons -->
-	{#if $uid === $authorUID || isAdmin}
+	{#if $uid === $authorUID}
 		<div class="absolute right-0 top-0">
 			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
 			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
 		</div>
+	{/if}
+	{#if $uid !== $authorUID && isAdmin}
+	<div class="absolute right-0 top-0">
+		<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+	</div>
 	{/if}
 </div>
 
