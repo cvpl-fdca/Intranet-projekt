@@ -44,6 +44,10 @@
 					'X-firebase-token': token
 				}
 			});
+      if (response.ok) {
+					navigate(`/`);
+					location.reload();
+			}
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
