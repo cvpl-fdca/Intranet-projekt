@@ -27,15 +27,12 @@
 
 	export let data: PageData;
 	let currentMessage = '';
-	console.log(data);
 	let userID: string | undefined;
 	let isAdmin: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
 		isAdmin = value?.roles.isAdmin;
 	});
-
-	$: console.log('uid', userID);
 
 	let db = getFirestore(app);
 	let title = writable('');
@@ -69,7 +66,6 @@
 				authorUID.set(postData.authorUID);
 				authorName.set(postData.authorName);
 				time.set(postData.time);
-				console.log(markdownText);
 				likes.set(postData.likes.length);
 			}
 		});
@@ -105,12 +101,6 @@
 	onMount(() => {
 		fetchData();
 	});
-
-
-
-	// Reactive statements
-	$: console.log($markdownText);
-	$: console.log($title);
 
 	
 	const modalStore = getModalStore();
@@ -201,8 +191,6 @@
 
 	async function editComment(commentId: string) {
 		try {
-			console.log('text', $editCommentText);
-			console.log('commentId:', commentId);
 			const token = await getToken();
 			const submissionFormData = new FormData();
 			submissionFormData.append('text', $editCommentText);
@@ -231,8 +219,6 @@
 	}
 
 	function toggleEditComment(commentId: string, text: string) {
-		console.log('editingComment:', commentId);
-
 		if (editingComment === commentId) {
 			editingComment = '';
 		} else {
