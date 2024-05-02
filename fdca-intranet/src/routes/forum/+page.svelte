@@ -52,9 +52,6 @@
 
 	modalStore.close();
 
-	let selected = 'Sort';
-	const selectItem = (item) => (selected = item);
-
 	// Notifications buttons logic
 	let subscribed = false;
 	let page = 'forum';
@@ -92,13 +89,6 @@
 			on:click={async () => await handleSubscribe()}><Fa icon={faBell}/></button
 		>
 	{/if}
-
-	<button type="button" class="btn">{selected}<AngleDownOutline /></button>
-	<Dropdown>
-		<DropdownItem on:click={() => selectItem('Newest')}>Newest</DropdownItem>
-		<DropdownItem on:click={() => selectItem('Oldest')}>Oldest</DropdownItem>
-		<DropdownItem on:click={() => selectItem('Best')}>Best</DropdownItem>
-	</Dropdown>
 </div>
 
 <div class="grid grid-cols-3 gap-4">
