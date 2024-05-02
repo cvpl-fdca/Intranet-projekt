@@ -74,19 +74,25 @@
         console.log(uid);
     });
     
-    function submitChanges() {
-        console.log("New roles: ", roles);
-        console.log("Roles before: ", roles_before);
-        if(roles.isAdmin !== roles_before.isAdmin) {
-            changePermission(uid, 'isAdmin', roles.isAdmin, '');
-        } if (roles.karkom !== roles_before.karkom || roles.karkom_role !== roles_before.karkom_role) {
-            changePermission(uid, 'karkom', roles.karkom, roles.karkom_role);
-        } if (roles.strøko !== roles_before.strøko || roles.strøko_role !== roles_before.strøko_role) {
-            changePermission(uid, 'strøko', roles.strøko, roles.strøko_role);
-        } if (roles.socsam !== roles_before.socsam || roles.socsam_role !== roles_before.socsam_role) {
-            changePermission(uid, 'socsam', roles.socsam, roles.socsam_role);
+    async function submitChanges() {
+        const isAdminChanged = roles.isAdmin !== roles_before.isAdmin;
+        const isKarkomChanged = roles.karkom !== roles_before.karkom || roles.karkom_role !== roles_before.karkom_role;
+        const isStrøkoChanged = roles.strøko !== roles_before.strøko || roles.strøko_role !== roles_before.strøko_role;
+        const isSocsamChanged = roles.socsam !== roles_before.socsam || roles.socsam_role !== roles_before.socsam_role;
+
+        const changePermissionPromises = [];
+        if(isAdminChanged) {
+            changePermissionPromises.push(changePermission(uid, 'isAdmin', roles.isAdmin, ''));
+        } if (isKarkomChanged) {
+            changePermissionPromises.push(changePermission(uid, 'karkom', roles.karkom, roles.karkom_role));
+        } if (isStrøkoChanged) {
+            changePermissionPromises.push(changePermission(uid, 'strøko', roles.strøko, roles.strøko_role));
+        } if (isSocsamChanged) {
+            changePermissionPromises.push(changePermission(uid, 'socsam', roles.socsam, roles.socsam_role));
         }
+        await Promise.all(changePermissionPromises);
         navigate('/admin/rettigheder');
+        location.reload();
     }
     
 
