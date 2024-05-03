@@ -38,7 +38,6 @@ export async function sendNotifications(userFirebaseToken: string, subject: stri
                 throw new Error("emailAccountJson is undefined");
             }
         });
-        console.log('Keys:', keys);
     } catch (error) {
         console.error('Failed to retrieve or parse keys:', error);
     }

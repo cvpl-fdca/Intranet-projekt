@@ -12,7 +12,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
-console.log(currentTimeInCopenhagen);
 
 
 
@@ -32,7 +31,6 @@ export async function POST(event) {
 
     try {
         // Verify the Firebase token and decode it to get the UID
-        console.log('Verifying Firebase token:', firebaseToken);
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);
@@ -47,7 +45,6 @@ export async function POST(event) {
     }
 
     const data = await event.request.formData();
-    console.log('Form data', data);
 
     //TODO: Validate form data
     if (true) {

@@ -19,7 +19,7 @@ async function initializeFirebase() {
 }
 
 initializeFirebase().catch((error) => {
-    console.error('Failed to initialize Firebase:', error);
+    console.error('Failed to initialize Firebase');
 });
 
-export { db , firebaseAdmin as admin };
+export { db, firebaseAdmin as admin };

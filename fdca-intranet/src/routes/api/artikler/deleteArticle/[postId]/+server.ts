@@ -22,7 +22,6 @@ export async function DELETE(event) {
 
     try {
         // Verify the Firebase token and decode it to get the UID
-        console.log('Verifying Firebase token:', firebaseToken);
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);

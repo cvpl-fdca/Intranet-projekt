@@ -31,7 +31,6 @@
 			(querySnapshot) => {
 				const articlesData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 				articles.set(articlesData);
-				console.log(articlesData);
 			},
 			(error) => {
 				console.error('Error getting articles:', error);

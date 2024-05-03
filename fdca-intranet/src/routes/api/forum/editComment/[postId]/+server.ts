@@ -30,7 +30,6 @@ export async function POST(event) {
     let token: DecodedIdToken;
 
     try {
-        console.log('Verifying Firebase token:', firebaseToken);
         token = await admin.auth().verifyIdToken(firebaseToken);
         console.log('Successfully authenticated Firebase token from user:', token.email);
     } catch (error) {

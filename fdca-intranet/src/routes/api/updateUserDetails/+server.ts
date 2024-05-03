@@ -58,10 +58,8 @@ export async function POST(event) {
             },
         };
 
-        console.log('User details:', userDetails);
         try {
             console.log('Updating user details for UID:', uid);
-            console.log('User details to merge into "details":', userDetails);
 
             await admin.firestore().collection('users').doc(uid).update({
                 details: {

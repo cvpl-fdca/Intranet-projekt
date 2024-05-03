@@ -34,7 +34,6 @@ export async function POST(event) {
 
     try {
         // Verify the Firebase token and decode it to get the UID
-        console.log('Verifying Firebase token:', firebaseToken);
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);
@@ -78,7 +77,6 @@ export async function POST(event) {
                 });
             }
 
-            console.log('Event:', eventData);
             try {
                 console.log('Creating event');
                 const eventRef = await admin.firestore().collection('events').add(eventData);
@@ -94,7 +92,6 @@ export async function POST(event) {
                     ...createdEventData,
                 };
             
-                console.log('Event data with ID:', eventDataWithId); // Log the complete document data including the ID
                 return json({ success: true, post: eventDataWithId });
             } catch (error) {
                 console.error('Failed to create event:', error);

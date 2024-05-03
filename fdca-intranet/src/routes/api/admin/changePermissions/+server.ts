@@ -21,10 +21,8 @@ export async function POST(event) {
     let token: DecodedIdToken;
     try {
         // Verify the Firebase token and decode it to get the UID
-        console.log('Verifying Firebase token:', firebaseToken);
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
-        console.log('Successfully authenticated Firebase token from user:', token.email);
     } catch (error) {
         console.error('Error verifying Firebase token:', error);
         return new Response(JSON.stringify({ error: 'Failed to authenticate Firebase token' }), {

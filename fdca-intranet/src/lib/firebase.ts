@@ -1,8 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import { PUBLIC_ENVIRONMENT } from '$env/static/public';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfigDevTest = {
