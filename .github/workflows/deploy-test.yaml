@@ -60,6 +60,7 @@ jobs:
             AZURE_TENANT_ID=${{ secrets.FDCA_INTRANET_AZURE_TENANT_ID }}
             AZURE_CLIENT_SECRET=${{ secrets.FDCA_INTRANET_AZURE_CLIENT_SECRET }}
             AZURE_SUBSCRIPTION_ID=${{ secrets.FDCA_INTRANET_AZURE_SUBSCRIPTION_ID }}
+            ENVIRONMENT="test"
 
       - name: Update Deployment YAML to current tag
         run: |
