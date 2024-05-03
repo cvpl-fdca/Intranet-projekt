@@ -50,8 +50,8 @@ jobs:
       - name: Build, Tag, and Push Docker Image with Cache
         uses: docker/build-push-action@v2
         with:
-          context: ./fdca-intranet
-          file: Dockerfile
+          context: .
+          file: ./fdca-intranet/Dockerfile
           tags: sagalabspackages.azurecr.io/sagalabs/fdca-intranet-test:${{ github.sha }}
           push: true
           cache-from: type=registry,ref=sagalabspackages.azurecr.io/sagalabs/fdca-intranet-test:cache
