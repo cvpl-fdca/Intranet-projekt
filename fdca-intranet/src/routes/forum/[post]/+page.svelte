@@ -20,7 +20,7 @@
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
 	import Fa from 'svelte-fa';
-	import { faBell, faBellSlash, faEdit } from '@fortawesome/free-solid-svg-icons';
+	import { faBell, faBellSlash, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
 	import ReportPage from '$lib/ReportPage.svelte';
 
@@ -246,6 +246,23 @@
 		await unsubscribeFromPage(page);
 		subscribed = await isSubscribed(page);
 	}
+	async function deleteComment(commentId: string) {
+		try {
+			const token = await getToken();
+			const submissionFormData = new FormData();
+			submissionFormData.append('commentId', commentId);
+			// Append the postID to the URL as a parameter
+			const response = await fetch(`/api/forum/deleteComment/${data.post}`, {
+				method: 'DELETE',
+				headers: {
+					'X-firebase-token': token
+				},
+				body: submissionFormData
+			});
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+	}
 	
 </script>
 
@@ -354,6 +371,12 @@
 									>cancel
 								</button>
 							{/if}
+						{/if}
+						{#if userID === comment.authorUID || isAdmin}
+							<button
+								class="btn variant-filled-primary"
+								on:click={deleteComment(comment.commentId)}
+							><Fa icon={faTrash}/></button>
 						{/if}
 					</div>
 				</div>
