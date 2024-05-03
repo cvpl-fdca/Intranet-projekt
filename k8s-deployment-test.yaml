@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intranet-test
+  namespace: aau
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: intranet-test
+  template:
+    metadata:
+      labels:
+        app: intranet-test
+    spec:
+      containers:
+      - name: intranet-test
+        image: sagalabspackages.azurecr.io/fdca/fdca-intranet-test:latest
+        env:
+        - name: ENVIRONMENT
+          value: "dev"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: intranet-test
+  namespace: aau
+spec:
+  selector:
+    app: intranet-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
