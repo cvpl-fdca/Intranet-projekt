@@ -16,6 +16,7 @@
 	import type { User } from '$lib/user';
 	import AddArticle from '$lib/AddArticle.svelte';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 
 let db = getFirestore(app);
@@ -37,6 +38,9 @@ async function openModal() {
 modalStore.close();
 
 </script>
+
+<ReportPage />
+
 
 <h1>Artikler!!</h1>
 

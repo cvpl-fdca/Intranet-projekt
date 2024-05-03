@@ -10,7 +10,9 @@ export class User {
         phone: {
             private: "",
             work: ""
-        }
+        },
+        certificate: "", // Add this line if certificate is a string
+        arbejde: ""
     };
     public roles = {
         isAdmin: false,
@@ -21,6 +23,7 @@ export class User {
         },
     };
     public uid = "";
+    public photoURL: string = "";
     constructor(uid: string) {
         this.uid = uid;
     }

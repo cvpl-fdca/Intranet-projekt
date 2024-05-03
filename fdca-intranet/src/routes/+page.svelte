@@ -142,7 +142,7 @@
         <div class="card bg-white shadow-md rounded-lg p-4 mb-4">
 			<!-- Add margin-bottom here -->
             <h3 class="card-title text-lg font-semibold">Kalender</h3>
-            {#if $userProfileStore?.roles.isAdmin}
+            {#if $userProfileStore?.roles.isAdmin || $userProfileStore?.roles.projects.karkom || $userProfileStore?.roles.projects.socsam || $userProfileStore?.roles.projects.strøko}
                 <button type="button" class="btn variant-filled" on:click={openAddModal}>Tilføj event</button>
             {/if}
             <Accordion class="accordion-container">
@@ -157,7 +157,7 @@
                             </svelte:fragment>
                             <svelte:fragment slot="content">{event.description}</svelte:fragment>
                         </AccordionItem>
-                        {#if $userProfileStore?.roles.isAdmin}
+                        {#if $userProfileStore?.roles.isAdmin || $userProfileStore?.roles.projects.karkom || $userProfileStore?.roles.projects.socsam || $userProfileStore?.roles.projects.strøko}
                             <button type="button" class="btn variant-filled" on:click={openEditModal(event)}>
                                 <Fa icon={faPenToSquare}/>
                             </button>

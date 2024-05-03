@@ -68,6 +68,7 @@ export async function POST(event) {
             text: data.get('text') as string,
             time: currentTimeInCopenhagen,
             title: data.get('title') as string,
+            likes: [],
         };
 
         console.log('Forum post:', forumPost);

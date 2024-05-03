@@ -5,6 +5,7 @@
 		getFirestore,
 		collection,
 		doc,
+		addDoc,
 		getDoc,
 		onSnapshot,
 		getDocs,
@@ -19,20 +20,19 @@
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
 	import Fa from 'svelte-fa';
-	import { faBell, faBellSlash, faEdit } from '@fortawesome/free-solid-svg-icons';
+	import { faBell, faBellSlash, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
+	import ReportPage from '$lib/ReportPage.svelte';
+
 
 	export let data: PageData;
 	let currentMessage = '';
-	console.log(data);
 	let userID: string | undefined;
 	let isAdmin: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
 		isAdmin = value?.roles.isAdmin;
 	});
-
-	$: console.log('uid', userID);
 
 	let db = getFirestore(app);
 	let title = writable('');
@@ -42,8 +42,11 @@
 	let authorName = writable('');
 	let time = writable('');
 	let comments = writable<DocumentData[]>([]);
+	let likes = writable(0);
+	let likesCount = writable(0);
 	let editingComment = '';
 	let editCommentText = writable('');
+
 
 	getUid()
 		.then((uidValue) => {
@@ -63,7 +66,7 @@
 				authorUID.set(postData.authorUID);
 				authorName.set(postData.authorName);
 				time.set(postData.time);
-				console.log(markdownText);
+				likes.set(postData.likes.length);
 			}
 		});
 
@@ -84,18 +87,20 @@
 			comments.set(commentsData);
 		});
 
+		// Subscribe to likes subcollection
+		const likesRef = collection(postRef, 'likes');
+
+		onSnapshot(likesRef, (snapshot) => {
+			let likesData = snapshot.docs.map((doc) => doc.data());
+			likes.set(likesData.length);
+		});
+
 		return unsubscribe;
 	};
 
 	onMount(() => {
 		fetchData();
 	});
-
-
-
-	// Reactive statements
-	$: console.log($markdownText);
-	$: console.log($title);
 
 	
 	const modalStore = getModalStore();
@@ -144,6 +149,27 @@
 		}
 	}
 
+
+	async function likePost(postId: string) {  // Add postId as a parameter with type string
+        try {
+            const token = await getToken();
+            const submissionFormData = new FormData();
+            if (userID) {
+                submissionFormData.append('uid', userID);
+            }
+
+            const response = await fetch(`/api/forum/addLike/${postId}`, {  // Use postId instead of data.post
+                method: 'POST',
+                headers: {
+                    'X-firebase-token': token
+                },
+                body: submissionFormData
+            });
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    }
+
 	async function addComment() {
 		try {
 			const token = await getToken();
@@ -165,8 +191,6 @@
 
 	async function editComment(commentId: string) {
 		try {
-			console.log('text', $editCommentText);
-			console.log('commentId:', commentId);
 			const token = await getToken();
 			const submissionFormData = new FormData();
 			submissionFormData.append('text', $editCommentText);
@@ -195,8 +219,6 @@
 	}
 
 	function toggleEditComment(commentId: string, text: string) {
-		console.log('editingComment:', commentId);
-
 		if (editingComment === commentId) {
 			editingComment = '';
 		} else {
@@ -224,16 +246,44 @@
 		await unsubscribeFromPage(page);
 		subscribed = await isSubscribed(page);
 	}
+	async function deleteComment(commentId: string) {
+		try {
+			const token = await getToken();
+			const submissionFormData = new FormData();
+			submissionFormData.append('commentId', commentId);
+			// Append the postID to the URL as a parameter
+			const response = await fetch(`/api/forum/deleteComment/${data.post}`, {
+				method: 'DELETE',
+				headers: {
+					'X-firebase-token': token
+				},
+				body: submissionFormData
+			});
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+	}
 	
 </script>
 
+<ReportPage />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
 <div class="relative mt-8 mb-4 px-4">
+
 	<!-- Center-aligned Title, Author, and Date -->
-	<div class="text-center mx-auto" style="max-width: 800px;">
-		<h1 class="text-4xl font-bold">{$title}</h1>
-		<p class="text-sm">{$authorName}</p>
-		<p class="text-sm">{new Date($time).toLocaleString()}</p>
-	</div>
+    <div class="text-center mx-auto" style="max-width: 800px;">
+        <h1 class="text-4xl font-bold">{$title}</h1>
+        <p class="text-sm">{$authorName}</p>
+        <p class="text-sm">{new Date($time).toLocaleString()}</p>        
+		<div class="flex justify-start">
+			<button on:click={() => likePost(data.post)} type="button" class="btn variant-filled mr-4">
+				<i class="fas fa-thumbs-up"></i>
+			</button>
+			<p>Likes: {$likes}</p>
+		</div>
+    </div>
 
 	{#if subscribed}
 		<button
@@ -248,11 +298,16 @@
 	{/if}
 
 	<!-- Right-aligned Delete/Edit Buttons -->
-	{#if $uid === $authorUID || isAdmin}
+	{#if $uid === $authorUID}
 		<div class="absolute right-0 top-0">
 			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
 			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
 		</div>
+	{/if}
+	{#if $uid !== $authorUID && isAdmin}
+	<div class="absolute right-0 top-0">
+		<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
+	</div>
 	{/if}
 </div>
 
@@ -316,6 +371,12 @@
 									>cancel
 								</button>
 							{/if}
+						{/if}
+						{#if userID === comment.authorUID || isAdmin}
+							<button
+								class="btn variant-filled-primary"
+								on:click={deleteComment(comment.commentId)}
+							><Fa icon={faTrash}/></button>
 						{/if}
 					</div>
 				</div>

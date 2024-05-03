@@ -2,6 +2,7 @@ import { admin } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import type { User } from '$lib/user.js';
 import { json } from '@sveltejs/kit';
+import validator from 'validator';
 
 const db = admin.firestore();
 
@@ -49,6 +50,14 @@ export async function POST(event) {
                 'roles.isAdmin': isAdmin
             });
         } else {
+            if(validator.isEmpty(data.permission.role)) {
+                return new Response(JSON.stringify({ error: 'Validation failed' }), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
             const groupRef = admin.firestore().collection('groups').doc(data.permission.name);
             let docRef: admin.firestore.DocumentReference = admin.firestore().doc(`users/${data.uid}`);
             let updateGroupObject = {[`members.${data.uid}`]: {role: data.permission.role, userRef: docRef}};

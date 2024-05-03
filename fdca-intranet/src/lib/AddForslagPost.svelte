@@ -11,6 +11,7 @@
 	import { userProfileStore } from './userProfileStore';
 	import type { User } from './user';
 	import { writable } from 'svelte/store';
+	import { navigate } from 'svelte-routing';
 
 	let userDoc;
 	userProfileStore.subscribe((value) => {
@@ -40,6 +41,10 @@
 					'X-firebase-token': token
 				}
 			});
+			if (response.ok) {
+					navigate(`/kontakt/forslag`);
+					location.reload();
+			}
 		} catch (error) {
 			console.error('Error:', error.message);
 		}

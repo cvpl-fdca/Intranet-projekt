@@ -14,10 +14,9 @@
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { getToken, getUid } from '$lib/login';
-	import EditForslagPost from '$lib/EditForslagPost.svelte';
-	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
+	import ReportPage from '$lib/ReportPage.svelte';
 
 
 	export let data: PageData;
@@ -91,33 +90,9 @@
 		fetchData();
 	});
 
-	const modalStore = getModalStore();
-	const editForslagPost: ModalComponent = { ref: EditForslagPost };
-
 	// Reactive statements
 	$: console.log($markdownText);
 	$: console.log($title);
-
-	let modal: ModalSettings;
-
-	// Reactive statement to update the modal object
-	$: {
-		modal = {
-			type: 'component',
-			component: editForslagPost,
-			meta: {
-				postId: data.post,
-				title: $title,
-				markdownText: markdownText
-			}
-		};
-	}
-
-	async function openModal() {
-		modalStore.trigger(modal);
-	}
-
-	modalStore.close();
 
 	async function deletePost() {
 		if (confirm('Are you sure you want to delete this post?')) {
@@ -220,6 +195,9 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
 />
 
+<ReportPage />
+
+
 <div class="relative mt-8 mb-4 px-4">
 	<!-- Center-aligned Title, Author, and Date -->
 	<div class="text-center mx-auto" style="max-width: 800px;">
@@ -228,11 +206,10 @@
 		<p class="text-sm">{new Date($time).toLocaleString()}</p>
 	</div>
 
-	<!-- Right-aligned Delete/Edit Buttons -->
+	<!-- Right-aligned Delete Button -->
 	{#if $uid === $authorUID || isAdmin}
 		<div class="absolute right-0 top-0">
 			<button on:click={deletePost} type="button" class="btn variant-filled mr-4">Delete</button>
-			<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
 		</div>
 	{/if}
 </div>

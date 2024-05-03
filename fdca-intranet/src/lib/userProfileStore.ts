@@ -19,6 +19,7 @@ onAuthStateChanged(auth, (user) => {
     // Subscribe to the user's profile document
     const unsubscribe = onSnapshot(doc(db, 'users', uid), (doc) => {
       const userData = doc.data() as User;
+      userData.photoURL = user.photoURL || '';
       userProfileStore.set(userData);
       console.log("userdata", userData); // Print the userData to the console
     });

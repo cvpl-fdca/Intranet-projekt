@@ -44,6 +44,10 @@
 					'X-firebase-token': token
 				}
 			});
+      if (response.ok) {
+					navigate(`/`);
+					location.reload();
+			}
 		} catch (error) {
 			console.error('Error:', error.message);
 		}
@@ -63,13 +67,13 @@
       type="text"
       bind:value={start}
       class="w-[600px] p-2 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 mb-4"
-      placeholder="Event Start"
+      placeholder="Event Start (format: YYYY-MM-dd HH:mm)"
     />
     <input
       type="text"
       bind:value={end}
       class="w-[600px] p-2 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 mb-4"
-      placeholder="Event End"
+      placeholder="Event End (format: YYYY-MM-dd HH:mm)"
     />
 
     <div class="w-[600px] mb-4">

@@ -4,7 +4,9 @@ import { type DecodedIdToken } from 'firebase-admin/auth';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
-export async function PATCH(event) {
+
+const db = admin.firestore();
+export async function DELETE(event) {
     // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
@@ -24,6 +26,7 @@ export async function PATCH(event) {
         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
         token = decodedToken;
         console.log('Successfully authenticated Firebase token from user:', token.email);
+        console.log("token: ", token);
     } catch (error) {
         console.error('Error verifying Firebase token:', error);
         return new Response(JSON.stringify({ error: 'Failed to authenticate Firebase token' }), {
@@ -35,26 +38,28 @@ export async function PATCH(event) {
     }
 
     try {
-        // Get the forslag post ID from the URL parameters
+        // Get the forum post ID from the request body
         const postId = event.params.postId;
+        const data = await event.request.formData();
 
-        // Get the title and text from the request body
-        const formData = await event.request.formData();
-        const title = formData.get('title');
-        const text = formData.get('text');
+        const commentId = data.get('commentId');
 
-        // Get the forslag post from Firestore
-        const forslagPostRef = admin.firestore().collection('OpenForslag').doc(postId);
-        const forslagPost = await forslagPostRef.get();
+        // Get the forum post from Firestore
+        const commentRef = admin.firestore().collection('OpenForum').doc(postId).collection('comments').doc(commentId);
+        const comment = await commentRef.get();
+
+        let userDoc = (await db.collection('users').doc(token.uid).get()).data() as User;
+
+        let isAdmin = userDoc.roles.isAdmin;
+
+        console.log('is the user admin: ', isAdmin);
 
         // Check if the user is the author or an admin
-        if (forslagPost.exists && (forslagPost.data().authorUID === token.uid || token.admin)) {
-            // Update the forslag post
-            await forslagPostRef.update({
-                title,
-                text
-            });
-
+        if (comment.exists && (comment.data().authorUID === token.uid || isAdmin === true)) {
+            console.log("Deleting comment");
+            // Delete the comment
+            await commentRef.delete();
+            console.log("Comment deleted");
             return json({ success: true });
         } else {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -65,8 +70,8 @@ export async function PATCH(event) {
             });
         }
     } catch (error) {
-        console.error('Failed to update forslag post:', error);
-        return new Response(JSON.stringify({ error: 'Failed to update forslag post' }), {
+        console.error('Failed to delete comment:', error);
+        return new Response(JSON.stringify({ error: 'Failed to delete comment' }), {
             status: 500,
             headers: {
                 'Content-Type': 'application/json',
