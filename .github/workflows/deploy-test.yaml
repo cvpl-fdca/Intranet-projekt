@@ -61,7 +61,7 @@ jobs:
             AZURE_CLIENT_SECRET=${{ secrets.FDCA_INTRANET_AZURE_CLIENT_SECRET }}
             AZURE_SUBSCRIPTION_ID=${{ secrets.FDCA_INTRANET_AZURE_SUBSCRIPTION_ID }}
             ENVIRONMENT="test"
-            ORIGIN="https://intra-test.fdca.dk"
+            ORIGIN="http://intranet-test"
 
       - name: Update Deployment YAML to current tag
         run: |
