@@ -5,8 +5,9 @@ import { type DecodedIdToken } from 'firebase-admin/auth';
 import nodemailer from 'nodemailer';
 import type { User } from '$lib/user.js';
 import path from 'path';
-import keys from '/secrets/fdca-intranet-dev-test-0fcb3c7d3892.json';
+import { getEmailSecret } from './getSecret.server';
 import { getDocs } from 'firebase/firestore';
+
 
 
 const db = admin.firestore();
@@ -27,6 +28,22 @@ const db = admin.firestore();
  * @throws {Error} If there's an error sending the email.
  */
 export async function sendNotifications(userFirebaseToken: string, subject: string, body: string, page: string, post: string) {
+    let keys: JSON;
+
+    try {
+        // Retrieve the email account JSON from the Azure Key Vault
+        keys = await getEmailSecret().then((result) => {
+            if (result && result.emailAccountJson) {
+                return JSON.parse(result.emailAccountJson);
+            } else {
+                throw new Error("emailAccountJson is undefined");
+            }
+        });
+        console.log('Keys:', keys);
+    } catch (error) {
+        console.error('Failed to retrieve or parse keys:', error);
+    }
+
     // Retrieve the Firebase token from the request headers 
     if (!userFirebaseToken) {
         return json({ error: 'Firebase token not provided' }, { status: 401 });

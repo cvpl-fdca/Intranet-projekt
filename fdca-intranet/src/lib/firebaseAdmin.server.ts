@@ -1,13 +1,19 @@
 import admin from 'firebase-admin';
-import * as path from 'path';
+import { getFirebaseSecret } from './getSecret.server';
 
-// Get the path to the JSON file
-const jsonFilePath = path.resolve('secrets/fdca-intranet-dev-test-firebase-adminsdk-e9ktp-e1032c03a1.json');
-
-// Initialize Firebase Admin
+// Initialize Firebase Admin, but only if it hasn't been initialized yet
 if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert(jsonFilePath)
+    getFirebaseSecret().then((firebaseSecret) => {
+        try {
+            const firebaseCredentials = JSON.parse(firebaseSecret.firebaseAccountJson);
+            admin.initializeApp({
+                credential: admin.credential.cert(firebaseCredentials)
+            });
+        } catch (error) {
+            console.error('Failed to parse Firebase secret or initialize Firebase:', error);
+        }
+    }).catch((error) => {
+        console.error('Failed to retrieve Firebase secret:', error);
     });
 }
 
