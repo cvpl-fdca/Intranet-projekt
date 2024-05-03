@@ -24,7 +24,7 @@
 		unsubscribeFromPage,
 		unsubscribeFromPost
 	} from '$lib/subscribeTo';
-	import { faBellSlash, faBell } from '@fortawesome/free-solid-svg-icons';
+	import { faBellSlash, faBell, faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import EditArticle from '$lib/EditArticle.svelte';
 
@@ -33,9 +33,11 @@
 	console.log(data);
 	let userID: string | undefined;
 	let isAdmin: boolean | undefined;
+	let projectMember: boolean | undefined;
 	userProfileStore.subscribe((value) => {
 		userID = value?.uid;
 		isAdmin = value?.roles.isAdmin;
+		projectMember = value?.roles.projects.strøko;
 	});
 
 	$: console.log('uid', userID);
@@ -128,6 +130,31 @@
 		subscribed = await isSubscribed(page, post);
 		console.log('subscribed: ' + subscribed);
 	}
+	async function deleteArticle(articleId: string) {
+		if (confirm('Are you sure you want to delete this article?')) {
+			try {
+				const token = await getToken();
+				const submissionFormData = new FormData();
+				submissionFormData.append('project', 'strøko');
+				// Append the postID to the URL as a parameter
+				const response = await fetch(`/api/artikler/deleteArticle/${data.article}`, {
+					method: 'DELETE',
+					body: submissionFormData,
+					headers: {
+						'X-firebase-token': token
+					}
+				});
+
+				// If the post was successfully deleted, navigate to the forum
+				if (response.ok) {
+					navigate('/artikler/strøko');
+					location.reload();
+				}
+			} catch (error) {
+				console.error('Error:', error.message);
+			}
+		}
+	}
 
 
 </script>
@@ -151,8 +178,9 @@
 				on:click={async () => await handleSubscribe()}><Fa icon={faBell} /></button
 			>
 		{/if}
-		{#if $uid === $authorUID}
-				<button type="button" class="btn variant-filled" on:click={openModal}>Edit</button>
+		{#if projectMember}
+			<button type="button" class="btn variant-filled" on:click={openModal}><Fa icon={faPenToSquare}/></button>
+			<button type="button" class="btn variant-filled" on:click={deleteArticle(data.article)}><Fa icon={faTrash}/></button>
 		{/if}
 	</div>
 </div>
