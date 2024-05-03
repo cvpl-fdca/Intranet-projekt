@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import nodemailer from 'nodemailer';
@@ -10,7 +10,6 @@ import { getDocs } from 'firebase/firestore';
 
 
 
-const db = admin.firestore();
 
 /**
  * Sends notification emails to all subscribers of a specific post.

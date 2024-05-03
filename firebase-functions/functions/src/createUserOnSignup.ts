@@ -30,6 +30,6 @@ export const createUser = (user: { uid: any; }) => {
     };
 
     // Write the User object to Firestore
-    const db = admin.firestore();
+    
     return db.collection('users').doc(uid).set(newUser);
 };

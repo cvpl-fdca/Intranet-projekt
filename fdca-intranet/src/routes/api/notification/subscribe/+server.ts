@@ -1,11 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import nodemailer from 'nodemailer';
 import type { User } from '$lib/user.js';
 import path from 'path';
-// import keys from '/secrets/fdca-intranet-dev-test-0fcb3c7d3892.json';
 
 
 
@@ -33,7 +32,7 @@ export async function POST(event) {
     const post = formData.get('post').toString();
     const email = token.email;
     const uuid = token.uid;
-    const db = admin.firestore();
+    
     const docRef = db.collection('emailList').doc(page).collection('posts').doc(post).collection('subscribers').doc(uuid); await docRef.set({ email: email });
     return json({ success: 'Subscribed to notifications' });
 }

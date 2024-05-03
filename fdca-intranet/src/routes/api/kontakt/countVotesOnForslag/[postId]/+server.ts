@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 
-const db = admin.firestore();
+
 
 export async function GET({ params }) {
     const { postId } = params; // Extract postId from the request parameters

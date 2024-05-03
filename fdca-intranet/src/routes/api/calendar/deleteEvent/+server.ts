@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';

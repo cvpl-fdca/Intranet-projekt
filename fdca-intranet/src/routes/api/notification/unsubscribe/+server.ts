@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 
 
@@ -34,7 +34,7 @@ export async function DELETE(event) {
     // Delete the user from emailList/{page}/subscribers/{UUID}
     const email = token.email;
     const uuid = token.uid;
-    const db = admin.firestore();
+    
     const docRef = db.collection('emailList').doc(page).collection('posts').doc(post).collection('subscribers').doc(uuid);
     await docRef.delete();
 

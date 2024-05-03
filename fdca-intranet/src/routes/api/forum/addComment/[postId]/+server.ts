@@ -1,13 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { getUsername } from '$lib/login.js';
-import type { User } from '$lib/user.js';
-import { cp } from 'fs';
 
 
 dayjs.extend(utc);
@@ -16,7 +13,7 @@ dayjs.extend(timezone);
 
 // src/routes/api/addComment/+server.ts
 
-const db = admin.firestore();
+
 let errors: string[] = [];
 
 export async function POST(event) {

@@ -1,9 +1,9 @@
 // src/routes/api/updateUserDetails/+server.ts
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 
-const db = admin.firestore();
+
 let errors: string[] = [];
 
 export async function POST(event) {

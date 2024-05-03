@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import dayjs from 'dayjs';
@@ -8,7 +8,7 @@ import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
-const db = admin.firestore();
+
 let errors: string[] = [];
 
 export async function POST(event) {

@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import dayjs from 'dayjs';
@@ -16,7 +16,7 @@ console.log(currentTimeInCopenhagen);
 
 // src/routes/api/kontakt/createForslagPost/+server.ts
 
-const db = admin.firestore();
+
 let errors: string[] = [];
 
 export async function POST(event) {

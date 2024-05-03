@@ -1,11 +1,11 @@
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import type { User } from '$lib/user.js';
 import firebase from '$lib/firebase';
 import { json } from '@sveltejs/kit';
 
 
-const db = admin.firestore();
+
 
 export async function GET(event) {
     // Retrieve Firebase token from the request headers

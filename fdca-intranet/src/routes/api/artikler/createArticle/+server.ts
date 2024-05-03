@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { type DecodedIdToken } from 'firebase-admin/auth';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import { json } from '@sveltejs/kit';
 import type { User } from '$lib/user';
 import { sendNotifications } from '$lib/notification.server';
@@ -14,7 +14,7 @@ dayjs.extend(timezone);
 const currentTimeInCopenhagen = dayjs().tz('Europe/Copenhagen').format();
 console.log(currentTimeInCopenhagen);
 
-const db = admin.firestore();
+
 
 export async function POST(event) {
     // Retrieve the Firebase token from the request headers

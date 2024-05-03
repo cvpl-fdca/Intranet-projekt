@@ -1,20 +1,25 @@
-import admin from 'firebase-admin';
+import firebaseAdmin from 'firebase-admin';
 import { getFirebaseSecret } from './getSecret.server';
 
-// Initialize Firebase Admin, but only if it hasn't been initialized yet
-if (!admin.apps.length) {
-    getFirebaseSecret().then((firebaseSecret) => {
+let db;
+
+async function initializeFirebase() {
+    if (!firebaseAdmin.apps.length) {
         try {
+            const firebaseSecret = await getFirebaseSecret();
             const firebaseCredentials = JSON.parse(firebaseSecret.firebaseAccountJson);
-            admin.initializeApp({
-                credential: admin.credential.cert(firebaseCredentials)
+            firebaseAdmin.initializeApp({
+                credential: firebaseAdmin.credential.cert(firebaseCredentials)
             });
+            db = firebaseAdmin.firestore();
         } catch (error) {
             console.error('Failed to parse Firebase secret or initialize Firebase:', error);
         }
-    }).catch((error) => {
-        console.error('Failed to retrieve Firebase secret:', error);
-    });
+    }
 }
 
-export { admin };
+initializeFirebase().catch((error) => {
+    console.error('Failed to initialize Firebase:', error);
+});
+
+export { db , firebaseAdmin as admin };

@@ -1,15 +1,30 @@
 import { json } from '@sveltejs/kit';
-import { admin } from '$lib/firebaseAdmin.server.js';
+import { admin, db } from '$lib/firebaseAdmin.server.js';
 import validator from 'validator';
 import { type DecodedIdToken } from 'firebase-admin/auth';
 import nodemailer from 'nodemailer';
 import type { User } from '$lib/user.js';
 import path from 'path';
-import keys from '/secrets/fdca-intranet-dev-test-0fcb3c7d3892.json';
-
+import { getEmailSecret } from '$lib/getSecret.server';
 
 
 export async function POST(event) {
+    let keys: JSON;
+
+    try {
+        // Retrieve the email account JSON from the Azure Key Vault
+        keys = await getEmailSecret().then((result) => {
+            if (result && result.emailAccountJson) {
+                return JSON.parse(result.emailAccountJson);
+            } else {
+                throw new Error("emailAccountJson is undefined");
+            }
+        });
+        console.log('Keys:', keys);
+    } catch (error) {
+        console.error('Failed to retrieve or parse keys:', error);
+    }
+
     // Retrieve the Firebase token from the request headers
     const firebaseToken = event.request.headers.get('X-firebase-token');
     if (!firebaseToken) {
