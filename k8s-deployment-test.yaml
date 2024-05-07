@@ -18,7 +18,8 @@ spec:
         image: sagalabspackages.azurecr.io/sagalabs/fdca-intranet-test:latest
         env:
         - name: ENVIRONMENT
-          value: "dev"
+          value: "test"
+          
         ports:
         - containerPort: 3000
 ---

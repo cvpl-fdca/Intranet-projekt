@@ -12,10 +12,7 @@ const config = {
 		inspector: true,
 	},
 	kit: {
-		adapter: adapter(),
-		csrf: {
-            checkOrigin: false
-        }
+		adapter: adapter()
 	}
 };
 export default config;
