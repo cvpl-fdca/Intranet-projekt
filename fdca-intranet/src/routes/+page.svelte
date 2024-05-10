@@ -161,9 +161,11 @@
                             <button type="button" class="btn variant-filled" on:click={openEditModal(event)}>
                                 <Fa icon={faPenToSquare}/>
                             </button>
-                            <button type="button" class="btn variant-filled" on:click={editColor(event.id)}>
-                                <Fa icon={faPalette}/>
-                            </button>
+                            {#if $userProfileStore?.roles.isAdmin}
+                                <button type="button" class="btn variant-filled" on:click={editColor(event.id)}>
+                                    <Fa icon={faPalette}/>
+                                </button>
+                            {/if}
                             <button type="button" class="btn variant-filled" on:click={deleteEvent(event.id)}>
                                 <Fa icon={faTrash}/>
                             </button>
