@@ -6,7 +6,6 @@ import { admin, db } from '$lib/firebaseAdmin.server.js';
 import { json } from '@sveltejs/kit';
 import type { User } from '$lib/user';
 import { sendNotifications } from '$lib/notification.server';
-import { sanitizeMarkdown } from '$lib/sanitizeMarkdown';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -55,7 +54,7 @@ export async function POST(event) {
         let article = {
             authorUID: token.uid,
             authorName: username,
-            text: sanitizeMarkdown(data.get('text') as string),
+            text: data.get('text') as string,
             time: currentTimeInCopenhagen,
             title: data.get('title') as string,
         };
