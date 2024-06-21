@@ -1,21 +1,32 @@
 import { json } from '@sveltejs/kit';
 import { admin, db } from '$lib/firebaseAdmin.server.js';
 
-
-
 export async function GET({ params }) {
     const { postId } = params; // Extract postId from the request parameters
 
-    try {
-        // Retrieve upvotes
-        const upvotesRef = db.collection('OpenForslag').doc(postId).collection('upvotes');
-        const upvotesSnapshot = await upvotesRef.where('voted', '==', true).get();
-        const upvotesCount = upvotesSnapshot.size;
+    let upvotesCount = 0;
+    let downvotesCount = 0;
 
-        // Retrieve downvotes
-        const downvotesRef = db.collection('OpenForslag').doc(postId).collection('downvotes');
-        const downvotesSnapshot = await downvotesRef.where('voted', '==', true).get();
-        const downvotesCount = downvotesSnapshot.size;
+    try {
+        // Try to retrieve upvotes
+        try {
+            const upvotesRef = db.collection('OpenForslag').doc(postId).collection('upvotes');
+            const upvotesSnapshot = await upvotesRef.where('voted', '==', true).get();
+            upvotesCount = upvotesSnapshot.empty ? 0 : upvotesSnapshot.size;
+        } catch (error) {
+            console.error('Error fetching upvotes:', error);
+            upvotesCount = 0; // Set to 0 if there's an error (e.g., collection doesn't exist)
+        }
+
+        // Try to retrieve downvotes
+        try {
+            const downvotesRef = db.collection('OpenForslag').doc(postId).collection('downvotes');
+            const downvotesSnapshot = await downvotesRef.where('voted', '==', true).get();
+            downvotesCount = downvotesSnapshot.empty ? 0 : downvotesSnapshot.size;
+        } catch (error) {
+            console.error('Error fetching downvotes:', error);
+            downvotesCount = 0; // Set to 0 if there's an error
+        }
 
         // Return both counts in one response
         return json({ upvotesCount, downvotesCount });

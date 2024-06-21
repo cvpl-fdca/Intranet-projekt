@@ -17,6 +17,8 @@
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
 	import ReportPage from '$lib/ReportPage.svelte';
+	import Fa from 'svelte-fa';
+	import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 
 
 	export let data: PageData;
@@ -190,10 +192,6 @@
 
 </script>
 
-<link
-	rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-/>
 
 <ReportPage />
 
@@ -220,13 +218,13 @@
 		<MarkdownRenderer {markdownText} />
 </div>
 <div class="grid grid-cols-[auto_auto_1fr] items-center gap-x-2">
-	<button class="vote-button" on:click={() => vote('upvote')} aria-label="Upvote">
-		<i class="fas fa-arrow-alt-circle-up"></i>
+	<button class="btn variant-filled" on:click={() => vote('upvote')} aria-label="Upvote">
+		<Fa icon={faArrowUp}></Fa>
 	</button>
 <p id="upvoteCount">{$upvotesCount}</p>
 <div></div>
-	<button class="vote-button" on:click={() => vote('downvote')} aria-label="Downvote">
-		<i class="fas fa-arrow-alt-circle-down"></i>
+	<button class="btn variant-filled" on:click={() => vote('downvote')} aria-label="Downvote">
+		<Fa icon={faArrowDown}></Fa>
 	</button>
 <p id="downvoteCount">{$downvotesCount}</p>
 

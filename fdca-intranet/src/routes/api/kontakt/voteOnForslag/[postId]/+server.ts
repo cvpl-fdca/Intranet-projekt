@@ -8,7 +8,6 @@ import timezone from 'dayjs/plugin/timezone';
 import { getUsername } from '$lib/login.js';
 import type { User } from '$lib/user.js';
 
-
 let errors: string[] = [];
 
 export async function POST(event) {
@@ -47,54 +46,98 @@ export async function POST(event) {
     console.log('Form data:', data);
 
     const voteDirection = data.get('voteDirection');
-
-    // Extract the forslag post ID from the URL parameters
-    const postId = event.params.postId;
-
-    // Get the user's display name
-    const user = await admin.auth().getUser(token.uid);
-    username = user.displayName;
-
-    // Create a new comment document in Firestore
-    if(voteDirection === 'upvote') {
-        const downvoted = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
-        try {
-            if((await downvoted.get()).data().voted) {
-                return new Response(JSON.stringify({ error: 'Already voted.'}), {
-                    status: 400,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-            }
-        } catch (error) {}
-        const commentRef = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
-        await commentRef.set({
-            voted: true
-        });
-    } else if (voteDirection === 'downvote') {
-        const upvoted = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
-        try {
-            if((await upvoted.get()).data().voted) {
-                return new Response(JSON.stringify({error: 'Already voted.'}), {
-                    status: 400,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-            }
-        } catch (error) {}
-        const commentRef = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
-        await commentRef.set({
-            voted: true
-        });
-    } else {
-        return new Response(JSON.stringify({ error: 'Vote failed' }), {
+    if (!voteDirection) {
+        return new Response(JSON.stringify({ error: 'Vote direction not provided' }), {
             status: 400,
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     }
+
+    // Extract the forslag post ID from the URL parameters
+    const postId = event.params.postId;
+    if (!postId) {
+        return new Response(JSON.stringify({ error: 'Post ID not provided' }), {
+            status: 400,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    // Get the user's display name
+    try {
+        const user = await admin.auth().getUser(token.uid);
+        username = user.displayName;
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        return new Response(JSON.stringify({ error: 'Failed to fetch user data' }), {
+            status: 500,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    // Ensure Firestore is initialized
+    if (!db) {
+        console.error('Firestore not initialized');
+        return new Response(JSON.stringify({ error: 'Internal server error' }), {
+            status: 500,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    // Create a new comment document in Firestore
+    try {
+        if (voteDirection === 'upvote') {
+            const downvoted = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
+            if ((await downvoted.get()).data()?.voted) {
+                return new Response(JSON.stringify({ error: 'Already voted.' }), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+            const commentRef = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
+            await commentRef.set({
+                voted: true
+            });
+        } else if (voteDirection === 'downvote') {
+            const upvoted = db.collection('OpenForslag').doc(postId).collection('upvotes').doc(token.uid);
+            if ((await upvoted.get()).data()?.voted) {
+                return new Response(JSON.stringify({ error: 'Already voted.' }), {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+            const commentRef = db.collection('OpenForslag').doc(postId).collection('downvotes').doc(token.uid);
+            await commentRef.set({
+                voted: true
+            });
+        } else {
+            return new Response(JSON.stringify({ error: 'Vote failed' }), {
+                status: 400,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+    } catch (error) {
+        console.error('Error processing vote:', error);
+        return new Response(JSON.stringify({ error: 'Failed to process vote' }), {
+            status: 500,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
     return json({ success: true });
 }
