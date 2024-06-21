@@ -11,6 +11,7 @@
 	import { userProfileStore } from './userProfileStore';
 	import type { User } from './user';
 	import { writable } from 'svelte/store';
+	import { navigate } from 'svelte-routing';
 
 	let userDoc;
 	userProfileStore.subscribe((value) => {
