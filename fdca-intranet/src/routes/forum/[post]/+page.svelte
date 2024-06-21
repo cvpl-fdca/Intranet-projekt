@@ -20,7 +20,7 @@
 	import { userProfileStore } from '$lib/userProfileStore';
 	import { navigate } from 'svelte-routing';
 	import Fa from 'svelte-fa';
-	import { faBell, faBellSlash, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faBell, faBellSlash, faEdit, faThumbsUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { isSubscribed, subscribeToPage, unsubscribeFromPage } from '$lib/subscribeTo';
 	import ReportPage from '$lib/ReportPage.svelte';
 
@@ -267,7 +267,6 @@
 </script>
 
 <ReportPage />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 
 <div class="relative mt-8 mb-4 px-4">
@@ -279,7 +278,7 @@
         <p class="text-sm">{new Date($time).toLocaleString()}</p>        
 		<div class="flex justify-start">
 			<button on:click={() => likePost(data.post)} type="button" class="btn variant-filled mr-4">
-				<i class="fas fa-thumbs-up"></i>
+				<Fa icon={faThumbsUp}></Fa>
 			</button>
 			<p>Likes: {$likes}</p>
 		</div>
