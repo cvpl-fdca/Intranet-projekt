@@ -17,7 +17,7 @@ csp: {
     directives: {
         'default-src': ['self'],
         'script-src': ['self', 'https://apis.google.com', 'https://*.cloudflare.com', 'https://ajax.cloudflare.com', 'unsafe-inline', 'static.cloudflareinsights.com', 'https://*.googleapis.com'],
-        'style-src': ['self', 'unsafe-inline'],
+        'style-src': ['self', 'https://cdnjs.cloudlfare.com' , 'unsafe-inline'],
         'img-src': ['self', 'data:', 'https://as1.ftcdn.net', 'https://*.discordapp.com', 'https://lh3.googleusercontent.com'],
         'object-src': ['none'],
         'connect-src': ['self', 'https://firestore.googleapis.com', 'https://identitytoolkit.googleapis.com', 'cloudflareinsights.com', 'https://*.googleapis.com'],
@@ -26,7 +26,7 @@ csp: {
     reportOnly: {
         'default-src': ['self'],
         'script-src': ['self', 'https://apis.google.com', 'https://*.cloudflare.com', 'https://ajax.cloudflare.com', 'unsafe-inline', 'static.cloudflareinsights.com', 'https://*.googleapis.com'],
-        'style-src': ['self', 'unsafe-inline'],
+        'style-src': ['self', 'https://cdnjs.cloudlfare.com' , 'unsafe-inline'],
         'img-src': ['self', 'data:', 'https://as1.ftcdn.net', 'https://*.discordapp.com', 'https://lh3.googleusercontent.com'],
         'object-src': ['none'],
         'connect-src': ['self', 'https://firestore.googleapis.com', 'https://identitytoolkit.googleapis.com', 'cloudflareinsights.com', 'https://*.googleapis.com'],
