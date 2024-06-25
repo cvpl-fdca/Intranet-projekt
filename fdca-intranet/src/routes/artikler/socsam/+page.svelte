@@ -80,6 +80,10 @@ modalStore.close();
 		subscribed = await isSubscribed(page);
 	}
 
+	function sortPostsByTime(postsArray) {
+		return postsArray.slice().sort((a, b) => new Date(b.time) - new Date(a.time));
+	}
+
 </script>
 
 <style>
@@ -116,7 +120,7 @@ modalStore.close();
 </div>
 
 <div class="grid grid-cols-3 gap-4">
-	{#each $articles as article}
+	{#each sortPostsByTime($articles) as article}
 	<a href= {`/artikler/socsam/${article.id}`} class="card card-hover p-4">
 		<h2>{article.title}</h2>
 		<p>{article.authorName}</p>

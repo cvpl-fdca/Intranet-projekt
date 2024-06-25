@@ -47,6 +47,10 @@
 		}
 	
 		modalStore.close();
+
+		function sortPostsByTime(postsArray) {
+			return postsArray.slice().sort((a, b) => new Date(b.time) - new Date(a.time));
+		}
 	
 	</script>
 	
@@ -68,7 +72,7 @@
 	</div>
 	
 	<div class="grid grid-cols-3 gap-4">
-		{#each $posts as post}
+		{#each sortPostsByTime($posts) as post}
 		  <div class="card card-hover p-4">
 			<a href={`/kontakt/forslag/${post.id}`}>
 			  <h2>{post.title}</h2>

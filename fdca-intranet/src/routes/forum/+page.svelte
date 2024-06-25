@@ -70,6 +70,10 @@
 		await unsubscribeFromPage(page);
 		subscribed = await isSubscribed(page);
 	}
+
+	function sortPostsByTime(postsArray) {
+		return postsArray.slice().sort((a, b) => new Date(b.time) - new Date(a.time));
+	}
 	
 </script>
 
@@ -92,7 +96,7 @@
 </div>
 
 <div class="grid grid-cols-3 gap-4">
-	{#each $posts as post}
+	{#each sortPostsByTime($posts) as post}
 		<a href={`/forum/${post.id}`} class="card card-hover p-4">
 			<h2>{post.title}</h2>
 			<p>{post.authorName}</p>
