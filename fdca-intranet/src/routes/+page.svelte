@@ -102,6 +102,10 @@
 
     modalStore.close();
 
+    function sortEventsByTime(eventsArray) {
+		return eventsArray.slice().sort((a, b) => new Date(a.eventStart) - new Date(b.eventStart));
+	}
+
 </script>
 
 <style>
@@ -146,7 +150,7 @@
                 <button type="button" class="btn variant-filled" on:click={openAddModal}>Tilføj event</button>
             {/if}
             <Accordion class="accordion-container">
-                {#each $events as event}
+                {#each sortEventsByTime($events) as event}
                     <div class="event-container">
                         <AccordionItem class="accordion-item" closed>
                             <svelte:fragment slot="lead">
