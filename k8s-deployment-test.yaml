@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: intranet-test
-        image: sagalabspackages.azurecr.io/sagalabs/fdca-intranet-test:latest
+        image: {CHANGEME}packages.azurecr.io/{CHANGEME}/fdca-intranet-test:latest
         env:
         - name: ENVIRONMENT
           value: "test"
